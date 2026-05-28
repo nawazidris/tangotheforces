@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>League Standings — Tango Football Club</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="css/league-standings.css">
+</head>
+<body>
+
+    <header class="main-header">
+        <div class="header-brand">
+            <img src="images/tangoforces.jpg" alt="Tango FC Logo">
+            <div>
+                <h1>Tango FC</h1>
+                <p>The Forces</p>
+            </div>
+        </div>
+
+        <nav>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="technical-team.html">Technical Team</a></li>
+                <li><a href="roster.html">Roster</a></li>
+                <li><a href="matches.html">Matches</a></li>
+                <li><a href="stats.html">Stats</a></li>
+                <li><a href="league-standings.html" class="active">Standings</a></li>
+                <li><a href="history.html">History</a></li>
+                <li><a href="videos.html">Videos</a></li>
+                <li><a href="gallery.html">Gallery</a></li>
+            </ul>
+        </nav>
+
+        <button class="mobile-menu-btn" id="menuBtn">
+            <i class="fa-solid fa-bars"></i>
+        </button>
+    </header>
+
+    <nav class="mobile-nav" id="mobileNav">
+        <a href="index.html">Home</a>
+        <a href="technical-team.html">Technical Team</a>
+        <a href="roster.html">Roster</a>
+        <a href="matches.html">Matches</a>
+        <a href="stats.html">Stats</a>
+        <a href="league-standings.html">Standings</a>
+        <a href="history.html">History</a>
+        <a href="videos.html">Videos</a>
+        <a href="gallery.html">Gallery</a>
+    </nav>
+
+    <main>
+        <section class="hero-section">
+            <div class="hero-content">
+                <div class="hero-left">
+                    <span class="season-badge">MOSSL 2026</span>
+                    <h2>League <span class="accent">Standings</span></h2>
+                    <p>Track Tango FC's league position, form, and performance across the MOSSL season.</p>
+                    <div class="hero-buttons">
+                        <a href="stats.html" class="btn-secondary"><i class="fa-solid fa-chart-simple"></i> Stats</a>
+                        <a href="matches.html" class="btn-secondary"><i class="fa-solid fa-calendar-days"></i> Fixtures</a>
+                    </div>
+                </div>
+
+                <div class="hero-pos-card glass-card">
+                    <span class="pos-label">Tango FC Position</span>
+                    <strong id="heroPosNum" class="pos-number">-</strong>
+                    <span class="pos-sub">Current MOSSL ranking</span>
+                    <div id="heroPosStats" class="pos-stats">
+                        <div class="pos-stat-item">
+                            <strong>-</strong>
+                            <span>Points</span>
+                        </div>
+                        <div class="pos-stat-item">
+                            <strong>-</strong>
+                            <span>Wins</span>
+                        </div>
+                        <div class="pos-stat-item">
+                            <strong>-</strong>
+                            <span>Draws</span>
+                        </div>
+                        <div class="pos-stat-item">
+                            <strong>-</strong>
+                            <span>Losses</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="summary-strip" id="summaryStrip"></div>
+
+        <section class="section-spacing">
+            <div class="table-topbar">
+                <div>
+                    <div class="section-title">
+                        <h2>League Table</h2>
+                        <p>Search teams, compare stats, and view Tango FC's league progress.</p>
+                    </div>
+                </div>
+                <div class="table-controls">
+                    <div class="search-wrap">
+                        <span class="search-icon"><i class="fa-solid fa-magnifying-glass"></i></span>
+                        <input id="tableSearch" type="text" placeholder="Search team name">
+                    </div>
+                </div>
+            </div>
+
+            <div class="legend-row">
+                <div class="legend-item"><span class="legend-dot champion"></span>Champion zone</div>
+                <div class="legend-item"><span class="legend-dot europa"></span>Europa zone</div>
+                <div class="legend-item"><span class="legend-dot tango"></span>Tango FC</div>
+                <div class="legend-item"><span class="legend-dot relegation"></span>Relegation zone</div>
+            </div>
+
+            <div class="table-wrapper glass-card">
+                <div class="table-scroll">
+                    <table id="standingsTable">
+                        <thead>
+                            <tr>
+                                <th class="th-pos">Pos</th>
+                                <th class="th-team">Team</th>
+                                <th>Pl</th>
+                                <th>W</th>
+                                <th>D</th>
+                                <th>L</th>
+                                <th>GF</th>
+                                <th>GA</th>
+                                <th>GD</th>
+                                <th class="th-pts">Pts</th>
+                                <th>Form</th>
+                            </tr>
+                        </thead>
+                        <tbody id="standingsBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="standingsNoData" class="no-data-msg" style="display:none;">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+                No standings data is available right now.
+            </div>
+        </section>
+    </main>
+
+    <footer class="main-footer">
+        <div class="footer-brand">
+            <img src="images/tangoforces.jpg" alt="Tango FC">
+            <div>
+                <strong>Tango Football Club</strong>
+                <span>Est. 2015 · Masvingo, Zimbabwe</span>
+            </div>
+        </div>
+        <nav class="footer-nav">
+            <a href="roster.html">Roster</a>
+            <a href="matches.html">Matches</a>
+            <a href="stats.html">Stats</a>
+            <a href="history.html">History</a>
+            <a href="gallery.html">Gallery</a>
+        </nav>
+        <p class="footer-copy">© 2026 Tango Football Club. All rights reserved.</p>
+    </footer>
+
+    <script src="js/league-standings.js"></script>
+    <script>
+        // Smooth layout drawer operations on mobile devices
+        const menuBtn = document.getElementById('menuBtn');
+        const mobileNav = document.getElementById('mobileNav');
+        menuBtn.addEventListener('click', () => {
+            mobileNav.classList.toggle('open');
+        });
+    </script>
+</body>
+</html>

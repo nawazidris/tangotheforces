@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard — Tango FC</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+
+    <!-- ============================
+         TOPBAR
+    ============================= -->
+    <header class="admin-topbar">
+        <div class="topbar-left">
+            <div class="topbar-brand">
+                <img src="images/tangoforces.jpg" alt="Tango FC">
+                <div>
+                    <strong>Tango FC</strong>
+                    <span>Admin Dashboard</span>
+                </div>
+            </div>
+        </div>
+        <div class="topbar-right">
+            <a href="index.html" class="topbar-link" target="_blank">
+                <i class="fa-solid fa-arrow-up-right-from-square"></i> View Site
+            </a>
+            <button class="btn-logout" onclick="logout()">
+                <i class="fa-solid fa-right-from-bracket"></i> Logout
+            </button>
+        </div>
+    </header>
+
+    <div class="admin-layout">
+
+        <!-- ============================
+             SIDEBAR
+        ============================= -->
+        <aside class="admin-sidebar">
+            <nav class="sidebar-nav">
+                <button class="sidebar-btn active" onclick="switchTab('dashboard', this)">
+                    <i class="fa-solid fa-gauge-high"></i>
+                    <span>Dashboard</span>
+                </button>
+                <button class="sidebar-btn" onclick="switchTab('players', this)">
+                    <i class="fa-solid fa-users"></i>
+                    <span>Players</span>
+                </button>
+                <button class="sidebar-btn" onclick="switchTab('matches', this)">
+                    <i class="fa-solid fa-futbol"></i>
+                    <span>Matches</span>
+                </button>
+                <button class="sidebar-btn" onclick="switchTab('standings', this)">
+                    <i class="fa-solid fa-table-list"></i>
+                    <span>Standings</span>
+                </button>
+            </nav>
+        </aside>
+
+        <!-- ============================
+             MAIN CONTENT
+        ============================= -->
+        <main class="admin-main">
+
+            <!-- ── DASHBOARD ── -->
+            <section id="tab-dashboard" class="admin-tab active">
+                <div class="tab-header">
+                    <h2>Dashboard</h2>
+                    <p>Season overview at a glance</p>
+                </div>
+
+                <div class="dash-cards">
+                    <div class="dash-card">
+                        <div class="dash-card-icon blue">
+                            <i class="fa-solid fa-users"></i>
+                        </div>
+                        <div>
+                            <span>Players</span>
+                            <strong id="dashPlayerCount">0</strong>
+                        </div>
+                    </div>
+                    <div class="dash-card">
+                        <div class="dash-card-icon green">
+                            <i class="fa-solid fa-futbol"></i>
+                        </div>
+                        <div>
+                            <span>Matches</span>
+                            <strong id="dashMatchCount">0</strong>
+                        </div>
+                    </div>
+                    <div class="dash-card">
+                        <div class="dash-card-icon gold">
+                            <i class="fa-solid fa-bullseye"></i>
+                        </div>
+                        <div>
+                            <span>Goals Logged</span>
+                            <strong id="dashGoalsCount">0</strong>
+                        </div>
+                    </div>
+                    <div class="dash-card">
+                        <div class="dash-card-icon red">
+                            <i class="fa-solid fa-trophy"></i>
+                        </div>
+                        <div>
+                            <span>Wins</span>
+                            <strong id="dashWinsCount">0</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dash-info glass-card">
+                    <h3><i class="fa-solid fa-circle-info"></i> Quick Guide</h3>
+                    <ul>
+                        <li>Use <strong>Players</strong> to add or edit squad members and their stats.</li>
+                        <li>Use <strong>Matches</strong> to log fixtures, results, goals, and assists.</li>
+                        <li>Use <strong>Standings</strong> to upload or preview the league table.</li>
+                        <li>All data is saved locally in the browser and reflected on the public site immediately.</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- ── PLAYERS ── -->
+            <section id="tab-players" class="admin-tab">
+                <div class="tab-header">
+                    <h2>Players</h2>
+                    <p>Add or edit squad members and statistics</p>
+                </div>
+
+                <div class="glass-card form-card">
+                    <h3 class="form-card-title">
+                        <i class="fa-solid fa-user-plus"></i> Add / Edit Player
+                    </h3>
+                    <form id="playerForm" class="admin-form">
+                        <input type="hidden" id="playerId">
+
+                        <div class="field-group">
+                            <label>Full Name *</label>
+                            <input type="text" id="playerName" placeholder="e.g. John Moyo" required>
+                        </div>
+                        <div class="field-group">
+                            <label>Nickname</label>
+                            <input type="text" id="playerNickname" placeholder="e.g. The Flash">
+                        </div>
+                        <div class="field-group">
+                            <label>Position</label>
+                            <select id="playerPosition">
+                                <option>Forward</option>
+                                <option>Midfielder</option>
+                                <option>Defender</option>
+                                <option>Goalkeeper</option>
+                            </select>
+                        </div>
+                        <div class="field-group">
+                            <label>Squad Number</label>
+                            <input type="number" id="playerNumber" placeholder="e.g. 10" min="1" max="99">
+                        </div>
+                        <div class="field-group field-full">
+                            <label>Image Path</label>
+                            <input type="text" id="playerImage" placeholder="images/player.jpg">
+                        </div>
+                        <div class="field-group">
+                            <label>Goals</label>
+                            <input type="number" id="playerGoals" value="0" min="0">
+                        </div>
+                        <div class="field-group">
+                            <label>Assists</label>
+                            <input type="number" id="playerAssists" value="0" min="0">
+                        </div>
+
+                        <div class="field-full form-actions">
+                            <button type="submit" class="btn-primary">
+                                <i class="fa-solid fa-floppy-disk"></i> Save Player
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="list-section">
+                    <h3 class="list-title">Squad Roster</h3>
+                    <div id="playersList" class="admin-list"></div>
+                </div>
+            </section>
+
+            <!-- ── MATCHES ── -->
+            <section id="tab-matches" class="admin-tab">
+                <div class="tab-header">
+                    <h2>Matches</h2>
+                    <p>Log fixtures, results, and match events</p>
+                </div>
+
+                <div class="glass-card form-card">
+                    <h3 class="form-card-title">
+                        <i class="fa-solid fa-calendar-plus"></i> Add / Edit Match
+                    </h3>
+                    <form id="matchForm" class="admin-form">
+                        <input type="hidden" id="matchId">
+
+                        <div class="field-group">
+                            <label>Home Team *</label>
+                            <input type="text" id="homeTeam" placeholder="e.g. Tango FC" required>
+                        </div>
+                        <div class="field-group">
+                            <label>Away Team *</label>
+                            <input type="text" id="awayTeam" placeholder="e.g. Flesk FC" required>
+                        </div>
+                        <div class="field-group">
+                            <label>Date</label>
+                            <input type="date" id="matchDate">
+                        </div>
+                        <div class="field-group">
+                            <label>Time</label>
+                            <input type="time" id="matchTime">
+                        </div>
+                        <div class="field-group field-full">
+                            <label>Venue</label>
+                            <input type="text" id="matchVenue" placeholder="e.g. Mucheke Stadium">
+                        </div>
+                        <div class="field-group">
+                            <label>Status</label>
+                            <select id="matchStatus">
+                                <option value="upcoming">Upcoming</option>
+                                <option value="completed">Completed</option>
+                            </select>
+                        </div>
+                        <div class="field-group">
+                            <label>Home Score</label>
+                            <input type="number" id="homeScore" min="0" placeholder="0">
+                        </div>
+                        <div class="field-group">
+                            <label>Away Score</label>
+                            <input type="number" id="awayScore" min="0" placeholder="0">
+                        </div>
+
+                        <!-- Match Events -->
+                        <div class="field-full events-block glass-card">
+                            <h4><i class="fa-solid fa-bolt"></i> Match Events</h4>
+
+                            <div class="events-inputs">
+                                <div class="field-group">
+                                    <label>Type</label>
+                                    <select id="eventType" onchange="toggleAssistField()">
+                                        <option value="goal">Goal</option>
+                                        <option value="yellow_card">Yellow Card</option>
+                                        <option value="red_card">Red Card</option>
+                                    </select>
+                                </div>
+                                <div class="field-group">
+                                    <label>Team</label>
+                                    <select id="eventTeam">
+                                        <option value="home">Home</option>
+                                        <option value="away">Away</option>
+                                    </select>
+                                </div>
+                                <div class="field-group">
+                                    <label>Player</label>
+                                    <select id="eventPlayer"></select>
+                                </div>
+                                <div class="field-group" id="assistField">
+                                    <label>Assist (optional)</label>
+                                    <select id="eventAssist"></select>
+                                </div>
+                                <div class="field-group">
+                                    <label>Minute</label>
+                                    <input type="number" id="eventMinute" placeholder="e.g. 45" min="1" max="120">
+                                </div>
+                                <div class="field-group field-align-end">
+                                    <button type="button" class="btn-add-event" onclick="addEvent()">
+                                        <i class="fa-solid fa-plus"></i> Add Event
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div id="eventList" class="event-list"></div>
+                        </div>
+
+                        <div class="field-full form-actions">
+                            <button type="submit" class="btn-primary">
+                                <i class="fa-solid fa-floppy-disk"></i> Save Match
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="list-section">
+                    <h3 class="list-title">Match Log</h3>
+                    <div id="matchesList" class="admin-list"></div>
+                </div>
+            </section>
+
+            <!-- ── STANDINGS ── -->
+            <section id="tab-standings" class="admin-tab">
+                <div class="tab-header">
+                    <h2>League Standings</h2>
+                    <p>Upload or manage the league table</p>
+                </div>
+
+                <div class="glass-card form-card">
+                    <h3 class="form-card-title">
+                        <i class="fa-solid fa-upload"></i> Upload Standings
+                    </h3>
+                    <p class="form-card-desc">
+                        Upload a <code>.json</code> or plain-text standings file. It will be saved and displayed on the public Standings page immediately.
+                    </p>
+
+                    <label class="file-upload-btn">
+                        <i class="fa-solid fa-file-arrow-up"></i>
+                        Choose File
+                        <input type="file" id="standingsFileInput" accept=".json,.txt,.csv">
+                    </label>
+
+                    <div id="standingsAdminPreview" class="standings-preview"></div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <script src="js/admin.js"></script>
+    <script>
+        function switchTab(name, btn) {
+            document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.sidebar-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('tab-' + name).classList.add('active');
+            btn.classList.add('active');
+            updateDashboard();
+        }
+
+        function updateDashboard() {
+            const players = JSON.parse(localStorage.getItem('adminPlayers') || '[]');
+            const matches = JSON.parse(localStorage.getItem('adminMatches') || '[]');
+            const goals   = players.reduce((s, p) => s + (p.goals || 0), 0);
+            const wins    = matches.filter(m => {
+                if (m.status !== 'completed') return false;
+                const home = m.homeTeam?.toLowerCase().includes('tango');
+                const hs = parseInt(m.homeScore); const as = parseInt(m.awayScore);
+                return home ? hs > as : as > hs;
+            }).length;
+
+            const pc = document.getElementById('dashPlayerCount');
+            const mc = document.getElementById('dashMatchCount');
+            const gc = document.getElementById('dashGoalsCount');
+            const wc = document.getElementById('dashWinsCount');
+            if (pc) pc.textContent = players.length;
+            if (mc) mc.textContent = matches.length;
+            if (gc) gc.textContent = goals;
+            if (wc) wc.textContent = wins;
+        }
+
+        document.addEventListener('DOMContentLoaded', updateDashboard);
+    </script>
+</body>
+</html>

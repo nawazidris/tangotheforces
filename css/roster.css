@@ -1,0 +1,479 @@
+/* =========================================
+   IMPORT SHARED DESIGN SYSTEM
+   ========================================= */
+@import url("index.css");
+
+/* =========================================
+   ROSTER HERO
+   ========================================= */
+
+.roster-hero {
+    padding: 70px 6% 0;
+    background:
+        linear-gradient(rgba(7,17,31,0.60), rgba(7,17,31,0.92)),
+        url('../images/stadium-bg.jpg') center/cover no-repeat;
+    border-bottom: 1px solid var(--border);
+}
+
+.roster-hero-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding-bottom: 48px;
+}
+
+.roster-hero-content .season-badge {
+    margin-bottom: 18px;
+}
+
+.roster-hero-content h2 {
+    font-size: clamp(2.2rem, 5vw, 3.6rem);
+    font-weight: 800;
+    line-height: 1.1;
+    margin-bottom: 12px;
+}
+
+.roster-hero-content h2 .accent {
+    color: var(--blue);
+}
+
+.roster-hero-content p {
+    color: var(--muted);
+    font-size: 1.05rem;
+}
+
+/* Squad breakdown bar */
+.squad-stats {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border);
+    border-bottom: none;
+    border-radius: 16px 16px 0 0;
+    overflow: hidden;
+}
+
+.sq-item {
+    flex: 1;
+    text-align: center;
+    padding: 18px 10px;
+    transition: background 0.2s;
+}
+
+.sq-item:hover {
+    background: rgba(255,255,255,0.04);
+}
+
+.sq-item strong {
+    display: block;
+    font-size: 1.75rem;
+    font-weight: 800;
+    line-height: 1;
+    margin-bottom: 5px;
+}
+
+.sq-item span {
+    font-size: 0.75rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-weight: 600;
+}
+
+.sq-divider {
+    width: 1px;
+    height: 40px;
+    background: var(--border);
+    flex-shrink: 0;
+}
+
+.clr-green  { color: var(--green); }
+.clr-gold   { color: var(--gold);  }
+.clr-red    { color: var(--red);   }
+.clr-blue   { color: var(--blue);  }
+
+
+/* =========================================
+   FILTER BAR
+   ========================================= */
+
+.roster-filter-bar {
+    position: sticky;
+    top: 81px;
+    z-index: 900;
+    background: rgba(7,17,31,0.92);
+    backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--border);
+}
+
+.roster-filter-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 14px 6%;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.filter-tabs {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.filter-tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 9px 18px;
+    border-radius: 10px;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 0.88rem;
+    font-weight: 600;
+    font-family: 'Inter', sans-serif;
+    cursor: pointer;
+    transition: 0.25s ease;
+}
+
+.filter-tab:hover {
+    color: white;
+    background: rgba(255,255,255,0.06);
+}
+
+.filter-tab.active {
+    background: var(--blue);
+    border-color: var(--blue);
+    color: white;
+}
+
+
+/* =========================================
+   PLAYERS SECTION & GRID
+   ========================================= */
+
+.players-section {
+    padding: 40px 6% 70px;
+    max-width: 1440px;
+    margin: 0 auto;
+}
+
+.players-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 20px;
+}
+
+@media (min-width: 1100px) {
+    .players-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+@media (min-width: 800px) and (max-width: 1099px) {
+    .players-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+/* Loading / empty states */
+.loading-state,
+.empty-state {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    padding: 80px 20px;
+    color: var(--muted);
+    text-align: center;
+}
+
+.loading-spinner {
+    width: 36px;
+    height: 36px;
+    border: 3px solid var(--border);
+    border-top-color: var(--blue);
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Staggered fade-in for cards */
+@keyframes cardFadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+
+/* =========================================
+   PLAYER CARD
+   ========================================= */
+
+.player-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+    animation: cardFadeUp 0.5s ease backwards;
+    position: relative;
+}
+
+.player-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 24px 48px rgba(0,0,0,0.4);
+    border-color: rgba(59,130,246,0.35);
+}
+
+/* Position-coloured top accent */
+.player-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    border-radius: 20px 20px 0 0;
+}
+
+.player-card.pos-forward::before    { background: linear-gradient(90deg, var(--red), #f97316); }
+.player-card.pos-midfielder::before { background: linear-gradient(90deg, var(--blue), #6366f1); }
+.player-card.pos-defender::before   { background: linear-gradient(90deg, var(--green), #0ea5e9); }
+.player-card.pos-goalkeeper::before { background: linear-gradient(90deg, var(--gold), #f59e0b); }
+
+
+/* ---- Photo area ---- */
+.player-photo-wrap {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+    background: rgba(255,255,255,0.03);
+}
+
+.player-photo-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top center;
+    transition: transform 0.4s ease;
+    display: block;
+}
+
+.player-card:hover .player-photo-wrap img {
+    transform: scale(1.06);
+}
+
+/* Photo fallback / placeholder */
+.player-photo-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 4rem;
+    background: rgba(255,255,255,0.03);
+    color: var(--muted);
+}
+
+/* Jersey number badge overlaid on photo */
+.jersey-badge {
+    position: absolute;
+    bottom: 10px;
+    right: 12px;
+    padding: 3px 9px;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 800;
+    color: white;
+    background: rgba(0,0,0,0.55);
+    backdrop-filter: blur(6px);
+    border: 1px solid rgba(255,255,255,0.12);
+    letter-spacing: 0.03em;
+}
+
+/* New signing badge */
+.new-badge {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    background: rgba(245,158,11,0.9);
+    color: #07111f;
+}
+
+
+/* ---- Info panel ---- */
+.player-info {
+    padding: 16px 18px 18px;
+}
+
+.player-name {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1.25;
+    margin-bottom: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.player-nickname {
+    font-size: 0.82rem;
+    color: var(--blue);
+    font-style: italic;
+    font-weight: 600;
+    margin-bottom: 12px;
+}
+
+/* Position pill */
+.position-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 14px;
+}
+
+.pill-forward    { background: rgba(239,68,68,0.15);   color: var(--red);   border: 1px solid rgba(239,68,68,0.25);   }
+.pill-midfielder { background: rgba(59,130,246,0.15);  color: var(--blue);  border: 1px solid rgba(59,130,246,0.25);  }
+.pill-defender   { background: rgba(16,185,129,0.15);  color: var(--green); border: 1px solid rgba(16,185,129,0.25);  }
+.pill-goalkeeper { background: rgba(245,158,11,0.15);  color: var(--gold);  border: 1px solid rgba(245,158,11,0.25);  }
+
+
+/* Stats row */
+.player-stats-row {
+    display: flex;
+    gap: 0;
+    border-top: 1px solid var(--border);
+    margin-top: 4px;
+}
+
+.ps-stat {
+    flex: 1;
+    text-align: center;
+    padding: 10px 4px 6px;
+    border-right: 1px solid var(--border);
+}
+
+.ps-stat:last-child {
+    border-right: none;
+}
+
+.ps-val {
+    display: block;
+    font-size: 1.15rem;
+    font-weight: 800;
+    line-height: 1;
+    color: var(--text);
+    margin-bottom: 3px;
+}
+
+.ps-lbl {
+    display: block;
+    font-size: 0.65rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-weight: 600;
+}
+
+
+/* =========================================
+   RESPONSIVE
+   ========================================= */
+
+@media (max-width: 768px) {
+    .roster-filter-bar {
+        top: 70px;
+    }
+
+    .squad-stats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        border-radius: 12px 12px 0 0;
+    }
+
+    .sq-divider { display: none; }
+
+    .sq-item {
+        padding: 14px 6px;
+        border: 1px solid var(--border);
+    }
+
+    .sq-item strong { font-size: 1.4rem; }
+
+    .players-section {
+        padding: 24px 4% 50px;
+    }
+
+    .roster-filter-inner {
+        padding: 12px 4%;
+    }
+
+    .players-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    .players-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+    }
+
+    .player-name   { font-size: 0.88rem; }
+    .player-info   { padding: 12px 12px 14px; }
+    .ps-val        { font-size: 1rem; }
+    .filter-tab    { font-size: 0.8rem; padding: 8px 12px; }
+
+    .roster-hero-content h2 { font-size: 2rem; }
+}
+.btn-whatsapp {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+
+    padding: 15px 30px;
+    border-radius: 50px;
+    text-decoration: none;
+    font-size: 1rem;
+    font-weight: 600;
+
+    color: #ffffff;
+    background: #25d366;
+    border: 2px solid #25d366;
+    box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);
+
+    transition: all 0.3s ease;
+}
+
+.btn-whatsapp:hover {
+    transform: translateY(-2px);
+    background: #1ebe55;
+    box-shadow: 0 8px 25px rgba(37, 211, 102, 0.4);
+}
+
+.btn-whatsapp i {
+    margin-right: 8px;
+}
