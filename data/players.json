@@ -48,7 +48,7 @@
         "id": 5,
         "name": "Vincho",
         "position": "Forward",
-        "image": "https://placehold.co/95x95?text=KC",
+        "image": "images/vincho.jpg",
         "stats": {
             "gamesPlayed": 6,
             "goals": 2,
