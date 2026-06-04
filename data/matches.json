@@ -157,15 +157,15 @@
     "id": 18,
     "homeTeam": "Mutimurefu FC",
     "awayTeam": "Tango FC",
-    "homeScore": null,
-    "awayScore": null,
+    "homeScore": 0,
+    "awayScore": 1,
     "date": "2026-05-30",
     "time": "15:00",
     "venue": "Ndarama High Stadium",
-    "status": "upcoming",
+    "status": "completed",
     "competition": "League",
     "events": [
-      
+      { "type": "goal", "team": "home", "player": "Edrice", "minute": 70}
     ]
   },
 {
