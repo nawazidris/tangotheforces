@@ -14,6 +14,7 @@
         "id": 2,
         "name": "Tan Tan",
         "position": "Midfielder",
+        "image": "https://placehold.co/95x95?text=KC",
         "stats": {
             "gamesPlayed": 6,
             "goals": 2,
@@ -24,6 +25,7 @@
         "id": 3,
         "name": "Tsano",
         "position": "Defender",
+        "image": "https://placehold.co/95x95?text=KC",
         "stats": {
             "gamesPlayed": 6,
             "goals": 1,
@@ -35,6 +37,7 @@
         "id": 4,
         "name": "Kimmich",
         "position": "Midfielder",
+        "image": "https://placehold.co/95x95?text=KC",
         "stats": {
             "gamesPlayed": 6,
             "goals": 1,
@@ -45,6 +48,7 @@
         "id": 5,
         "name": "Vincho",
         "position": "Forward",
+        "image": "https://placehold.co/95x95?text=KC",
         "stats": {
             "gamesPlayed": 6,
             "goals": 2,
@@ -55,6 +59,7 @@
         "id": 6,
         "name": "Gerrygold",
         "position": "Defender",
+        "image": "https://placehold.co/95x95?text=KC",
         "stats": {
             "gamesPlayed": 7,
             "goals": 1,
@@ -65,6 +70,7 @@
         "id": 7,
         "name": "Mahrez",
         "position": "Forward",
+        "image": "https://placehold.co/95x95?text=KC",  
         "stats": {
             "gamesPlayed": 6,
             "goals": 1,
@@ -75,6 +81,7 @@
         "id": 8,
         "name": "Dos",
         "position": "Midfielder",
+        "image": "https://placehold.co/95x95?text=KC",
         "stats": {
             "gamesPlayed": 8,
             "goals": 1,
@@ -85,6 +92,7 @@
         "id": 9,
         "name": "Svari",
         "position": "Forward",
+        "image": "https://placehold.co/95x95?text=KC",
         "stats": {
             "gamesPlayed": 2,
             "goals": 1,
