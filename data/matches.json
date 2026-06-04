@@ -165,7 +165,7 @@
     "status": "completed",
     "competition": "League",
     "events": [
-      { "type": "goal", "team": "home", "player": "Edrice", "minute": 70}
+      { "type": "goal", "team": "away", "player": "Edrice", "minute": 70}
     ]
   },
 {
