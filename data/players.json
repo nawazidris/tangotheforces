@@ -3,10 +3,10 @@
         "id": 1,
         "name": "Edrice",
         "position": "Forward",
-        "image": "https://placehold.co/95x95?text=KC",
+        "image": "images/idris.jpg",
         "stats": {
             "gamesPlayed": 7,
-            "goals": 5,
+            "goals": 6,
             "assists": 3
         }
     },
