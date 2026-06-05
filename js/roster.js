@@ -7,32 +7,33 @@ const basePlayers = [
     { id: 5,  name: "Shephard Mukarati",       nickname: "PSG",      position: "Forward",    number: 17, goals: 19, assists: 9,  playerImage: "images/psg.jpg"      },
     { id: 6,  name: "Simbarashe Borerwa",      nickname: "Jah Bhora",position: "Forward",    number: 17, goals: 19, assists: 9,  playerImage: "images/jahbhora.jpg" },
     { id: 7,  name: "Godfrey Rwodzi",          nickname: "Goda",     position: "Forward",    number: 19, goals: 15, assists: 8,  playerImage: "images/goda.jpg"     },
+    { id: 8,  name: "Kudzai Muganhu",          nickname: "Mahrez",     position: "Forward",    number: 30, goals: 15, assists: 8,  playerImage: "images/mahrez.jpg"     },
 
     // Midfielders
-    { id: 8,  name: "Alious Jamela",           nickname: "Bambo",    position: "Midfielder", number: 8,  goals: 12, assists: 15, playerImage: "images/jamela.jpg"   },
-    { id: 9,  name: "Delight Mwadira",         nickname: "Mashefu",  position: "Midfielder", number: 13, goals: 8,  assists: 18, playerImage: "images/delo.jpg"     },
-    { id: 10, name: "Milton Bosha",            nickname: "Milito",   position: "Midfielder", number: 4,  goals: 10, assists: 16, playerImage: "images/milito1.jpg"  },
-    { id: 11, name: "Providence Mashuro",      nickname: "Shule",    position: "Midfielder", number: 17, goals: 6,  assists: 12, playerImage: "images/shule.jpg"    },
-    { id: 12, name: "Blessed Shoko",           nickname: "Tsoko",    position: "Midfielder", number: 14, goals: 7,  assists: 14, playerImage: "images/shoko.jpg"    },
-    { id: 13, name: "Edward Mapuranga",        nickname: "Dos",      position: "Midfielder", number: 14, goals: 7,  assists: 14, playerImage: "images/dos.jpg"      },
-    { id: 14, name: "Abisha Gideon",           nickname: "Yaya",     position: "Midfielder", number: 14, goals: 7,  assists: 14, playerImage: "images/yaya.jpg"     },
-    { id: 15, name: "Author Masocha",          nickname: "Levels",   position: "Midfielder", number: 14, goals: 7,  assists: 14, playerImage: "images/levels.jpg"   },
-    { id: 16, name: "Tafadzwa Jimere",         nickname: "Jimere",   position: "Midfielder", number: 16, goals: 5,  assists: 10, playerImage: "images/jimere.jpg"   },
+    { id: 9,  name: "Alious Jamela",           nickname: "Bambo",    position: "Midfielder", number: 8,  goals: 12, assists: 15, playerImage: "images/jamela.jpg"   },
+    { id: 10, name: "Delight Mwadira",         nickname: "Mashefu",  position: "Midfielder", number: 13, goals: 8,  assists: 18, playerImage: "images/delo.jpg"     },
+    { id: 11, name: "Milton Bosha",            nickname: "Milito",   position: "Midfielder", number: 4,  goals: 10, assists: 16, playerImage: "images/milito1.jpg"  },
+    { id: 12, name: "Providence Mashuro",      nickname: "Shule",    position: "Midfielder", number: 17, goals: 6,  assists: 12, playerImage: "images/shule.jpg"    },
+    { id: 13, name: "Blessed Shoko",           nickname: "Tsoko",    position: "Midfielder", number: 14, goals: 7,  assists: 14, playerImage: "images/shoko.jpg"    },
+    { id: 14, name: "Edward Mapuranga",        nickname: "Dos",      position: "Midfielder", number: 14, goals: 7,  assists: 14, playerImage: "images/dos.jpg"      },
+    { id: 15, name: "Tanaka Muganhu",           nickname: "Tan tan",     position: "Midfielder", number: 14, goals: 7,  assists: 14, playerImage: "images/yaya.jpg"     },
+    { id: 16, name: "Author Masocha",          nickname: "Levels",   position: "Midfielder", number: 14, goals: 7,  assists: 14, playerImage: "images/levels.jpg"   },
+    { id: 17, name: "Munyeketi Munyaradzi",         nickname: "Kimmich",   position: "Midfielder",   number: 16, goals: 5,  assists: 10, playerImage: "images/jimere.jpg"   },
 
     // Defenders
-    { id: 17, name: "Lordship Sithole",        nickname: "Lord",     position: "Defender",   number: 5,  goals: 2,  assists: 3,  cleansheets: 16, playerImage: "images/lord.jpg"     },
-    { id: 18, name: "Nokutenda Makumbe",       nickname: "Noku",     position: "Defender",   number: 4,  goals: 1,  assists: 2,  playerImage: "images/noku.jpg"     },
-    { id: 19, name: "Saul Garira",             nickname: "Sauro",    position: "Defender",   number: 3,  goals: 0,  assists: 1,  playerImage: "images/sauro.jpg"    },
+    { id: 18, name: "Lordship Sithole",        nickname: "Lord",     position: "Defender",   number: 5,  goals: 2,  assists: 3,  cleansheets: 16, playerImage: "images/lord.jpg"     },
+    { id: 19, name: "Nokutenda Makumbe",       nickname: "Noku",     position: "Defender",   number: 4,  goals: 1,  assists: 2,  playerImage: "images/noku.jpg"     },
+    { id: 19, name: "Gerald Wafawanaka",        nickname: "Gerrygold",    position: "Defender",   number: 3,  goals: 0,  assists: 1,  playerImage: "images/gerrygold.jpg"    },
     { id: 20, name: "Alban Makwarimba",        nickname: "Bhani",    position: "Defender",   number: 16, goals: 1,  assists: 2,  playerImage: "images/ban.jpg"      },
     { id: 21, name: "Musa Chasepa",            nickname: "Inter",    position: "Defender",   number: 2,  goals: 0,  assists: 0,  playerImage: "images/inter.jpg"    },
-    { id: 22, name: "Washington Murambidza",   nickname: "Washco",   position: "Defender",   number: 22, goals: 0,  assists: 0,  playerImage: "images/washco.jpg"   },
+    { id: 22, name: "Patrick Chikwashiwa",   nickname: "Tsano",   position: "Defender",   number: 22, goals: 0,  assists: 0,  playerImage: "images/tsano.jpg"   },
     { id: 23, name: "Ian Pisirai",             nickname: "Ian",      position: "Defender",   number: 20, goals: 23, assists: 0,  playerImage: "images/ian.jpg"      },
     { id: 24, name: "Leeroy Mamombe",          nickname: "Maleedza", position: "Defender",   number: 24, goals: 0,  assists: 0,  playerImage: "images/maleedza.jpg" },
     { id: 25, name: "Bruce Tanaka Venganai",   nickname: "Tanaka",   position: "Defender",   number: 21, goals: 0,  assists: 0,  playerImage: "images/bruce.jpg"    },
 
     // Goalkeepers
     { id: 26, name: "Knowledge Sheche",  nickname: "Ba Rashy", position: "Goalkeeper", number: 1,  cleansheets: 20, SavePercentage: 60, playerImage: "images/rashy1.jpg" },
-    { id: 27, name: "Robert Marongwe",   nickname: "Robho",    position: "Goalkeeper", number: 23, cleansheets: 2,  SavePercentage: 20, playerImage: "images/robho.jpg"  },
+    { id: 27, name: "Forster Chikusvura",   nickname: "Fofo",    position: "Goalkeeper", number: 23, cleansheets: 2,  SavePercentage: 70, playerImage: "images/fofo.jpg"  },
 ];
 
 let allPlayers = [];

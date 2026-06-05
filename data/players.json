@@ -14,7 +14,7 @@
         "id": 2,
         "name": "Tan Tan",
         "position": "Midfielder",
-        "image": "https://placehold.co/95x95?text=KC",
+        "image": "images/tantan.jpg",
         "stats": {
             "gamesPlayed": 6,
             "goals": 2,
@@ -37,7 +37,7 @@
         "id": 4,
         "name": "Kimmich",
         "position": "Midfielder",
-        "image": "https://placehold.co/95x95?text=KC",
+        "image": "images/kimmich.jpg",
         "stats": {
             "gamesPlayed": 6,
             "goals": 1,
@@ -59,7 +59,7 @@
         "id": 6,
         "name": "Gerrygold",
         "position": "Defender",
-        "image": "https://placehold.co/95x95?text=KC",
+        "image": "images/gerrygold.jpg",
         "stats": {
             "gamesPlayed": 7,
             "goals": 1,
@@ -81,7 +81,7 @@
         "id": 8,
         "name": "Dos",
         "position": "Midfielder",
-        "image": "https://placehold.co/95x95?text=KC",
+        "image": "images/dos.jpg",
         "stats": {
             "gamesPlayed": 8,
             "goals": 1,
@@ -92,7 +92,7 @@
         "id": 9,
         "name": "Svari",
         "position": "Forward",
-        "image": "https://placehold.co/95x95?text=KC",
+        "image": "images/svari.jpg",
         "stats": {
             "gamesPlayed": 2,
             "goals": 1,
