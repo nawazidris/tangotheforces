@@ -11,12 +11,12 @@ const basePlayers = [
 
     // Midfielders
     { id: 9,  name: "Alious Jamela",           nickname: "Bambo",    position: "Midfielder", number: 8,  goals: 0, assists: 5, playerImage: "images/jamela.jpg"   },
-    { id: 10, name: "Delight Mwadira",         nickname: "Mashefu",  position: "Midfielder", number: 13, goals: 0,  assists: 1, playerImage: "images/delo.jpg"     },
+    { id: 10, name: "Delight Mwadira",         nickname: "Mashefu",  position: "Midfielder", number: 13, goals: 0,  assists: 1, playerImage: "images/dhila.jpg"     },
     { id: 11, name: "Milton Bosha",            nickname: "Milito",   position: "Midfielder", number: 4,  goals: 0, assists: 2, playerImage: "images/milito1.jpg"  },
     { id: 12, name: "Providence Mashuro",      nickname: "Shule",    position: "Midfielder", number: 17, goals: 0,  assists: 0, playerImage: "images/shule.jpg"    },
     { id: 13, name: "Blessed Shoko",           nickname: "Tsoko",    position: "Midfielder", number: 14, goals: 0,  assists: 0, playerImage: "images/shoko.jpg"    },
     { id: 14, name: "Edward Mapuranga",        nickname: "Dos",      position: "Midfielder", number: 14, goals: 1,  assists: 4, playerImage: "images/dos.jpg"      },
-    { id: 15, name: "Tanaka Muganhu",           nickname: "Tan tan",     position: "Midfielder", number: 14, goals: 2,  assists: 4, playerImage: "images/yaya.jpg"     },
+    { id: 15, name: "Tanaka Muganhu",           nickname: "Tan tan",     position: "Midfielder", number: 14, goals: 2,  assists: 4, playerImage: "images/tan tan.jpg"     },
     { id: 16, name: "Author Masocha",          nickname: "Levels",   position: "Midfielder", number: 14, goals: 0,  assists: 0, playerImage: "images/levels.jpg"   },
     { id: 17, name: "Munyeketi Munyaradzi",         nickname: "Kimmich",   position: "Midfielder",   number: 16, goals: 1,  assists: 1, playerImage: "images/jimere.jpg"   },
 
