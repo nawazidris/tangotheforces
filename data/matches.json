@@ -170,17 +170,34 @@
   },
 {
     "id": 18,
-    "homeTeam": "GZU FC",
-    "awayTeam": "Tango FC",
-    "homeScore": null,
-    "awayScore": null,
+    "homeTeam": "Tango FC",
+    "awayTeam": "GZU FC",
+    "homeScore": 3,
+    "awayScore": 0,
     "date": "2026-06-06",
     "time": "15:00",
-    "venue": "Mucheke B Arena",
-    "status": "upcoming",
+    "venue": "Shakashe Stadium",
+    "status": "completed",
     "competition": "League",
     "events": [
-      
+      { "type": "goal", "team": "home", "player": "Vincho", "minute": 13},
+      { "type": "goal", "team": "home", "player": "Edrice", "minute": 34},
+      { "type": "goal", "team": "home", "player": "Edrice", "minute": 60}
     ]
-  }
+  },
+  {
+"id": 19,
+"homeTeam": "Tango FC",
+"awayTeam": "ZRP FC",
+"homeScore": null,
+"awayScore": null,
+"date": "2026-06-13",
+"time": "15:00",
+"venue": "Shakashe Stadium",
+"status": "upcoming",
+"competition": "League",
+"events": [
+
+]
+}
 ]
