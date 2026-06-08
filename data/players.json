@@ -6,7 +6,7 @@
         "image": "images/idris.jpg",
         "stats": {
             "gamesPlayed": 7,
-            "goals": 6,
+            "goals": 8,
             "assists": 3
         }
     },
@@ -50,9 +50,9 @@
         "position": "Forward",
         "image": "images/vincho.jpg",
         "stats": {
-            "gamesPlayed": 6,
-            "goals": 2,
-            "assists": 0
+            "gamesPlayed": 8,
+            "goals": 3,
+            "assists": 3
         }
     },
     {
