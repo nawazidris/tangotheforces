@@ -189,15 +189,16 @@
 "id": 19,
 "homeTeam": "Tango FC",
 "awayTeam": "ZRP FC",
-"homeScore": null,
-"awayScore": null,
+"homeScore": 2,
+"awayScore": 2,
 "date": "2026-06-13",
 "time": "15:00",
 "venue": "Shakashe Stadium",
-"status": "upcoming",
+"status": "completed",
 "competition": "League",
 "events": [
-
+  { "type": "goal", "team": "home", "player": "Tife", "minute": 18},
+  { "type": "goal", "team": "home", "player": "Shule", "minute": 40}
 ]
 },
 {
@@ -287,7 +288,29 @@
   "events": [
     
   ]
-}
+},
+{
+        "id": 10,
+        "name": "Shule",
+        "position": "Midfielder",
+        "image": "images/shule.jpg",
+        "stats": {
+            "gamesPlayed": 10,
+            "goals": 1,
+            "assists": 0
+        }
+    },
+    {
+        "id": 11,
+        "name": "Tife",
+        "position": "Forward",
+        "image": "images/tife.jpg",
+        "stats": {
+            "gamesPlayed": 1,
+            "goals": 1,
+            "assists": 0
+        }
+    }
   
 ]
 
