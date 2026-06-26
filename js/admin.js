@@ -45,6 +45,7 @@ const app = {
                                 // Defensive check: If role is missing, default to a safe value.
                                 if (!app.state.currentUser.role) {
                                     console.warn(`User ${user.email} is missing a 'role' in their Firestore profile. Defaulting to 'Guest'.`);
+                                    alert(`Warning: The user '${user.email}' is missing a 'role' in their database profile. Access will be limited.`);
                                     app.state.currentUser.role = 'Guest';
                                 }
 
