@@ -30,15 +30,15 @@
         <form id="login-form" autocomplete="off">
             <div id="login-error" class="error-msg" aria-live="polite"></div>
             <div class="form-group">
-                <label for="email">Email</label>
+                <label for="username">Username or Email</label>
                 <div class="input-wrap">
                     <i class="fa-solid fa-user"></i>
                     <input
-                        type="email"
-                        id="email"
-                        placeholder="Enter your email"
+                        type="text"
+                        id="username"
+                        placeholder="Enter username or email"
                         required
-                        autocomplete="email"
+                        autocomplete="username"
                     >
                 </div>
             </div>
@@ -82,6 +82,9 @@
     <!-- Your unique Firebase configuration -->
     <script src="js/firebase-init.js"></script>
 
+    <!-- Load base data and main app logic for auth checking -->
+    <script src="js/players data.js"></script>
+    <script src="js/admin.js"></script>
     <!-- The new login script -->
     <script src="js/login.js"></script>
 

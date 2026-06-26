@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
     loginForm.addEventListener('submit', async (e) => {
         e.preventDefault();
 
-        const email = document.getElementById('email').value;
+        const userInput = document.getElementById('username').value;
         const password = document.getElementById('password').value;
         const errorContainer = document.getElementById('login-error');
         const submitButton = loginForm.querySelector('button[type="submit"]');
@@ -32,8 +32,15 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!firebase || !firebase.auth) {
                 throw new Error("Firebase is not initialized.");
             }
+
+            let email = userInput;
+            // If user entered only a username without an "@", convert it to an email
+            if (!userInput.includes('@')) {
+                email = `${userInput.toLowerCase()}@tangofc.com`;
+            }
+
             // Sign in with Firebase Auth
-            await firebase.auth().signInWithEmailAndPassword(email, password);
+            await firebase.auth().signInWithEmailAndPassword(email, password.trim());
             // On success, Firebase's onAuthStateChanged listener (in admin.js) will handle the redirect.
             // We don't need to do anything else here.
 

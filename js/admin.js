@@ -42,6 +42,12 @@ const app = {
                                     ...userDoc.data() // Merges name, role, etc.
                                 };
 
+                                // Defensive check: If role is missing, default to a safe value.
+                                if (!app.state.currentUser.role) {
+                                    console.warn(`User ${user.email} is missing a 'role' in their Firestore profile. Defaulting to 'Guest'.`);
+                                    app.state.currentUser.role = 'Guest';
+                                }
+
                                 // Update UI and redirect if necessary
                                 const nameEl = document.getElementById('sessionUserName');
                                 const roleEl = document.getElementById('sessionUserRole');
