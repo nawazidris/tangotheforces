@@ -313,7 +313,18 @@ const app = {
                 let parsed = null;
 
                 if (file.type.includes('json') || file.name.toLowerCase().endsWith('.json')) {
-                    try { parsed = JSON.parse(text); } catch { parsed = null; }
+                    try {
+                        let rawParsed = JSON.parse(text);
+                        // If the user uploads a simple array of arrays, convert it to the expected format.
+                        if (Array.isArray(rawParsed) && Array.isArray(rawParsed[0])) {
+                            parsed = {
+                                headers: ["Pos", "Team", "P", "W", "D", "L", "GF", "GA", "GD", "PTS"],
+                                rows: rawParsed
+                            };
+                        } else {
+                            parsed = rawParsed; // Assume it's already in the {headers, rows} format
+                        }
+                    } catch { parsed = null; }
                 } else {
                     parsed = app.ui.parseStandingText(text);
                 }
