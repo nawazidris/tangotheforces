@@ -285,33 +285,8 @@
   "venue": "Shakashe Stadium",
   "status": "upcoming",
   "competition": "League",
-  "events": [
-    
-  ]
-},
-{
-        "id": 10,
-        "name": "Shule",
-        "position": "Midfielder",
-        "image": "images/shule.jpg",
-        "stats": {
-            "gamesPlayed": 10,
-            "goals": 1,
-            "assists": 0
-        }
-    },
-    {
-        "id": 11,
-        "name": "Tife",
-        "position": "Forward",
-        "image": "images/tife.jpg",
-        "stats": {
-            "gamesPlayed": 1,
-            "goals": 1,
-            "assists": 0
-        }
-    }
-  
+  "events": []
+}
 ]
 
 

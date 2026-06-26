@@ -10,15 +10,22 @@
 }
 
 :root {
-    --bg: #07111f;
-    --card: rgba(255,255,255,0.06);
+    --bg: #050b14;
+    --bg2: #091321;
+    --card: rgba(255,255,255,0.03);
+    --card-hover: rgba(255,255,255,0.06);
     --border: rgba(255,255,255,0.08);
+    --border-hover: rgba(255,255,255,0.15);
     --text: #ffffff;
-    --muted: #9ca3af;
+    --muted: #a1a1aa;
     --blue: #3b82f6;
+    --blue-glow: rgba(59, 130, 246, 0.4);
     --green: #10b981;
+    --green-glow: rgba(16, 185, 129, 0.4);
     --red: #ef4444;
+    --red-glow: rgba(239, 68, 68, 0.4);
     --gold: #f59e0b;
+    --gold-glow: rgba(245, 158, 11, 0.4);
 }
 
 body {
@@ -149,8 +156,17 @@ body {
 .glass-card {
     background: var(--card);
     border: 1px solid var(--border);
-    backdrop-filter: blur(18px);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
     border-radius: 24px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    transition: background 0.3s ease, border-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.glass-card:hover {
+    background: var(--card-hover);
+    border-color: var(--border-hover);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
 }
 
 .section-spacing {
@@ -199,11 +215,14 @@ body {
 .btn-primary:hover {
     background: #2563eb;
     transform: translateY(-2px);
+    box-shadow: 0 8px 20px var(--blue-glow);
 }
 
 .btn-secondary:hover {
     background: rgba(255,255,255,0.06);
     transform: translateY(-2px);
+    border-color: rgba(255,255,255,0.2);
+    box-shadow: 0 8px 20px rgba(255, 255, 255, 0.05);
 }
 
 /* Icon colour helpers */
@@ -344,6 +363,87 @@ body {
 .hero-badge-card span {
     color: var(--muted);
     font-size: 0.85rem;
+}
+
+
+/* ============================
+     COUNTDOWN WIDGET
+============================= */
+.countdown-section {
+    padding: 40px 6%;
+    background: linear-gradient(180deg, rgba(59, 130, 246, 0.08) 0%, transparent 100%);
+    border-bottom: 1px solid var(--border);
+    animation: fadeIn 0.5s ease-out;
+}
+
+.countdown-content {
+    max-width: 800px;
+    margin: 0 auto;
+    text-align: center;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 30px 40px;
+}
+
+.countdown-header p {
+    color: var(--muted);
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.countdown-header h3 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--blue);
+    margin-top: 4px;
+}
+
+.countdown-timer {
+    display: flex;
+    justify-content: center;
+    align-items: baseline;
+    gap: 16px;
+    margin: 24px 0;
+}
+
+.countdown-segment strong {
+    display: block;
+    font-size: clamp(2rem, 8vw, 3.5rem);
+    font-weight: 800;
+    line-height: 1;
+    color: white;
+}
+
+.countdown-segment span {
+    font-size: 0.8rem;
+    color: var(--muted);
+    font-weight: 500;
+}
+
+.countdown-divider {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--blue);
+    padding-bottom: 10px;
+}
+
+.countdown-footer {
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.countdown-footer i {
+    margin-right: 6px;
+    color: var(--blue);
 }
 
 
@@ -523,7 +623,7 @@ body {
 
 .news-grid {
     display: grid;
-    grid-template-columns: 1fr 420px;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 24px;
     align-items: start;
 }
@@ -531,7 +631,11 @@ body {
 .news-card {
     overflow: hidden;
     transition: 0.3s ease;
+    animation: cardFadeUp 0.5s ease backwards;
 }
+
+@keyframes cardFadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
 
 .news-card:hover {
     transform: translateY(-4px);
@@ -646,10 +750,26 @@ body {
     line-height: 1.65;
 }
 
-.news-secondary {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
+.featured-content {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+}
+
+.featured-content ul,
+.featured-content ol {
+    padding-left: 20px;
+    margin-bottom: 16px;
+}
+
+.featured-content li {
+    margin-bottom: 8px;
+}
+
+.featured-content a {
+    color: var(--blue);
+    text-decoration: none;
+    font-weight: 600;
 }
 
 

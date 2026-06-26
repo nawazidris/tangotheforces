@@ -1,0 +1,50 @@
+{
+    "foundedYear": 2015,
+    "founder": "Sports Community Initiative",
+    "club": "Tango Football Club",
+    "stadium": "Rujeko Stadium-PaMuonde",
+    "capacity": 300,
+    "description": "Tango Football Club is a passionate and ambitious football team dedicated to excellence on and off the pitch. Since our founding in 2015, the club has grown into a competitive force while promoting teamwork, discipline, and community spirit. Based at Rujeko Stadium – PaMuonde, Tango FC continues to develop local talent and inspire supporters through exciting football and strong values.",
+    "seasonStats": {
+        "2025_26": {
+            "league": "MOSSL",
+            "position": "1st",
+            "played": 38,
+            "won": 27,
+            "drawn": 6,
+            "lost": 3,
+            "points": 86,
+            "topScorers": [
+                {"name": "Edrice Mujeyi", "goals": 18},
+                {"name": "Svari", "goals": 11},
+                {"name": "Jamela", "goals": 10}
+            ]
+        }
+    },
+    "clubPhilosophy": {
+        "title": "Our Philosophy",
+        "description": "At Tango FC, we believe in developing not just skilled footballers, but well-rounded individuals who contribute positively to our community. Our three pillars guide everything we do:",
+        "pillars": [
+            {"name": "Excellence", "description": "Striving for perfection in every aspect of our game and organization"},
+            {"name": "Community", "description": "Giving back to Masvingo through youth development and community programs"},
+            {"name": "Integrity", "description": "Conducting ourselves with honesty, respect, and sportsmanship both on and off the pitch"}
+        ]
+    },
+    "achievements": [
+        {"year": "2025", "title": "MOSSL Champions", "description": "Won the Masvingo Social Soccer League with outstanding performance: 27 wins, 6 draws, 3 losses from 38 matches (86 points)"},
+        {"year": 2024, "title": "League Champions", "description": "Won the Premier League with 89 points"},
+        {"year": 2023, "title": "Cup Winners", "description": "Claimed the Provincial Cup trophy"}
+    ],
+    "milestones": [
+        "2015 - Club Founded by Taruvinga Mutangiranwa",
+        "2018 - First League Title secured",
+        "2019 - Second League Title won",
+        "2020 - Youth development program launched",
+        "2021 - Stadium Expansion (50 to 2,00 capacity)",
+        "2022 - Professional Youth Academy Established",
+        "2023 - Professional Academy Status achieved",
+        "2023 - Third League Title won",
+        "2024 - Top Four Secured in Mossl League",
+        "2025 - MOSSL Champions with 86 points, 27 wins, 6 draws, 3 losses from 37 matches"
+    ]
+}

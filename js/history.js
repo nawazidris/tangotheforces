@@ -1,16 +1,14 @@
 document.addEventListener("DOMContentLoaded", loadClubHistory);
 
-function loadClubHistory(){
-    let data;
+async function loadClubHistory(){
     try {
-        const inline = document.getElementById("clubHistoryData");
-        if(inline){
-            data = JSON.parse(inline.textContent);
-            renderAll(data);
-            return;
-        }
-    } catch(e) {
-        console.warn("Inline JSON invalid");
+        const response = await fetch('data/history.json');
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        const data = await response.json();
+        renderAll(data);
+    } catch (error) {
+        console.error("Failed to load or render history data:", error);
+        // Optionally, display an error message to the user on the page
     }
 }
 

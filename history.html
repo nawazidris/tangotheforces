@@ -9,155 +9,43 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="css/history.css">
+    <script src="js/components.js" defer></script>
 </head>
 <body>
 
-    <header class="main-header">
-        <div class="header-brand">
-            <img src="images/tangoforces.jpg" alt="Tango FC Logo">
-            <div>
-                <h1>Tango FC</h1>
-                <p>The Forces</p>
-            </div>
-        </div>
+    <main-header></main-header>
+    <mobile-nav></mobile-nav>
 
-        <nav>
-            <ul class="nav-links">
-                <li><a href="index.html">Home</a></li>
-                <li><a href="technical-team.html">Technical Team</a></li>
-                <li><a href="roster.html">Roster</a></li>
-                <li><a href="matches.html">Matches</a></li>
-                <li><a href="stats.html">Stats</a></li>
-                <li><a href="league-standings.html">Standings</a></li>
-                <li><a href="history.html" class="active">History</a></li>
-                <li><a href="videos.html">Videos</a></li>
-                <li><a href="gallery.html">Gallery</a></li>
-            </ul>
-        </nav>
-
-        <button class="mobile-menu-btn" id="menuBtn">
-            <i class="fa-solid fa-bars"></i>
-        </button>
-    </header>
-
-    <nav class="mobile-nav" id="mobileNav">
-        <a href="index.html">Home</a>
-        <a href="technical-team.html">Technical Team</a>
-        <a href="roster.html">Roster</a>
-        <a href="matches.html">Matches</a>
-        <a href="stats.html">Stats</a>
-        <a href="league-standings.html">Standings</a>
-        <a href="history.html">History</a>
-        <a href="videos.html">Videos</a>
-        <a href="gallery.html">Gallery</a>
-    </nav>
-
-    <main>
-        <section class="history-header">
-            <h2>Club History & Achievements</h2>
-        </section>
-
-        <section id="clubInfo"></section>
-
-        <section class="season-stats">
-            <h3>2025/26 Season Statistics</h3>
-            <div id="seasonStatsContainer"></div>
-        </section>
-
-        <section class="club-philosophy">
-            <h3>Club Philosophy & Values</h3>
-            <div id="philosophyContainer"></div>
-        </section>
-
-        <section class="achievements-section">
-            <h3>Major Achievements</h3>
-            <div class="achievements-container" id="achievementsContainer"></div>
-        </section>
-
-        <section class="milestones-section">
-            <h3>Key Milestones</h3>
-            <div class="timeline" id="timelineContainer"></div>
-        </section>
-    </main>
-
-    <footer class="main-footer">
-        <div class="footer-brand">
-            <img src="images/tangoforces.jpg" alt="Tango FC">
-            <div>
-                <strong>Tango Football Club</strong>
-                <span>Est. 2015 · Masvingo, Zimbabwe</span>
-            </div>
-        </div>
-        <nav class="footer-nav">
-            <a href="roster.html">Roster</a>
-            <a href="matches.html">Matches</a>
-            <a href="stats.html">Stats</a>
-            <a href="history.html">History</a>
-            <a href="gallery.html">Gallery</a>
-        </nav>
-        <p class="footer-copy">© 2026 Tango Football Club. All rights reserved.</p>
-    </footer>
-
-    <script id="clubHistoryData" type="application/json"> 
-    {
-        "foundedYear": 2015,
-        "founder": "Sports Community Initiative",
-        "club": "Tango Football Club",
-        "stadium": "Rujeko Stadium-PaMuonde",
-        "capacity": 300,
-        "description": "Tango Football Club is a passionate and ambitious football team dedicated to excellence on and off the pitch. Since our founding in 2015, the club has grown into a competitive force while promoting teamwork, discipline, and community spirit. Based at Rujeko Stadium – PaMuonde, Tango FC continues to develop local talent and inspire supporters through exciting football and strong values.",
-        "seasonStats": {
-            "2025_26": {
-                "league": "MOSSL",
-                "position": "1st",
-                "played": 38,
-                "won": 27,
-                "drawn": 6,
-                "lost": 3,
-                "points": 86,
-                "topScorers": [
-                    {"name": "Edrice Mujeyi", "goals": 18},
-                    {"name": "Svari", "goals": 11},
-                    {"name": "Jamela", "goals": 10}
-                ]
-            }
-        },
-        "clubPhilosophy": {
-            "title": "Our Philosophy",
-            "description": "At Tango FC, we believe in developing not just skilled footballers, but well-rounded individuals who contribute positively to our community. Our three pillars guide everything we do:",
-            "pillars": [
-                {"name": "Excellence", "description": "Striving for perfection in every aspect of our game and organization"},
-                {"name": "Community", "description": "Giving back to Masvingo through youth development and community programs"},
-                {"name": "Integrity", "description": "Conducting ourselves with honesty, respect, and sportsmanship both on and off the pitch"}
-            ]
-        },
-        "achievements": [
-            {"year": "2025", "title": "MOSSL Champions", "description": "Won the Masvingo Social Soccer League with outstanding performance: 27 wins, 6 draws, 3 losses from 38 matches (86 points)"},
-            {"year": 2024, "title": "League Champions", "description": "Won the Premier League with 89 points"},
-            {"year": 2023, "title": "Cup Winners", "description": "Claimed the Provincial Cup trophy"}
-        ],
-        "milestones": [
-            "2015 - Club Founded by Taruvinga Mutangiranwa",
-            "2018 - First League Title secured",
-            "2019 - Second League Title won",
-            "2020 - Youth development program launched",
-            "2021 - Stadium Expansion (50 to 2,00 capacity)",
-            "2022 - Professional Youth Academy Established",
-            "2023 - Professional Academy Status achieved",
-            "2023 - Third League Title won",
-            "2024 - Top Four Secured in Mossl League",
-            "2025 - MOSSL Champions with 86 points, 27 wins, 6 draws, 3 losses from 37 matches"
-        ]
-    }
-    </script>
-    <script src="js/history.js"></script>
-    <script>
-        // Smooth responsive layout toggle management for mobile interfaces
-        const menuBtn = document.getElementById('menuBtn');
-        const mobileNav = document.getElementById('mobileNav');
-        menuBtn.addEventListener('click', () => {
-            mobileNav.classList.toggle('open');
-        });
-    </script>
+     <main>
+         <section class="history-header">
+             <h2>Club History & Achievements</h2>
+         </section>
+ 
+         <section id="clubInfo"></section>
+ 
+         <section class="season-stats">
+             <h3>2025/26 Season Statistics</h3>
+             <div id="seasonStatsContainer"></div>
+         </section>
+ 
+         <section class="club-philosophy">
+             <h3>Club Philosophy & Values</h3>
+             <div id="philosophyContainer"></div>
+         </section>
+ 
+         <section class="achievements-section">
+             <h3>Major Achievements</h3>
+             <div class="achievements-container" id="achievementsContainer"></div>
+         </section>
+ 
+         <section class="milestones-section">
+             <h3>Key Milestones</h3>
+             <div class="timeline" id="timelineContainer"></div>
+         </section>
+     </main>
+ 
+     <main-footer></main-footer>
+ 
+     <script src="js/history.js"></script>
 </body>
 </html>

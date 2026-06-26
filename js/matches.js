@@ -201,6 +201,7 @@ function buildMatchCard(match) {
 /* ================= DISPLAY MATCHES ================= */
 function displayMatches(matches, filter = 'all') {
     const container = document.getElementById('matchesContainer');
+    if (!container) return;
     container.innerHTML = '';
 
     const filtered = filter === 'all'
@@ -222,49 +223,74 @@ function displayMatches(matches, filter = 'all') {
 /* ================= FETCH MATCHES ================= */
 async function fetchMatches() {
     const container = document.getElementById('matchesContainer');
-    container.innerHTML = `
-        <div class="loading-state">
-            <div class="loading-spinner"></div>
-            <p>Loading matches…</p>
-        </div>`;
+    if (container) {
+        container.innerHTML = `
+            <div class="loading-state">
+                <div class="loading-spinner"></div>
+                <p>Loading matches…</p>
+            </div>`;
+    }
 
     try {
+        let adminMatches = [];
+        let deletedMatchIds = [];
+
+        try {
+            deletedMatchIds = JSON.parse(localStorage.getItem('deletedBaseMatchIds') || '[]').map(Number);
+        } catch (e) {
+            console.warn("Could not retrieve deleted base match list:", e);
+        }
+
+        if (window.db) {
+            try {
+                const mSnap = await window.db.collection('matches').get();
+                if (!mSnap.empty) {
+                    adminMatches = mSnap.docs.map(doc => doc.data());
+                }
+            } catch(e) { console.error('Firebase fetch matches failed:', e); }
+        }
+
+        if (adminMatches.length === 0) {
+            const adminMatchesData = localStorage.getItem('adminMatches');
+            if (adminMatchesData) {
+                adminMatches = JSON.parse(adminMatchesData);
+            }
+        }
+        
+        adminMatches = adminMatches.map(m => ({
+            ...m,
+            homeScore:   m.homeScore ?? null,
+            awayScore:   m.awayScore ?? null,
+            competition: m.competition || 'League',
+            events:      m.events || []
+        }));
+
         const response  = await fetch('data/matches.json');
-        let jsonMatches = await response.json();
+        let jsonMatches = [];
+        if (response.ok) {
+            jsonMatches = await response.json();
+        }
 
-        const adminMatchesData = localStorage.getItem('adminMatches');
-        const adminMatches = adminMatchesData
-            ? JSON.parse(adminMatchesData).map(m => ({
-                ...m,
-                homeScore:   m.homeScore ?? null,
-                awayScore:   m.awayScore ?? null,
-                competition: m.competition || 'League',
-                events:      m.events || []
-              }))
-            : [];
+        // 1. Filter out deleted base fixtures
+        jsonMatches = jsonMatches.filter(m => !deletedMatchIds.includes(Number(m.id)));
 
-        allMatches = [...jsonMatches, ...adminMatches];
+        // 2. Remove base fixtures that have admin overrides to prevent duplicate listings
+        const adminIds = new Set(adminMatches.map(m => Number(m.id)));
+        const activeBaseMatches = jsonMatches.filter(m => !adminIds.has(Number(m.id)));
+
+        allMatches = [...activeBaseMatches, ...adminMatches];
         allMatches.sort((a, b) => new Date(a.date) - new Date(b.date));
 
-    } catch {
-        const adminMatchesData = localStorage.getItem('adminMatches');
-        if (adminMatchesData) {
-            allMatches = JSON.parse(adminMatchesData).map(m => ({
-                ...m,
-                homeScore:   m.homeScore ?? null,
-                awayScore:   m.awayScore ?? null,
-                competition: m.competition || 'League',
-                events:      m.events || []
-            }));
-            allMatches.sort((a, b) => new Date(a.date) - new Date(b.date));
-        } else {
+    } catch (err) {
+        console.error(err);
+        if (container) {
             container.innerHTML = `
                 <div class="empty-state">
                     <i class="fa-solid fa-triangle-exclamation" style="font-size:2.5rem;color:var(--red);opacity:0.7;"></i>
                     <p>Unable to load matches. Please try again.</p>
                 </div>`;
-            return;
         }
+        return;
     }
 
     updateQuickStats(allMatches);

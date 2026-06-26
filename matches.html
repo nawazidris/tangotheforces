@@ -2,6 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="description" content="Tango FC fixtures and results — full match schedule, scores, goals and events for the 2026 season.">
+    <link rel="icon" type="image/jpeg" href="images/tangoforces.jpg">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Matches & Fixtures — Tango Football Club</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -9,54 +11,13 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="css/matches.css">
+    <link rel="stylesheet" href="css/index.css">
+    <script src="js/components.js" defer></script>
 </head>
 <body>
 
-    <!-- ============================
-         HEADER
-    ============================= -->
-    <header class="main-header">
-        <div class="header-brand">
-            <img src="images/tangoforces.jpg" alt="Tango FC Logo">
-            <div>
-                <h1>Tango FC</h1>
-                <p>Masvingo's Champions</p>
-            </div>
-        </div>
-
-        <nav>
-            <ul class="nav-links">
-                <li><a href="index.html">Home</a></li>
-                <li><a href="technical-team.html">Technical Team</a></li>
-                <li><a href="roster.html">Roster</a></li>
-                <li><a href="matches.html" class="active">Matches</a></li>
-                <li><a href="stats.html">Stats</a></li>
-                <li><a href="league-standings.html">Standings</a></li>
-                <li><a href="history.html">History</a></li>
-                <li><a href="videos.html">Videos</a></li>
-                <li><a href="gallery.html">Gallery</a></li>
-            </ul>
-        </nav>
-
-        <button class="mobile-menu-btn" id="menuBtn" aria-label="Open menu">
-            <i class="fa-solid fa-bars"></i>
-        </button>
-    </header>
-
-    <!-- Mobile Nav Drawer -->
-    <div class="mobile-nav" id="mobileNav">
-        <ul>
-            <li><a href="index.html">Home</a></li>
-            <li><a href="technical-team.html">Technical Team</a></li>
-            <li><a href="roster.html">Roster</a></li>
-            <li><a href="matches.html" class="active">Matches</a></li>
-            <li><a href="stats.html">Stats</a></li>
-            <li><a href="league-standings.html">Standings</a></li>
-            <li><a href="history.html">History</a></li>
-            <li><a href="videos.html">Videos</a></li>
-            <li><a href="gallery.html">Gallery</a></li>
-        </ul>
-    </div>
+    <main-header></main-header>
+    <mobile-nav></mobile-nav>
 
     <main>
 
@@ -143,35 +104,11 @@
 
     </main>
 
-    <!-- ============================
-         FOOTER
-    ============================= -->
-    <footer class="main-footer">
-        <div class="footer-brand">
-            <img src="images/tangoforces.jpg" alt="Tango FC">
-            <div>
-                <strong>Tango Football Club</strong>
-                <span>Est. 2015 · Masvingo, Zimbabwe</span>
-            </div>
-        </div>
-        <nav class="footer-nav">
-            <a href="roster.html">Roster</a>
-            <a href="matches.html">Matches</a>
-            <a href="stats.html">Stats</a>
-            <a href="history.html">History</a>
-            <a href="gallery.html">Gallery</a>
-        </nav>
-        <p class="footer-copy">© 2026 Tango Football Club. All rights reserved.</p>
-    </footer>
+    <main-footer></main-footer>
 
-    <script src="js/theme.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script src="js/firebase-config.js"></script>
     <script src="js/matches.js"></script>
-    <script>
-        const menuBtn = document.getElementById('menuBtn');
-        const mobileNav = document.getElementById('mobileNav');
-        menuBtn.addEventListener('click', () => {
-            mobileNav.classList.toggle('open');
-        });
-    </script>
 </body>
 </html>

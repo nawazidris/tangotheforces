@@ -134,6 +134,7 @@ function closeLightbox() {
     if (lightbox) lightbox.style.display = 'none';
 }
 
+// Event listeners for lightbox navigation
 document.getElementById('lightbox')?.addEventListener('click', (e) => {
     if (e.target.id === 'lightbox' || e.target.classList.contains('lightbox-content-container')) {
         closeLightbox();

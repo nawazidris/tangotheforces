@@ -1,264 +1,190 @@
-document.addEventListener('DOMContentLoaded', () => {
-    loadLeagueStandings();
-});
+const standingsApp = {
+    config: {
+        CHAMPION_ZONE: 1,
+        EUROPA_ZONE: 4,
+        RELEGATION_POS: 17,
+        TANGO_FC_NAME: 'tango fc'
+    },
 
-/* =========================================
-   ZONE THRESHOLDS
-   Adjust these to match your league rules
-========================================= */
-const CHAMPION_ZONE  = 1;   // top N rows get gold border
-const EUROPA_ZONE    = 4;   // rows 2–N get blue border
-const RELEGATION_POS = 17;  // rows N+ get red border
+    state: {
+        standings: null,
+        matches: []
+    },
 
-/* =========================================
-   MAIN LOADER
-========================================= */
-async function loadLeagueStandings() {
-    const tbody    = document.getElementById('standingsBody');
-    const noData   = document.getElementById('standingsNoData');
-    const strip    = document.getElementById('summaryStrip');
+    init: function() {
+        this.data.loadAllData();
+    },
 
-    let parsed = null;
+    data: {
+        loadAllData: async function() {
+            const [standings, matchesData] = await Promise.all([
+                this.loadStandings(),
+                this.loadMatches()
+            ]);
 
-    // 1. Try localStorage override
-    const localRaw = localStorage.getItem('leagueStandingsJson');
-    if (localRaw) {
-        parsed = safeParseLeagueJson(localRaw);
-        if (!parsed) console.warn('Invalid local standings JSON, falling back to log.json');
-    }
+            if (!standings || !standings.headers || !standings.rows || !standings.rows.length) {
+                standingsApp.ui.showNoData(true);
+                return;
+            }
 
-    // 2. Fetch from data/log.json
-    if (!parsed) parsed = await loadStandingsFromLogJson();
+            standingsApp.state.standings = standings;
+            standingsApp.state.matches = matchesData && matchesData.matches ? matchesData.matches : [];
 
-    // 3. Nothing found
-    if (!parsed || !parsed.headers || !parsed.rows || !parsed.rows.length) {
-        if (tbody)  tbody.innerHTML  = '';
-        if (noData) noData.style.display = 'flex';
-        return;
-    }
+            standingsApp.ui.showNoData(false);
+            standingsApp.ui.renderAll();
+            standingsApp.events.wireSearch();
+        },
 
-    if (noData) noData.style.display = 'none';
+        safeParseJson: function(raw) {
+            try { return JSON.parse(raw); }
+            catch (e) { console.error('Parse error:', e); return null; }
+        },
 
-    // 4. Fetch real match results for the form badges
-    const resultsData = await loadResultsJson();
-    const matches = resultsData && resultsData.matches ? resultsData.matches : [];
+        loadStandings: async function() {
+            const localRaw = localStorage.getItem('leagueStandingsJson');
+            if (localRaw) {
+                const parsed = this.safeParseJson(localRaw);
+                if (parsed) return parsed;
+                console.warn('Invalid local standings JSON, falling back to log.json');
+            }
 
-    renderSummaryStrip(parsed.rows, strip);
-    renderHeroCard(parsed.rows);
-    renderTable(parsed.rows, tbody, matches);
-    wireSearch(parsed.rows, tbody, matches);
-}
+            try {
+                const res = await fetch('data/log.json');
+                if (!res.ok) { console.warn('Could not fetch data/log.json:', res.statusText); return null; }
+                const json = await res.json();
+                if (!json || !json.headers || !json.rows) { console.warn('Invalid log.json structure'); return null; }
+                return json;
+            } catch (e) {
+                console.warn('Failed to load data/log.json:', e);
+                return null;
+            }
+        },
 
-/* =========================================
-   JSON HELPERS
-========================================= */
-function safeParseLeagueJson(raw) {
-    try { return JSON.parse(raw); }
-    catch (e) { console.error('Parse error:', e); return null; }
-}
-
-async function loadStandingsFromLogJson() {
-    try {
-        const res = await fetch('data/log.json');
-        if (!res.ok) { console.warn('Could not fetch data/log.json:', res.statusText); return null; }
-        const json = await res.json();
-        if (!json || !json.headers || !json.rows) { console.warn('Invalid log.json structure'); return null; }
-        return json;
-    } catch (e) {
-        console.warn('Failed to load data/log.json:', e);
-        return null;
-    }
-}
-
-async function loadResultsJson() {
-    try {
-        // Tries data/results.json first, falls back to root results.json if needed
-        let res = await fetch('data/results.json');
-        if (!res.ok) res = await fetch('results.json');
-        if (!res.ok) { console.warn('Could not fetch results.json'); return null; }
-        return await res.json();
-    } catch (e) {
-        console.warn('Failed to load results.json:', e);
-        return null;
-    }
-}
-
-/* =========================================
-   HERO CARD — Tango FC position snapshot
-========================================= */
-function renderHeroCard(rows) {
-    const tangoRow = rows.find(r => r.join(' ').toLowerCase().includes('tango fc'));
-    if (!tangoRow) return;
-
-    const posNum   = document.getElementById('heroPosNum');
-    const posStats = document.getElementById('heroPosStats');
-    if (!posNum || !posStats) return;
-
-    // Columns: Pos W D L GF GA GD Pts  (indices from log.json)
-    const pos = tangoRow[0];
-    const w   = tangoRow[3];
-    const d   = tangoRow[4];
-    const l   = tangoRow[5];
-    const pts = tangoRow[9];
-    const gd  = tangoRow[8];
-
-    posNum.textContent = ordinal(pos);
-
-    posStats.innerHTML = `
-        <div class="pos-stat-item">
-            <strong>${pts}</strong>
-            <span>Points</span>
-        </div>
-        <div class="pos-stat-item">
-            <strong>${w}</strong>
-            <span>Wins</span>
-        </div>
-        <div class="pos-stat-item">
-            <strong>${d}</strong>
-            <span>Draws</span>
-        </div>
-        <div class="pos-stat-item">
-            <strong>${l}</strong>
-            <span>Losses</span>
-        </div>
-    `;
-}
-
-/* =========================================
-   SUMMARY STRIP — top 4 aggregate metrics
-========================================= */
-function renderSummaryStrip(rows, container) {
-    if (!container) return;
-
-    const totalTeams = rows.length;
-    const totalGoals = rows.reduce((s, r) => s + parseInt(r[6] || 0), 0);
-    const topPts     = Math.max(...rows.map(r => parseInt(r[9] || 0)));
-    const leader     = rows.find(r => parseInt(r[9]) === topPts);
-
-    container.innerHTML = `
-        <div class="s-pill">
-            <div class="s-pill-icon blue">
-                <i class="fa-solid fa-users"></i>
-            </div>
-            <div>
-                <span>Teams</span>
-                <strong>${totalTeams}</strong>
-            </div>
-        </div>
-        <div class="s-pill">
-            <div class="s-pill-icon green">
-                <i class="fa-solid fa-futbol"></i>
-            </div>
-            <div>
-                <span>Total Goals</span>
-                <strong>${totalGoals}</strong>
-            </div>
-        </div>
-        <div class="s-pill">
-            <div class="s-pill-icon gold">
-                <i class="fa-solid fa-trophy"></i>
-            </div>
-            <div>
-                <span>League Leaders</span>
-                <strong style="font-size:1rem; margin-top:2px;">${leader ? leader[1] : '—'}</strong>
-            </div>
-        </div>
-        <div class="s-pill">
-            <div class="s-pill-icon red">
-                <i class="fa-solid fa-star"></i>
-            </div>
-            <div>
-                <span>Top Points</span>
-                <strong>${topPts}</strong>
-            </div>
-        </div>
-    `;
-}
-
-/* =========================================
-   TABLE RENDER
-========================================= */
-function renderTable(rows, tbody, matches) {
-    tbody.innerHTML = rows.map((row, index) => buildRow(row, index, matches)).join('');
-}
-
-function buildRow(row, index, matches) {
-    const pos    = parseInt(row[0]);
-    const name   = row[1] || '';
-    const played = row[2];
-    const w      = row[3];
-    const d      = row[4];
-    const l      = row[5];
-    const gf     = row[6];
-    const ga     = row[7];
-    const gd     = row[8];
-    const pts    = row[9];
-
-    const isTango     = name.toLowerCase().includes('tango fc');
-    const isChampion  = pos === CHAMPION_ZONE;
-    const isEuropa    = pos > CHAMPION_ZONE && pos <= EUROPA_ZONE;
-    const isRelegation = pos >= RELEGATION_POS;
-
-    let rowClass = '';
-    if (isTango)      rowClass = 'row-tango';
-    else if (isChampion)   rowClass = 'zone-champion';
-    else if (isEuropa)     rowClass = 'zone-europa';
-    else if (isRelegation) rowClass = 'zone-relegation';
-
-    const gdNum  = parseInt(gd) || 0;
-    const gdClass = gdNum > 0 ? 'gd-pos' : gdNum < 0 ? 'gd-neg' : 'gd-zero';
-    const gdText  = gdNum > 0 ? `+${gdNum}` : `${gdNum}`;
-
-    const initials = nameToInitials(name);
-    const form     = generateForm(name, matches);
-
-    return `
-        <tr class="${rowClass}">
-            <td class="pos-cell">${pos}</td>
-            <td>
-                <div class="team-cell">
-                    <div class="team-initials">${initials}</div>
-                    <span class="team-name">${name}</span>
-                </div>
-            </td>
-            <td>${played}</td>
-            <td>${w}</td>
-            <td>${d}</td>
-            <td>${l}</td>
-            <td>${gf}</td>
-            <td>${ga}</td>
-            <td class="${gdClass}">${gdText}</td>
-            <td class="pts-cell">${pts}</td>
-            <td>${form}</td>
-        </tr>
-    `;
-}
-
-/* =========================================
-   SEARCH / FILTER
-========================================= */
-function wireSearch(rows, tbody, matches) {
-    const input = document.getElementById('tableSearch');
-    if (!input) return;
-
-    input.addEventListener('input', () => {
-        const q = input.value.trim().toLowerCase();
-        if (!q) {
-            renderTable(rows, tbody, matches);
-            return;
+        loadMatches: async function() {
+            try {
+                let res = await fetch('data/results.json');
+                if (!res.ok) res = await fetch('results.json');
+                if (!res.ok) { console.warn('Could not fetch results.json'); return null; }
+                return await res.json();
+            } catch (e) {
+                console.warn('Failed to load results.json:', e);
+                return null;
+            }
         }
-        const filtered = rows.filter(r => r[1].toLowerCase().includes(q));
-        tbody.innerHTML = filtered.length
-            ? filtered.map((r, i) => buildRow(r, i, matches)).join('')
-            : `<tr><td colspan="11" class="loading-cell">No teams match "${input.value}"</td></tr>`;
-    });
-}
+    },
 
-/* =========================================
-   HELPERS
-========================================= */
+    ui: {
+        renderAll: function() {
+            this.renderSummaryStrip();
+            this.renderHeroCard();
+            this.renderTable();
+        },
 
-function nameToInitials(name) {
+        showNoData: function(show) {
+            const tbody = document.getElementById('standingsBody');
+            const noData = document.getElementById('standingsNoData');
+            if (tbody) tbody.innerHTML = '';
+            if (noData) noData.style.display = show ? 'flex' : 'none';
+        },
+
+        renderHeroCard: function() {
+            const tangoRow = standingsApp.state.standings.rows.find(r => r.join(' ').toLowerCase().includes(standingsApp.config.TANGO_FC_NAME));
+            if (!tangoRow) return;
+
+            const posNum = document.getElementById('heroPosNum');
+            const posStats = document.getElementById('heroPosStats');
+            if (!posNum || !posStats) return;
+
+            const [pos, , , w, d, l, , , , pts] = tangoRow;
+            posNum.textContent = standingsApp.helpers.ordinal(pos);
+
+            posStats.innerHTML = `
+                <div class="pos-stat-item"><strong>${pts}</strong><span>Points</span></div>
+                <div class="pos-stat-item"><strong>${w}</strong><span>Wins</span></div>
+                <div class="pos-stat-item"><strong>${d}</strong><span>Draws</span></div>
+                <div class="pos-stat-item"><strong>${l}</strong><span>Losses</span></div>
+            `;
+        },
+
+        renderSummaryStrip: function() {
+            const container = document.getElementById('summaryStrip');
+            if (!container) return;
+            const rows = standingsApp.state.standings.rows;
+
+            const totalTeams = rows.length;
+            const totalGoals = rows.reduce((s, r) => s + parseInt(r[6] || 0), 0);
+            const topPts = Math.max(...rows.map(r => parseInt(r[9] || 0)));
+            const leader = rows.find(r => parseInt(r[9]) === topPts);
+
+            container.innerHTML = `
+                <div class="s-pill"><div class="s-pill-icon blue"><i class="fa-solid fa-users"></i></div><div><span>Teams</span><strong>${totalTeams}</strong></div></div>
+                <div class="s-pill"><div class="s-pill-icon green"><i class="fa-solid fa-futbol"></i></div><div><span>Total Goals</span><strong>${totalGoals}</strong></div></div>
+                <div class="s-pill"><div class="s-pill-icon gold"><i class="fa-solid fa-trophy"></i></div><div><span>League Leaders</span><strong style="font-size:1rem; margin-top:2px;">${leader ? leader[1] : '—'}</strong></div></div>
+                <div class="s-pill"><div class="s-pill-icon red"><i class="fa-solid fa-star"></i></div><div><span>Top Points</span><strong>${topPts}</strong></div></div>
+            `;
+        },
+
+        renderTable: function(filteredRows = null) {
+            const tbody = document.getElementById('standingsBody');
+            if (!tbody) return;
+            const rows = filteredRows || standingsApp.state.standings.rows;
+            const matches = standingsApp.state.matches;
+
+            if (rows.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="11" class="loading-cell">No teams match the search.</td></tr>`;
+                return;
+            }
+            tbody.innerHTML = rows.map((row, index) => this.buildRow(row, matches)).join('');
+        },
+
+        buildRow: function(row, matches) {
+            const [pos, name, played, w, d, l, gf, ga, gd, pts] = row;
+            const { TANGO_FC_NAME, CHAMPION_ZONE, EUROPA_ZONE, RELEGATION_POS } = standingsApp.config;
+
+            const isTango = (name || '').toLowerCase().includes(TANGO_FC_NAME);
+            const isChampion = parseInt(pos) === CHAMPION_ZONE;
+            const isEuropa = parseInt(pos) > CHAMPION_ZONE && parseInt(pos) <= EUROPA_ZONE;
+            const isRelegation = parseInt(pos) >= RELEGATION_POS;
+
+            let rowClass = '';
+            if (isTango) rowClass = 'row-tango';
+            else if (isChampion) rowClass = 'zone-champion';
+            else if (isEuropa) rowClass = 'zone-europa';
+            else if (isRelegation) rowClass = 'zone-relegation';
+
+            const gdNum = parseInt(gd) || 0;
+            const gdClass = gdNum > 0 ? 'gd-pos' : gdNum < 0 ? 'gd-neg' : 'gd-zero';
+            const gdText = gdNum > 0 ? `+${gdNum}` : `${gdNum}`;
+
+            const initials = standingsApp.helpers.nameToInitials(name);
+            const form = standingsApp.helpers.generateForm(name, matches);
+
+            return `
+                <tr class="${rowClass}">
+                    <td class="pos-cell" role="cell">${pos}</td>
+                    <th scope="row" role="rowheader"><div class="team-cell"><div class="team-initials">${initials}</div><span class="team-name">${name}</span></div></th>
+                    <td>${played}</td><td>${w}</td><td>${d}</td><td>${l}</td><td>${gf}</td><td>${ga}</td>
+                    <td class="${gdClass}">${gdText}</td><td class="pts-cell">${pts}</td><td>${form}</td>
+                </tr>
+            `;
+        }
+    },
+
+    events: {
+        wireSearch: function() {
+            const input = document.getElementById('tableSearch');
+            if (!input) return;
+
+            input.addEventListener('input', () => {
+                const q = input.value.trim().toLowerCase();
+                const filtered = standingsApp.state.standings.rows.filter(r => r[1].toLowerCase().includes(q));
+                standingsApp.ui.renderTable(filtered);
+            });
+        }
+    },
+
+    helpers: {
+        nameToInitials: function(name) {
     return name
         .replace(/fc|sc|ac|bc|united|city|town|stars|all/gi, '')
         .trim()
@@ -267,19 +193,16 @@ function nameToInitials(name) {
         .map(w => w[0] || '')
         .join('')
         .toUpperCase();
-}
+},
 
-function ordinal(n) {
+        ordinal: function(n) {
     const num = parseInt(n);
     const s = ['th', 'st', 'nd', 'rd'];
     const v = num % 100;
     return num + (s[(v - 20) % 10] || s[v] || s[0]);
-}
+},
 
-/**
- * Generate real form badges from actual match results.
- */
-function generateForm(teamName, matches) {
+        generateForm: function(teamName, matches) {
     if (!matches || !matches.length) return '<span class="form-badges">—</span>';
 
     const target = teamName.trim().toLowerCase();
@@ -320,3 +243,7 @@ function generateForm(teamName, matches) {
 
     return `<div class="form-badges">${badges}</div>`;
 }
+    }
+};
+
+document.addEventListener('DOMContentLoaded', () => standingsApp.init());

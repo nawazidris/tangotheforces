@@ -86,8 +86,7 @@
             icon.className = isHidden ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye';
         });
 
-        // Login
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             const btn     = document.getElementById('loginBtn');
             const btnText = document.getElementById('btnText');
@@ -100,23 +99,39 @@
             btnIcon.className = 'fa-solid fa-circle-notch fa-spin';
             error.textContent = '';
 
-            setTimeout(() => {
-                const user = document.getElementById('username').value;
-                const pass = document.getElementById('password').value;
+            const user = document.getElementById('username').value;
+            const pass = document.getElementById('password').value;
 
-                if (user === 'admin' && pass === 'tango123') {
-                    sessionStorage.setItem('adminToken', 'tango_secure_admin');
-                    btnText.textContent = 'Redirecting…';
-                    window.location.href = 'admin.html';
-                } else {
-                    btn.classList.remove('loading');
-                    btnText.textContent = 'Sign In';
-                    btnIcon.className = 'fa-solid fa-arrow-right';
-                    btn.classList.add('shake');
-                    setTimeout(() => btn.classList.remove('shake'), 500);
-                    error.textContent = 'Invalid username or password.';
+            // In a real app, this would be a server call. For this demo, we use a local user map.
+            const users = {
+                'admin': { pass: 'tango123', role: 'Admin', name: 'Admin User' },
+                'coach': { pass: 'coachpass', role: 'Coach', name: 'Coach Pride' },
+                'logistics': { pass: 'logisticspass', role: 'Logistics', name: 'Milton Bosha' }
+            };
+
+            const handleLogin = (username, password) => {
+                const userData = users[username];
+                if (userData && userData.pass === password) {
+                    return { success: true, user: { name: userData.name, role: userData.role } };
                 }
-            }, 700);
+                return { success: false };
+            };
+
+            const loginResult = await handleLogin(user, pass);
+
+            if (loginResult.success) {
+                // Store the entire user object in sessionStorage for the app to use
+                sessionStorage.setItem('tangoUser', JSON.stringify(loginResult.user));
+                btnText.textContent = 'Redirecting…';
+                window.location.href = 'admin.html';
+            } else {
+                btn.classList.remove('loading');
+                btnText.textContent = 'Sign In';
+                btnIcon.className = 'fa-solid fa-arrow-right';
+                btn.classList.add('shake');
+                setTimeout(() => btn.classList.remove('shake'), 500);
+                error.textContent = 'Invalid username or password.';
+            }
         });
     </script>
 

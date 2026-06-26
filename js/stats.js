@@ -4,16 +4,29 @@ const SEASON_START = '2026-03-21';
 let statsPlayers = [];
 
 const fetchPlayerStats = async () => {
-
     try {
+        let data = [];
+        if (window.db) {
+            try {
+                const pSnap = await window.db.collection('players').get();
+                if (!pSnap.empty) {
+                    data = pSnap.docs.map(doc => doc.data());
+                }
+            } catch(e) { console.error('Firebase fetch players failed:', e); }
+        }
 
-        const [playersResponse, seasonMatches] = await Promise.all([
-            fetch('data/players.json'),
-            loadSeasonMatches()
-        ]);
+        if (data.length === 0) {
+            // Fallback to local storage admin players first
+            const adminStored = JSON.parse(localStorage.getItem('adminPlayers') || '[]');
+            if (adminStored.length > 0) {
+                data = adminStored;
+            } else {
+                const playersResponse = await fetch('data/players.json');
+                data = await playersResponse.json();
+            }
+        }
 
-        const data = await playersResponse.json();
-
+        const seasonMatches = await loadSeasonMatches();
         statsPlayers = data;
 
         const leagueSummary = await getLeagueSummary();
@@ -61,41 +74,32 @@ const renderStatsTable = (players) => {
 
     players.forEach(player => {
 
-        const stats = player.stats || {};
+        // Support both nested stats object (stats.goals) and flat fields (player.goals)
+        const stats       = player.stats || {};
+        const goals       = stats.goals       ?? player.goals       ?? 0;
+        const assists     = stats.assists     ?? player.assists     ?? 0;
+        const cleanSheets = stats.cleanSheets ?? player.cleansheets ?? 0;
+        const gamesPlayed = stats.gamesPlayed ?? player.matches     ?? 0;
+        // Support both playerImage (roster schema) and image (legacy schema)
+        const playerImg   = player.playerImage || player.image || 'images/default-player.png';
 
         const row = document.createElement('tr');
 
         row.innerHTML = `
             <td>
                 <div class="player-cell">
-
-                    <img
-                        src="${
-                            player.image ||
-                            'images/default-player.png'
-                        }"
-                        alt="${player.name}"
-                        class="player-avatar"
-                    >
-
+                    <img src="${playerImg}" alt="${player.name}" class="player-avatar">
                     <div>
                         <strong>${player.name || 'Unknown'}</strong>
                         <small>${player.team || CLUB_NAME}</small>
                     </div>
-
                 </div>
             </td>
-
-            <td>
-                <span class="position-badge">
-                    ${player.position || '-'}
-                </span>
-            </td>
-
-            <td>${stats.gamesPlayed ?? 0}</td>
-            <td>${stats.goals ?? 0}</td>
-            <td>${stats.assists ?? 0}</td>
-            <td>${stats.cleanSheets ?? 0}</td>
+            <td><span class="position-badge">${player.position || '-'}</span></td>
+            <td>${gamesPlayed}</td>
+            <td>${goals}</td>
+            <td>${assists}</td>
+            <td>${cleanSheets}</td>
         `;
 
         statsBody.appendChild(row);
@@ -219,21 +223,23 @@ const parseLeagueStandings = (parsed) => {
 
 
 const getLeagueSummary = async () => {
-
     try {
+        if (window.db) {
+            try {
+                const doc = await window.db.collection('settings').doc('standings').get();
+                if (doc.exists && doc.data().data) {
+                    const parsed = JSON.parse(doc.data().data);
+                    const leagueSummary = parseLeagueStandings(parsed);
+                    if (leagueSummary) return leagueSummary;
+                }
+            } catch(e) { console.error('Firebase fetch standings failed:', e); }
+        }
 
-        const raw =
-            localStorage.getItem(
-                'leagueStandingsJson'
-            );
+        const raw = localStorage.getItem('leagueStandingsJson');
 
         if (raw) {
-
             const parsed = JSON.parse(raw);
-
-            const leagueSummary =
-                parseLeagueStandings(parsed);
-
+            const leagueSummary = parseLeagueStandings(parsed);
             if (leagueSummary) {
                 return leagueSummary;
             }
@@ -439,11 +445,8 @@ const displayTopScorers = (players) => {
     container.innerHTML = topScorers.map(
         (player, index) => {
 
-            const goals =
-                player.stats?.goals ?? 0;
-
-            const assists =
-                player.stats?.assists ?? 0;
+            const goals   = player.stats?.goals   ?? player.goals   ?? 0;
+            const assists = player.stats?.assists ?? player.assists ?? 0;
 
             return `
                 <div class="top-scorer-card">
@@ -453,10 +456,7 @@ const displayTopScorers = (players) => {
                     </div>
 
                     <img
-                        src="${
-                            player.image ||
-                            'images/default-player.png'
-                        }"
+                        src="${player.playerImage || player.image || 'images/default-player.png'}"
                         alt="${player.name}"
                         class="top-player-image"
                     >
@@ -820,15 +820,26 @@ const renderRecentFormMatches = (
 ========================================= */
 
 const loadSeasonMatches = async () => {
-
     try {
+        let matches = [];
+        if (window.db) {
+            try {
+                const mSnap = await window.db.collection('matches').get();
+                if (!mSnap.empty) {
+                    matches = mSnap.docs.map(doc => doc.data());
+                }
+            } catch(e) { console.error('Firebase fetch matches failed:', e); }
+        }
 
-        const response =
-            await fetch('data/matches.json');
-
-        if (!response.ok) return [];
-
-        const matches = await response.json();
+        if (matches.length === 0) {
+            const adminStored = JSON.parse(localStorage.getItem('adminMatches') || '[]');
+            if (adminStored.length > 0) {
+                matches = adminStored;
+            } else {
+                const response = await fetch('data/matches.json');
+                if (response.ok) matches = await response.json();
+            }
+        }
 
         const tangoMatches =
             matches.filter(match => {

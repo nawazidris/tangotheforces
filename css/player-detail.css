@@ -1,0 +1,249 @@
+@import url("index.css");
+
+.detail-hero {
+    padding: 24px 6% 0;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: color 0.2s;
+}
+
+.back-link:hover {
+    color: var(--blue);
+}
+
+.detail-section {
+    padding: 32px 6% 70px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.detail-card {
+    display: grid;
+    grid-template-columns: minmax(280px, 380px) 1fr;
+    gap: 40px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    overflow: hidden;
+    animation: cardFadeUp 0.5s ease backwards;
+}
+
+.detail-card.pos-forward::before,
+.detail-card.pos-midfielder::before,
+.detail-card.pos-defender::before,
+.detail-card.pos-goalkeeper::before {
+    content: '';
+    display: block;
+    grid-column: 1 / -1;
+    height: 4px;
+}
+
+.detail-card.pos-forward::before    { background: linear-gradient(90deg, var(--red), #f97316); }
+.detail-card.pos-midfielder::before { background: linear-gradient(90deg, var(--blue), #6366f1); }
+.detail-card.pos-defender::before   { background: linear-gradient(90deg, var(--green), #0ea5e9); }
+.detail-card.pos-goalkeeper::before { background: linear-gradient(90deg, var(--gold), #f59e0b); }
+
+.detail-photo-wrap {
+    position: relative;
+    aspect-ratio: 1 / 1;
+    background: rgba(255,255,255,0.03);
+    margin: 32px 0 32px 32px;
+    border-radius: 20px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+}
+
+.detail-photo-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top center;
+    display: block;
+}
+
+.detail-photo-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 5rem;
+    color: var(--muted);
+}
+
+.detail-jersey {
+    position: absolute;
+    bottom: 16px;
+    right: 16px;
+    padding: 6px 14px;
+    border-radius: 999px;
+    font-size: 0.9rem;
+    font-weight: 800;
+    color: white;
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(6px);
+    border: 1px solid rgba(255,255,255,0.12);
+}
+
+.detail-info {
+    padding: 40px 40px 40px 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.detail-name {
+    font-size: clamp(1.8rem, 4vw, 2.6rem);
+    font-weight: 800;
+    line-height: 1.15;
+    margin-bottom: 6px;
+}
+
+.detail-nickname {
+    font-size: 1.1rem;
+    color: var(--blue);
+    font-style: italic;
+    font-weight: 600;
+    margin-bottom: 20px;
+}
+
+.detail-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 28px;
+}
+
+.detail-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.pill-forward    { background: rgba(239,68,68,0.15);   color: var(--red);   border: 1px solid rgba(239,68,68,0.25);   }
+.pill-midfielder { background: rgba(59,130,246,0.15);  color: var(--blue);  border: 1px solid rgba(59,130,246,0.25);  }
+.pill-defender   { background: rgba(16,185,129,0.15);  color: var(--green); border: 1px solid rgba(16,185,129,0.25);  }
+.pill-goalkeeper { background: rgba(245,158,11,0.15);  color: var(--gold);  border: 1px solid rgba(245,158,11,0.25);  }
+
+.detail-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 16px;
+}
+
+.detail-stat {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px 16px;
+    text-align: center;
+}
+
+.detail-stat strong {
+    display: block;
+    font-size: 1.75rem;
+    font-weight: 800;
+    line-height: 1;
+    margin-bottom: 6px;
+}
+
+.detail-stat span {
+    font-size: 0.72rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-weight: 600;
+}
+
+.new-signing-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    background: rgba(245,158,11,0.15);
+    color: var(--gold);
+    border: 1px solid rgba(245,158,11,0.3);
+}
+
+.loading-state,
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    padding: 80px 20px;
+    color: var(--muted);
+    text-align: center;
+}
+
+.loading-spinner {
+    width: 36px;
+    height: 36px;
+    border: 3px solid var(--border);
+    border-top-color: var(--blue);
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+@keyframes cardFadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.btn-back-roster {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 20px;
+    padding: 12px 24px;
+    border-radius: 12px;
+    background: var(--blue);
+    color: white;
+    text-decoration: none;
+    font-weight: 600;
+    transition: opacity 0.2s;
+}
+
+.btn-back-roster:hover {
+    opacity: 0.9;
+}
+
+@media (max-width: 768px) {
+    .detail-card {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+
+    .detail-photo-wrap {
+        margin: 24px 24px 0;
+    }
+
+    .detail-info {
+        padding: 24px;
+    }
+}

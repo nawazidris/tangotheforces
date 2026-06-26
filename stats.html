@@ -1,645 +1,161 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
     <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tango FC — Statistics Dashboard</title>
-
-    <!-- Google Fonts -->
-    <link rel="preconnect"
-          href="https://fonts.googleapis.com">
-
-    <link rel="preconnect"
-          href="https://fonts.gstatic.com"
-          crossorigin>
-
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
-          rel="stylesheet">
-
-    <!-- Font Awesome -->
-    <link rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-
-    <!-- Main CSS -->
-    <link rel="stylesheet"
-          href="css/stats.css">
-
+    <meta name="description" content="Full season statistics for Tango FC — goals, assists, clean sheets, top scorers, form and league position.">
+    <link rel="icon" type="image/jpeg" href="images/tangoforces.jpg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="css/index.css">
+    <link rel="stylesheet" href="css/stats.css">
+    <script src="js/components.js" defer></script>
 </head>
-
 <body>
 
-    <!-- =====================================
-         HEADER
-    ====================================== -->
+    <main-header></main-header>
+    <mobile-nav></mobile-nav>
 
-    <header class="main-header">
-
-        <div class="header-brand">
-
-            <img
-                src="images/tangoforces.jpg"
-                alt="Tango FC Logo"
-            >
-
-            <div>
-                <h1>Tango FC</h1>
-                <p>Official Club Analytics</p>
-            </div>
-
-        </div>
-
-        <nav>
-
-            <ul class="nav-links">
-
-                <li>
-                    <a href="index.html">
-                        Home
-                    </a>
-                </li>
-
-                <li>
-                    <a href="technical-team.html">
-                        Technical Team
-                    </a>
-                </li>
-
-                <li>
-                    <a href="roster.html">
-                        Roster
-                    </a>
-                </li>
-
-                <li>
-                    <a href="matches.html">
-                        Matches
-                    </a>
-                </li>
-
-                <li>
-                    <a href="stats.html" class="active">
-                        Stats
-                    </a>
-                </li>
-
-                <li>
-                    <a href="league-standings.html">
-                        Standings
-                    </a>
-                </li>
-
-                <li>
-                    <a href="history.html">
-                        History
-                    </a>
-                </li>
-
-                <li>
-                    <a href="videos.html">
-                        Videos
-                    </a>
-                </li>
-
-                <li>
-                    <a href="gallery.html">
-                        Gallery
-                    </a>
-                </li>
-
-            </ul>
-
-        </nav>
-
-        <button class="mobile-menu-btn" id="menuBtn" aria-label="Open menu">
-            <i class="fa-solid fa-bars"></i>
-        </button>
-
-    </header>
-
-    <nav class="mobile-nav" id="mobileNav">
-        <a href="index.html">Home</a>
-        <a href="technical-team.html">Technical Team</a>
-        <a href="roster.html">Roster</a>
-        <a href="matches.html">Matches</a>
-        <a href="stats.html">Stats</a>
-        <a href="league-standings.html">Standings</a>
-        <a href="history.html">History</a>
-        <a href="videos.html">Videos</a>
-        <a href="gallery.html">Gallery</a>
-    </nav>
-
-
-
-    <!-- =====================================
-         HERO SECTION
-    ====================================== -->
-
+    <!-- HERO SECTION -->
     <section class="hero-section">
-
         <div class="hero-overlay"></div>
-
         <div class="hero-content">
-
             <div class="hero-left">
-
-                <span class="season-badge">
-                    2026 Season
-                </span>
-
-                <h2>
-                    Tango FC
-                    Statistics Dashboard
-                </h2>
-
-                <p>
-                    Performance analytics,
-                    player metrics,
-                    recent form,
-                    top scorers,
-                    and season insights.
-                </p>
-
+                <span class="season-badge">2026 Season</span>
+                <h2>Tango FC Statistics Dashboard</h2>
+                <p>Performance analytics, player metrics, recent form, top scorers, and season insights.</p>
                 <div class="hero-buttons">
-
-                    <a
-                        href="matches.html"
-                        class="btn-primary"
-                    >
-                        View Fixtures
-                    </a>
-
-                    <a
-                        href="league-standings.html"
-                        class="btn-secondary"
-                    >
-                        League Table
-                    </a>
-
+                    <a href="matches.html" class="btn-primary">View Fixtures</a>
+                    <a href="league-standings.html" class="btn-secondary">League Table</a>
                 </div>
-
             </div>
-
-
-
             <div class="hero-right">
-
                 <div class="glass-card hero-card">
-
-                    <span>
-                        Current League Position
-                    </span>
-
-                    <strong id="summaryPosition">
-                        -
-                    </strong>
-
-                    <small>
-                        MOSSL 2026
-                    </small>
-
+                    <span>Current League Position</span>
+                    <strong id="summaryPosition">-</strong>
+                    <small>MOSSL 2026</small>
                 </div>
-
             </div>
-
         </div>
-
     </section>
 
-
-
-    <!-- =====================================
-         DASHBOARD HEADING
-    ====================================== -->
-
+    <!-- DASHBOARD HEADING -->
     <section class="dashboard-heading">
-
         <div>
-
-            <h1>
-                Statistics Dashboard
-            </h1>
-
-            <p>
-                Professional football analytics,
-                performance insights,
-                player statistics,
-                and season tracking.
-            </p>
-
+            <h1>Statistics Dashboard</h1>
+            <p>Professional football analytics, performance insights, player statistics, and season tracking.</p>
         </div>
-
     </section>
 
-
-
-    <!-- =====================================
-         SUMMARY CARDS
-    ====================================== -->
-
+    <!-- SUMMARY CARDS -->
     <section class="summary-grid">
-
-        <!-- Matches -->
-
         <div class="summary-card">
-
-            <div class="summary-icon blue">
-                <i class="fa-solid fa-calendar"></i>
-            </div>
-
-            <div>
-                <span>Matches Played</span>
-
-                <h3 id="summaryMatches">
-                    0
-                </h3>
-            </div>
-
+            <div class="summary-icon blue"><i class="fa-solid fa-calendar"></i></div>
+            <div><span>Matches Played</span><h3 id="summaryMatches">0</h3></div>
         </div>
-
-
-
-        <!-- Goals For -->
-
         <div class="summary-card">
-
-            <div class="summary-icon green">
-                <i class="fa-solid fa-futbol"></i>
-            </div>
-
-            <div>
-                <span>Goals Scored</span>
-
-                <h3 id="summaryGoalsFor">
-                    0
-                </h3>
-            </div>
-
+            <div class="summary-icon green"><i class="fa-solid fa-futbol"></i></div>
+            <div><span>Goals Scored</span><h3 id="summaryGoalsFor">0</h3></div>
         </div>
-
-
-
-        <!-- Goals Against -->
-
         <div class="summary-card">
-
-            <div class="summary-icon red">
-                <i class="fa-solid fa-shield"></i>
-            </div>
-
-            <div>
-                <span>Goals Conceded</span>
-
-                <h3 id="summaryGoalsAgainst">
-                    0
-                </h3>
-            </div>
-
+            <div class="summary-icon red"><i class="fa-solid fa-shield"></i></div>
+            <div><span>Goals Conceded</span><h3 id="summaryGoalsAgainst">0</h3></div>
         </div>
-
-
-
-        <!-- Goal Difference -->
-
         <div class="summary-card">
-
-            <div class="summary-icon gold">
-                <i class="fa-solid fa-chart-line"></i>
-            </div>
-
-            <div>
-                <span>Goal Difference</span>
-
-                <h3 id="summaryGoalDiff">
-                    0
-                </h3>
-            </div>
-
+            <div class="summary-icon gold"><i class="fa-solid fa-chart-line"></i></div>
+            <div><span>Goal Difference</span><h3 id="summaryGoalDiff">0</h3></div>
         </div>
-
     </section>
 
-
-
-    <!-- =====================================
-         ADVANCED METRICS
-    ====================================== -->
-
+    <!-- ADVANCED METRICS -->
     <section class="advanced-grid">
-
-        <div class="metric-card glass-card">
-
-            <span>Wins</span>
-
-            <h2 id="summaryWins">
-                0
-            </h2>
-
-        </div>
-
-
-
-        <div class="metric-card glass-card">
-
-            <span>Draws</span>
-
-            <h2 id="summaryDraws">
-                0
-            </h2>
-
-        </div>
-
-
-
-        <div class="metric-card glass-card">
-
-            <span>Losses</span>
-
-            <h2 id="summaryLosses">
-                0
-            </h2>
-
-        </div>
-
-
-
-        <div class="metric-card glass-card">
-
-            <span>Points</span>
-
-            <h2 id="summaryPoints">
-                0
-            </h2>
-
-        </div>
-
-
-
-        <div class="metric-card glass-card">
-
-            <span>Goals Per Match</span>
-
-            <h2 id="summaryGoalsPerMatch">
-                0
-            </h2>
-
-        </div>
-
-
-
-        <div class="metric-card glass-card">
-
-            <span>Points Per Game</span>
-
-            <h2 id="summaryPointsPerGame">
-                0
-            </h2>
-
-        </div>
-
-
-
-        <div class="metric-card glass-card">
-
-            <span>Win Rate</span>
-
-            <h2 id="summaryWinPct">
-                0%
-            </h2>
-
-        </div>
-
-
-
-        <div class="metric-card glass-card">
-
-            <span>Recent Form</span>
-
-            <div
-                id="summaryForm"
-                class="summary-form"
-            ></div>
-
-        </div>
-
+        <div class="metric-card glass-card"><span>Wins</span><h2 id="summaryWins">0</h2></div>
+        <div class="metric-card glass-card"><span>Draws</span><h2 id="summaryDraws">0</h2></div>
+        <div class="metric-card glass-card"><span>Losses</span><h2 id="summaryLosses">0</h2></div>
+        <div class="metric-card glass-card"><span>Points</span><h2 id="summaryPoints">0</h2></div>
+        <div class="metric-card glass-card"><span>Goals Per Match</span><h2 id="summaryGoalsPerMatch">0</h2></div>
+        <div class="metric-card glass-card"><span>Points Per Game</span><h2 id="summaryPointsPerGame">0</h2></div>
+        <div class="metric-card glass-card"><span>Win Rate</span><h2 id="summaryWinPct">0%</h2></div>
+        <div class="metric-card glass-card"><span>Recent Form</span><div id="summaryForm" class="summary-form"></div></div>
     </section>
 
-
-
-    <!-- =====================================
-         RECENT FORM
-    ====================================== -->
-
+    <!-- RECENT FORM -->
     <section class="section-spacing">
-
         <div class="section-title">
-
-            <h2>
-                Recent Form
-            </h2>
-
-            <p>
-                Last five completed matches
-            </p>
-
+            <h2>Recent Form</h2>
+            <p>Last five completed matches</p>
         </div>
-
-        <div
-            id="recentFormMatches"
-            class="recent-form-grid"
-        ></div>
-
+        <div id="recentFormMatches" class="recent-form-grid"></div>
     </section>
 
-
-
-    <!-- =====================================
-         TOP SCORERS
-    ====================================== -->
-
+    <!-- TOP SCORERS -->
     <section class="section-spacing">
-
         <div class="section-title">
-
-            <h2>
-                Top Scorers
-            </h2>
-
-            <p>
-                Leading attacking performers
-            </p>
-
+            <h2>Top Scorers</h2>
+            <p>Leading attacking performers</p>
         </div>
-
-        <div
-            id="topScorersContainer"
-            class="top-scorers-grid"
-        ></div>
-
+        <div id="topScorersContainer" class="top-scorers-grid"></div>
     </section>
 
-
-
-    <!-- =====================================
-         CHARTS
-    ====================================== -->
-
+    <!-- CHARTS -->
     <section class="section-spacing charts-layout">
-
         <div class="glass-card chart-card">
-
-            <div class="chart-header">
-
-                <h3>
-                    Goals vs Assists
-                </h3>
-
-            </div>
-
+            <div class="chart-header"><h3>Goals vs Assists</h3></div>
             <canvas id="goalsAssistsChart"></canvas>
-
         </div>
-
     </section>
 
-
-
-    <!-- =====================================
-         PLAYER STATS TABLE
-    ====================================== -->
-
+    <!-- PLAYER STATS TABLE -->
     <section class="section-spacing">
-
         <div class="stats-table-wrapper glass-card">
-
-            <!-- TABLE HEADER -->
-
             <div class="table-header">
-
                 <div>
-
-                    <h2>
-                        Player Statistics
-                    </h2>
-
-                    <p>
-                        Complete squad performance overview
-                    </p>
-
+                    <h2>Player Statistics</h2>
+                    <p>Complete squad performance overview</p>
                 </div>
-
-
-
-                <!-- FILTERS -->
-
                 <div class="filters">
-
-                    <input
-                        type="text"
-                        id="statsSearchInput"
-                        placeholder="Search players..."
-                    >
-
-                    <select id="teamFilter">
-
-                        <option value="">
-                            All Teams
-                        </option>
-
-                    </select>
-
-                    <select id="positionFilter">
-
-                        <option value="">
-                            All Positions
-                        </option>
-
-                    </select>
-
+                    <input type="text" id="statsSearchInput" placeholder="Search players...">
+                    <select id="teamFilter"><option value="">All Teams</option></select>
+                    <select id="positionFilter"><option value="">All Positions</option></select>
                 </div>
-
             </div>
-
-
-
-            <!-- TABLE -->
-
             <div class="table-container">
-
                 <table id="stats-table">
-
                     <thead>
-
                         <tr>
-
-                            <th>Player</th>
-
-                            <th>Position</th>
-
-                            <th>Matches</th>
-
-                            <th>Goals</th>
-
-                            <th>Assists</th>
-
-                            <th>Clean Sheets</th>
-
+                            <th><button class="sort-btn" data-sort="name">Player</button></th>
+                            <th><button class="sort-btn" data-sort="position">Position</button></th>
+                            <th><button class="sort-btn" data-sort="matches">Matches</button></th>
+                            <th><button class="sort-btn" data-sort="goals">Goals</button></th>
+                            <th><button class="sort-btn" data-sort="assists">Assists</button></th>
+                            <th><button class="sort-btn" data-sort="cleansheets">Clean Sheets</button></th>
                         </tr>
-
                     </thead>
-
-                    <tbody></tbody>
-
+                    <tbody>
+                        <tr>
+                            <td colspan="6" class="loading-cell">
+                                <div class="loading-state">
+                                    <div class="loading-spinner"></div>
+                                    <p>Loading player stats...</p>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
                 </table>
-
             </div>
-
         </div>
-
     </section>
 
+    <main-footer></main-footer>
 
-
-    <!-- =====================================
-         FOOTER
-    ====================================== -->
-
-    <footer>
-
-        <p>
-            © 2026 Tango FC —
-            Official Statistics Dashboard
-        </p>
-
-    </footer>
-
-
-
-    <!-- =====================================
-         SCRIPTS
-    ====================================== -->
-
-    <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-    <!-- Stats JS -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script src="js/firebase-config.js"></script>
     <script src="js/stats.js"></script>
 
-    <script>
-        const menuBtn = document.getElementById('menuBtn');
-        const mobileNav = document.getElementById('mobileNav');
-
-        menuBtn.addEventListener('click', () => {
-            mobileNav.classList.toggle('open');
-        });
-    </script>
-
 </body>
-
 </html>

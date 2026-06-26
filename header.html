@@ -1,0 +1,42 @@
+<header class="main-header">
+    <div class="header-brand">
+        <a href="index.html" style="display: flex; align-items: center; gap: 14px; text-decoration: none;">
+            <img src="images/tangoforces.jpg" alt="Tango FC Logo">
+            <div>
+                <h1 style="color: white; font-size: 1.15rem; font-weight: 700; margin: 0;">Tango FC</h1>
+                <p style="color: #a1a1aa; font-size: 0.8rem; margin: 0;">The Forces</p>
+            </div>
+        </a>
+    </div>
+
+    <nav>
+        <ul class="nav-links" id="mainNavLinks">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="technical-team.html">Technical Team</a></li>
+            <li><a href="roster.html">Roster</a></li>
+            <li><a href="matches.html">Matches</a></li>
+            <li><a href="stats.html">Stats</a></li>
+            <li><a href="league-standings.html">Standings</a></li>
+            <li><a href="history.html">History</a></li>
+            <li><a href="videos.html">Videos</a></li>
+            <li><a href="gallery.html">Gallery</a></li>
+        </ul>
+    </nav>
+
+    <button class="mobile-menu-btn" id="menuBtn" aria-label="Open menu">
+        <i class="fa-solid fa-bars"></i>
+    </button>
+</header>
+
+<script>
+    // Auto-highlight active nav link based on current page
+    (function () {
+        const links = document.querySelectorAll('#mainNavLinks a');
+        const current = window.location.pathname.split('/').pop() || 'index.html';
+        links.forEach(link => {
+            if (link.getAttribute('href') === current) {
+                link.classList.add('active');
+            }
+        });
+    })();
+</script>

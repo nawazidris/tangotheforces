@@ -10,17 +10,23 @@
 }
 
 :root {
-    --bg: #07111f;
-    --bg2: #0b1929;
-    --card: rgba(255,255,255,0.06);
+    --bg: #050b14;
+    --bg2: #091321;
+    --card: rgba(255,255,255,0.03);
+    --card-hover: rgba(255,255,255,0.06);
     --border: rgba(255,255,255,0.08);
+    --border-hover: rgba(255,255,255,0.15);
     --text: #ffffff;
-    --muted: #9ca3af;
+    --muted: #a1a1aa;
     --blue: #3b82f6;
     --blue-dark: #2563eb;
+    --blue-glow: rgba(59, 130, 246, 0.4);
     --green: #10b981;
+    --green-glow: rgba(16, 185, 129, 0.4);
     --red: #ef4444;
+    --red-glow: rgba(239, 68, 68, 0.4);
     --gold: #f59e0b;
+    --gold-glow: rgba(245, 158, 11, 0.4);
     --sidebar-w: 220px;
     --topbar-h: 64px;
 }
@@ -63,6 +69,23 @@ body {
     gap: 12px;
 }
 
+.topbar-session-info {
+    border-left: 1px solid var(--border);
+    margin-left: 16px;
+    padding-left: 16px;
+}
+
+.topbar-session-info #sessionUserName {
+    display: block;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.topbar-session-info #sessionUserRole {
+    display: block;
+    color: var(--muted);
+    font-size: 0.78rem;
+}
 .topbar-brand img {
     width: 38px;
     height: 38px;
@@ -188,6 +211,7 @@ body {
     color: var(--blue);
     font-weight: 600;
     border: 1px solid rgba(59,130,246,0.2);
+    box-shadow: inset 3px 0 0 var(--blue), 0 4px 12px rgba(59,130,246,0.1);
 }
 
 
@@ -244,7 +268,17 @@ body {
 .glass-card {
     background: var(--card);
     border: 1px solid var(--border);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
     border-radius: 20px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    transition: background 0.3s ease, border-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.glass-card:hover {
+    background: var(--card-hover);
+    border-color: var(--border-hover);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
 }
 
 .btn-primary {
@@ -434,13 +468,26 @@ body {
     font-family: 'Inter', sans-serif;
     transition: 0.2s ease;
 }
+.field-group textarea {
+    padding: 11px 14px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--border);
+    border-radius: 11px;
+    color: white;
+    font-size: 0.88rem;
+    font-family: 'Inter', sans-serif;
+    transition: 0.2s ease;
+    resize: vertical;
+    min-height: 80px;
+}
 
 .field-group input:focus,
 .field-group select:focus {
     outline: none;
-    border-color: rgba(59,130,246,0.45);
+    border-color: rgba(59,130,246,0.6);
     background: rgba(59,130,246,0.05);
-    box-shadow: 0 0 0 3px rgba(59,130,246,0.1);
+    box-shadow: 0 0 0 4px rgba(59,130,246,0.15);
+    transform: translateY(-1px);
 }
 
 .field-group input::placeholder {
@@ -465,6 +512,21 @@ body {
     justify-content: flex-end;
     padding-top: 4px;
 }
+.read-only-banner {
+    padding: 12px 16px;
+    background: rgba(245, 158, 11, 0.1);
+    border: 1px solid rgba(245, 158, 11, 0.2);
+    color: var(--gold);
+    border-radius: 12px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: -4px;
+    margin-bottom: 20px;
+}
+
 
 
 /* =========================================
@@ -660,6 +722,54 @@ body {
     background: rgba(239,68,68,0.2);
 }
 
+.btn-delete {
+    padding: 7px 14px;
+    background: rgba(239,68,68,0.1);
+    border: 1px solid rgba(239,68,68,0.2);
+    color: var(--red);
+    border-radius: 9px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    font-family: 'Inter', sans-serif;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.btn-delete:hover {
+    background: rgba(239,68,68,0.2);
+}
+.media-item-info {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.media-thumb {
+    width: 80px;
+    height: 50px;
+    flex-shrink: 0;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #000;
+    position: relative;
+    border: 1px solid var(--border);
+}
+
+.media-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.media-thumb i {
+    position: absolute;
+    bottom: 4px;
+    right: 6px;
+    color: #ff0000;
+    font-size: 1rem;
+    text-shadow: 0 0 4px black;
+}
+
 
 /* =========================================
    STANDINGS UPLOAD
@@ -726,6 +836,14 @@ body {
 
 @media (max-width: 900px) {
     .admin-sidebar {
+        width: 68px;
+    }
+
+    .sidebar-btn span {
+        display: none;
+    }
+
+    .topbar-session-info {
         display: none;
     }
 
@@ -756,4 +874,50 @@ body {
     .dash-cards {
         grid-template-columns: 1fr;
     }
+}
+/* =============================================
+   ADMIN PLAYERS LIST — roster card layout
+   Append these rules to your css/admin.css
+============================================= */
+
+/* Section header e.g. "FORWARD REGISTERED ROSTER (8 PLAYERS)" */
+.roster-group-header {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    padding: 20px 0 10px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 10px;
+}
+
+/* Two-column grid of player cards */
+.admin-players-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 24px;
+}
+
+@media (max-width: 700px) {
+    .admin-players-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Individual player card */
+.admin-player-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 12px 14px;
+    transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.admin-player-card:hover {
+    background: rgba(255,255,255,0.07);
+    border-color: rgba(255,255,255,0.14);
 }

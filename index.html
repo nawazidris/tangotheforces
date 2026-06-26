@@ -2,6 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="description" content="Tango Football Club — Masvingo's most celebrated football organisation. MOSSL champions 2025/26.">
+    <link rel="icon" type="image/jpeg" href="images/tangoforces.jpg">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tango Football Club</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -9,54 +11,12 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="css/index.css">
+    <script src="js/components.js" defer></script>
 </head>
 <body>
 
-    <!-- ============================
-         HEADER
-    ============================= -->
-    <header class="main-header">
-        <div class="header-brand">
-            <img src="images/tangoforces.jpg" alt="Tango FC Logo">
-            <div>
-                <h1>Tango FC</h1>
-                <p>The Forces</p>
-            </div>
-        </div>
-
-        <nav>
-            <ul class="nav-links">
-                <li><a href="index.html" class="active">Home</a></li>
-                <li><a href="technical-team.html">Technical Team</a></li>
-                <li><a href="roster.html">Roster</a></li>
-                <li><a href="matches.html">Matches</a></li>
-                <li><a href="stats.html">Stats</a></li>
-                <li><a href="league-standings.html">Standings</a></li>
-                <li><a href="history.html">History</a></li>
-                <li><a href="videos.html">Videos</a></li>
-                <li><a href="gallery.html">Gallery</a></li>
-            </ul>
-        </nav>
-
-        <button class="mobile-menu-btn" id="menuBtn" aria-label="Open menu">
-            <i class="fa-solid fa-bars"></i>
-        </button>
-    </header>
-
-    <!-- Mobile Nav Drawer -->
-    <div class="mobile-nav" id="mobileNav">
-        <ul>
-            <li><a href="index.html">Home</a></li>
-            <li><a href="technical-team.html">Technical Team</a></li>
-            <li><a href="roster.html">Roster</a></li>
-            <li><a href="matches.html">Matches</a></li>
-            <li><a href="stats.html">Stats</a></li>
-            <li><a href="league-standings.html">Standings</a></li>
-            <li><a href="history.html">History</a></li>
-            <li><a href="videos.html">Videos</a></li>
-            <li><a href="gallery.html">Gallery</a></li>
-        </ul>
-    </div>
+    <main-header></main-header>
+    <mobile-nav></mobile-nav>
 
     <main>
 
@@ -121,6 +81,43 @@
                     </div>
                 </div>
 
+            </div>
+        </section>
+
+        <!-- ============================
+             NEXT MATCH COUNTDOWN
+        ============================= -->
+        <section class="countdown-section" id="nextMatchCountdown" style="display: none;">
+            <div class="countdown-content">
+                <div class="countdown-header">
+                    <p>Next Match Kicks Off In</p>
+                    <h3 id="countdownOpponent">vs. Opponent</h3>
+                </div>
+                <div class="countdown-timer">
+                    <div class="countdown-segment">
+                        <strong id="countdownDays">00</strong>
+                        <span>Days</span>
+                    </div>
+                    <div class="countdown-divider">:</div>
+                    <div class="countdown-segment">
+                        <strong id="countdownHours">00</strong>
+                        <span>Hours</span>
+                    </div>
+                    <div class="countdown-divider">:</div>
+                    <div class="countdown-segment">
+                        <strong id="countdownMinutes">00</strong>
+                        <span>Mins</span>
+                    </div>
+                    <div class="countdown-divider">:</div>
+                    <div class="countdown-segment">
+                        <strong id="countdownSeconds">00</strong>
+                        <span>Secs</span>
+                    </div>
+                </div>
+                <div class="countdown-footer">
+                    <span id="countdownVenue"><i class="fa-solid fa-location-dot"></i> Venue</span>
+                    <span id="countdownDate"><i class="fa-solid fa-calendar-day"></i> Date</span>
+                </div>
             </div>
         </section>
 
@@ -242,58 +239,8 @@
                 <p>Stay updated with everything Tango FC</p>
             </div>
 
-            <div class="news-grid">
-                <!-- Featured News -->
-                <article class="news-card news-featured glass-card">
-                    <div class="news-img-wrap">
-                        <img src="images/new2.jpg" alt="Champions celebration" onerror="this.style.display='none'">
-                        <div class="news-overlay"></div>
-                        <span class="news-tag gold-tag">Champions</span>
-                    </div>
-                    <div class="news-body">
-                        <p class="news-date"><i class="fa-regular fa-calendar"></i> February 22, 2026</p>
-                        <h3>🏆 MOSSL Champions 2025/26!</h3>
-                        <p>
-                            Tango FC etched their name into league history with an impressive 86-point season.
-                            The campaign was defined by consistency, resilience, and a collective spirit that made the side unstoppable.
-                        </p>
-                        <h4>✨ Key Highlights of the Season</h4>
-                        <ul>
-                            <li><strong>Dominant finish:</strong> The squad closed the season with a string of commanding performances, leaving no doubt about their superiority.</li>
-                            <li><strong>Squad unity:</strong> Every player contributed—across defense, midfield, and attack—showcasing balance and depth.</li>
-                            <li><strong>Quality football:</strong> Tango FC combined tactical discipline with flair, thrilling supporters and setting a benchmark for excellence.</li>
-                            <li><strong>Unbreakable spirit:</strong> Even in the toughest fixtures, the team’s determination and cohesion carried them through.</li>
-                        </ul>
-                    </div>
-
-                </article>
-
-                <!-- Secondary News -->
-                <div class="news-secondary">
-                    <article class="news-card glass-card">
-                        <div class="news-img-wrap news-img-sm">
-                            <img src="images/tango1111.jpg" alt="Training" onerror="this.style.display='none'">
-                            <span class="news-tag blue-tag">Training</span>
-                        </div>
-                        <div class="news-body">
-                            <p class="news-date"><i class="fa-regular fa-calendar"></i> February 28, 2026</p>
-                            <h4>🎯 Pre-Season Training Camp</h4>
-                            <p>Players are back in camp for focused fitness, tactical drills, and team cohesion ahead of the new season.</p>
-                        </div>
-                    </article>
-
-                    <article class="news-card glass-card">
-                        <div class="news-img-wrap news-img-sm">
-                            <img src="images/new00.jpeg" alt="Signings" onerror="this.style.display='none'">
-                            <span class="news-tag green-tag">Transfers</span>
-                        </div>
-                        <div class="news-body">
-                            <p class="news-date"><i class="fa-regular fa-calendar"></i> March 10, 2026</p>
-                            <h4>👥 New Signings Announced</h4>
-                            <p>Tango FC has added fresh attacking and defensive talent to strengthen the squad ahead of the new campaign.</p>
-                        </div>
-                    </article>
-                </div>
+            <div class="news-grid" id="newsGrid">
+                <!-- News articles will be loaded here dynamically -->
             </div>
         </section>
 
@@ -359,35 +306,10 @@
         </section>
 
     </main>
-
-    <!-- ============================
-         FOOTER
-    ============================= -->
-    <footer class="main-footer">
-        <div class="footer-brand">
-            <img src="images/tangoforces.jpg" alt="Tango FC">
-            <div>
-                <strong>Tango Football Club</strong>
-                <span>Est. 2015 · Masvingo, Zimbabwe</span>
-            </div>
-        </div>
-        <nav class="footer-nav">
-            <a href="roster.html">Roster</a>
-            <a href="matches.html">Matches</a>
-            <a href="stats.html">Stats</a>
-            <a href="history.html">History</a>
-            <a href="gallery.html">Gallery</a>
-        </nav>
-        <p class="footer-copy">© 2026 Tango Football Club. All rights reserved.</p>
-    </footer>
-
-    <script>
-        const menuBtn = document.getElementById('menuBtn');
-        const mobileNav = document.getElementById('mobileNav');
-        menuBtn.addEventListener('click', () => {
-            mobileNav.classList.toggle('open');
-        });
-    </script>
+    
+    <main-footer></main-footer>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/2.1.0/showdown.min.js"></script>
+    <script src="js/home.js"></script>
 
 </body>
 </html>

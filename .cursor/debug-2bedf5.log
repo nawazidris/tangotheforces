@@ -1,0 +1,4 @@
+{"sessionId":"2bedf5","location":"firebase-config.js:skip","message":"Firebase skipped (placeholder config)","data":{"configured":false},"timestamp":1782205010806,"hypothesisId":"firebase"}
+{"sessionId":"2bedf5","location":"matches.js:fetchMatches","message":"matches.json parsed","data":{"count":19,"firstId":8,"lastId":25},"timestamp":1782205010853,"hypothesisId":"matches-json"}
+{"sessionId":"2bedf5","location":"firebase-config.js:skip","message":"Firebase skipped (placeholder config)","data":{"configured":false},"timestamp":1782205029879,"hypothesisId":"firebase"}
+{"sessionId":"2bedf5","location":"matches.js:fetchMatches","message":"matches.json parsed","data":{"count":19,"firstId":8,"lastId":25},"timestamp":1782205029946,"hypothesisId":"matches-json"}
