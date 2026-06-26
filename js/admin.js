@@ -101,20 +101,8 @@ const app = {
                 this.loadCollection('media', 'adminMedia')
             ]);
 
-            // Clean fallback in case getMergedPlayers does not resolve on load
-            let mergedPlayers = [];
-            try {
-                if (typeof getMergedPlayers === 'function') {
-                    mergedPlayers = getMergedPlayers();
-                } else {
-                    mergedPlayers = players;
-                }
-            } catch (e) {
-                console.warn("Base roster merge configuration not accessible, raw defaults applied.", e);
-                mergedPlayers = players;
-            }
-
-            app.state.players = mergedPlayers;
+            // With Firebase as the source of truth, we no longer need to merge with local files.
+            app.state.players = players;
             app.state.matches = matches;
             app.state.news = news;
             app.state.media = media;
@@ -967,6 +955,57 @@ const app = {
             document.getElementById("mediaTitle").value = item.title;
 
             this.switchTab('media');
+        },
+
+        downloadPlayerData: async function() {
+            if (!window.db) {
+                alert("Cannot download data. Firebase is not connected.");
+                return;
+            }
+            try {
+                const snapshot = await window.db.collection('players').get();
+                const players = snapshot.docs.map(doc => doc.data());
+
+                // Sort players by ID for consistency
+                players.sort((a, b) => a.id - b.id);
+
+                const dataStr = JSON.stringify(players, null, 2); // Pretty-print JSON
+                const dataBlob = new Blob([dataStr], { type: "application/json" });
+                const url = URL.createObjectURL(dataBlob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'players.json';
+                a.click();
+                URL.revokeObjectURL(url);
+            } catch (error) {
+                console.error("Error downloading player data:", error);
+                alert("Failed to download player data. See console for details.");
+            }
+        },
+
+        downloadMatchData: async function() {
+            if (!window.db) {
+                alert("Cannot download data. Firebase is not connected.");
+                return;
+            }
+            try {
+                const snapshot = await window.db.collection('matches').get();
+                const matches = snapshot.docs.map(doc => doc.data());
+
+                matches.sort((a, b) => a.id - b.id);
+
+                const dataStr = JSON.stringify(matches, null, 2);
+                const dataBlob = new Blob([dataStr], { type: "application/json" });
+                const url = URL.createObjectURL(dataBlob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'matches.json';
+                a.click();
+                URL.revokeObjectURL(url);
+            } catch (error) {
+                console.error("Error downloading match data:", error);
+                alert("Failed to download match data. See console for details.");
+            }
         },
 
         deleteMedia: async function(id) {

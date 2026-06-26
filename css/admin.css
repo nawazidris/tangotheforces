@@ -302,6 +302,25 @@ body {
     transform: translateY(-1px);
 }
 
+.btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 14px;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    border-radius: 9px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    font-family: 'Inter', sans-serif;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+.btn-secondary:hover {
+    background: rgba(255,255,255,0.12);
+    color: white;
+}
 /* colour helpers */
 .blue  { background: rgba(59,130,246,0.18); color: var(--blue); }
 .green { background: rgba(16,185,129,0.18); color: var(--green); }
@@ -932,6 +951,58 @@ body {
     .admin-players-grid {
         grid-template-columns: 1fr;
     }
+}
+/* =============================================
+   PAGINATION CONTROLS
+============================================= */
+.pagination-controls-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border);
+    border-bottom: none;
+    border-top-left-radius: 14px;
+    border-top-right-radius: 14px;
+}
+.pagination-controls-wrapper p {
+    font-size: 0.85rem;
+    color: var(--muted);
+}
+.pagination-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.pagination-controls button {
+    width: 34px;
+    height: 34px;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+.pagination-controls button:hover:not(:disabled) {
+    background: rgba(255,255,255,0.12);
+    color: white;
+}
+.pagination-controls button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+.pagination-controls .page-indicator {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--muted);
+    padding: 0 8px;
+}
+
+.stats-table-wrapper .table-container {
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
 }
 
 /* Individual player card */

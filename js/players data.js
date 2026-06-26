@@ -26,7 +26,7 @@ const basePlayers = [
     // Defenders
     { id: 17, name: "Lordship Sithole",        nickname: "Lord",     position: "Defender",   number: 5,  goals: 0,  assists: 0,  cleansheets: 16, playerImage: "images/lord.jpg" },
     { id: 18, name: "Nokutenda Makumbe",       nickname: "Noku",     position: "Defender",   number: 4,  goals: 0,  assists: 0,  playerImage: "images/noku.jpg" },
-    { id: 19, name: "Panashe Vaiya",             nickname: "Maluwa",    position: "Defender",   number: 3,  goals: 0,  assists: 0,  playerImage: "images/maluwa.jpg" },
+    { id: 19, name: "Panashe Vaiya",           nickname: "Maluwa",    position: "Defender",   number: 3,  goals: 0,  assists: 0,  playerImage: "images/maluwa.jpg" },
     { id: 20, name: "Alban Makwarimba",        nickname: "Bhani",    position: "Defender",   number: 16, goals: 0,  assists: 0,  playerImage: "images/ban.jpg" },
     { id: 21, name: "Musa Chasepa",            nickname: "Inter",    position: "Defender",   number: 2,  goals: 0,  assists: 0,  playerImage: "images/inter.jpg" },
     { id: 22, name: "Washington Murambidza",   nickname: "Washco",   position: "Defender",   number: 22, goals: 0,  assists: 0,  playerImage: "images/washco.jpg" },
@@ -37,41 +37,3 @@ const basePlayers = [
     { id: 26, name: "Knowledge Sheche",        nickname: "Ba Rashy", position: "Goalkeeper", number: 1,  cleansheets: 20, SavePercentage: 60, playerImage: "images/rashy1.jpg" },
     { id: 27, name: "Forster Chikusvura",         nickname: "Fofo",    position: "Goalkeeper", number: 23, cleansheets: 3,  SavePercentage: 60, playerImage: "images/fofo.jpg" },
 ];
-
-/**
- * getMergedPlayers()
- *
- * Returns the full squad by merging basePlayers with adminPlayers from
- * localStorage, while filtering out any explicitly deleted base players.
- */
-function getMergedPlayers() {
-    let adminPlayers = [];
-    let deletedBaseIds = [];
-    try {
-        adminPlayers = JSON.parse(localStorage.getItem('adminPlayers') || '[]');
-        deletedBaseIds = JSON.parse(localStorage.getItem('deletedBasePlayerIds') || '[]').map(Number);
-    } catch (e) {
-        console.warn('Could not parse admin players or deletions from localStorage:', e);
-    }
-
-    // 1. Filter out base players that have been deleted by the admin
-    const activeBasePlayers = basePlayers.filter(p => !deletedBaseIds.includes(Number(p.id)));
-
-    if (adminPlayers.length === 0) return [...activeBasePlayers];
-
-    const adminMap = new Map(adminPlayers.map(p => [Number(p.id), p]));
-
-    // 2. Map overrides onto the remaining active base players
-    const merged = activeBasePlayers.map(p => adminMap.has(p.id) ? { ...p, ...adminMap.get(p.id) } : p);
-    const baseIds = new Set(activeBasePlayers.map(p => p.id));
-
-    // 3. Append entirely new players added by the admin
-    adminPlayers.forEach(p => {
-        const pId = Number(p.id);
-        if (!baseIds.has(pId) && !deletedBaseIds.includes(pId)) {
-            merged.push(p);
-        }
-    });
-
-    return merged;
-}

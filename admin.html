@@ -198,7 +198,14 @@
                 </div>
 
                 <div class="list-section">
-                    <h3 class="list-title">Squad Roster</h3>
+                    <div class="list-header">
+                        <h3 class="list-title">Squad Roster</h3>
+                        <div class="list-actions">
+                            <button class="btn-secondary" onclick="app.ui.downloadPlayerData()">
+                                <i class="fa-solid fa-download"></i> Download players.json
+                            </button>
+                        </div>
+                    </div>
                     <div id="playersList" class="admin-list"></div>
                 </div>
             </section>
@@ -304,7 +311,14 @@
                 </div>
 
                 <div class="list-section">
-                    <h3 class="list-title">Match Log</h3>
+                    <div class="list-header">
+                        <h3 class="list-title">Match Log</h3>
+                        <div class="list-actions">
+                            <button class="btn-secondary" onclick="app.ui.downloadMatchData()">
+                                <i class="fa-solid fa-download"></i> Download matches.json
+                            </button>
+                        </div>
+                    </div>
                     <div id="matchesList" class="admin-list"></div>
                 </div>
             </section>
