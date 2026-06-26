@@ -11,6 +11,7 @@ const app = {
 
     init: async function() {
         if (!this.auth.check()) return;
+        await this.auth.check();
         await this.data.loadAll();
         this.events.bind();
         this.ui.applyRolePermissions();
@@ -28,6 +29,53 @@ const app = {
             if (!userJson) {
                 window.location.href = "login.html";
                 return false;
+            return new Promise((resolve) => {
+                // Use onAuthStateChanged for real-time auth state monitoring
+                firebase.auth().onAuthStateChanged(async (user) => {
+                    if (user) {
+                        // User is signed in. Fetch their custom data from Firestore.
+                        try {
+                            const userDoc = await window.db.collection('users').doc(user.uid).get();
+                            if (userDoc.exists) {
+                                app.state.currentUser = {
+                                    uid: user.uid,
+                                    email: user.email,
+                                    ...userDoc.data() // Merges name, role, etc.
+                                };
+
+                                // Update UI and redirect if necessary
+                                const nameEl = document.getElementById('sessionUserName');
+                                const roleEl = document.getElementById('sessionUserRole');
+                                if (nameEl) nameEl.textContent = app.state.currentUser.name;
+                                if (roleEl) roleEl.textContent = `Role: ${app.state.currentUser.role}`;
+
+                                // If user is on login page, redirect them to admin dashboard
+                                if (window.location.pathname.includes('login.html')) {
+                                    window.location.href = 'admin.html';
+                                }
+                                resolve(); // Resolve the promise to continue app initialization
+                            } else {
+                                throw new Error("User profile not found in database.");
+                            }
+                        } catch (error) {
+                            console.error("Auth check failed:", error);
+                            this.logout(); // Log out if profile data is missing/corrupt
+                        }
+                    } else {
+                        // User is not signed in. Redirect to login page.
+                        if (!window.location.pathname.includes('login.html')) {
+                            window.location.href = "login.html";
+                        }
+                    }
+                });
+            });
+        },
+        logout: async function() {
+            try {
+                await firebase.auth().signOut();
+                window.location.href = "index.html"; // Redirects to site home page on success
+            } catch (error) {
+                console.error("Logout failed:", error);
             }
             app.state.currentUser = JSON.parse(userJson);
             const nameEl = document.getElementById('sessionUserName');
@@ -83,106 +131,6 @@ const app = {
             await this.loadRosterPlayers();
         },
 
-        getMergedMatches: async function(adminMatches) {
-            let baseMatches = [];
-            let deletedMatchIds = [];
-            
-            try {
-                const response = await fetch('data/matches.json');
-                if (response.ok) {
-                    baseMatches = await response.json();
-                }
-            } catch (e) {
-                console.warn("Could not fetch matches.json, operating on saved matches only.", e);
-            }
-
-            try {
-                deletedMatchIds = JSON.parse(localStorage.getItem('deletedBaseMatchIds') || '[]').map(Number);
-            } catch (e) {
-                console.warn("Could not parse deleted matches tracking list:", e);
-            }
-
-            // 1. Filter out base fixtures that have been deleted by the admin
-            const activeBaseMatches = baseMatches.filter(m => !deletedMatchIds.includes(Number(m.id)));
-
-            if (!adminMatches || adminMatches.length === 0) {
-                return activeBaseMatches;
-            }
-
-            const adminMap = new Map(adminMatches.map(m => [Number(m.id), m]));
-
-            // 2. Map overrides onto remaining active base fixtures
-            const merged = activeBaseMatches.map(m => adminMap.has(m.id) ? { ...m, ...adminMap.get(m.id) } : m);
-            const baseIds = new Set(activeBaseMatches.map(m => m.id));
-
-            // 3. Append entirely new fixtures added by the admin
-            adminMatches.forEach(m => {
-                const mId = Number(m.id);
-                if (!baseIds.has(mId) && !deletedMatchIds.includes(mId)) {
-                    merged.push(m);
-                }
-            });
-
-            return merged;
-        },
-
-        savePlayers: async function() {
-            localStorage.setItem("adminPlayers", JSON.stringify(app.state.players));
-            localStorage.setItem("allPlayers", JSON.stringify(app.state.players));
-            if (window.db) {
-                try {
-                    const batch = window.db.batch();
-                    app.state.players.forEach(p => {
-                        const docRef = window.db.collection('players').doc(p.id.toString());
-                        batch.set(docRef, p);
-                    });
-                    await batch.commit();
-                } catch(e) { console.error("Firebase save players failed:", e); }
-            }
-        },
-
-        saveMatches: async function() {
-            localStorage.setItem("adminMatches", JSON.stringify(app.state.matches));
-            if (window.db) {
-                try {
-                    const batch = window.db.batch();
-                    app.state.matches.forEach(m => {
-                        const docRef = window.db.collection('matches').doc(m.id.toString());
-                        batch.set(docRef, m);
-                    });
-                    await batch.commit();
-                } catch(e) { console.error("Firebase save matches failed:", e); }
-            }
-        },
-
-        saveNews: async function() {
-            localStorage.setItem("adminNews", JSON.stringify(app.state.news));
-            if (window.db) {
-                try {
-                    const batch = window.db.batch();
-                    app.state.news.forEach(article => {
-                        const docRef = window.db.collection('news').doc(article.id.toString());
-                        batch.set(docRef, article);
-                    });
-                    await batch.commit();
-                } catch (e) { console.error("Firebase save news failed:", e); }
-            }
-        },
-
-        saveMedia: async function() {
-            localStorage.setItem("adminMedia", JSON.stringify(app.state.media));
-            if (window.db) {
-                try {
-                    const batch = window.db.batch();
-                    app.state.media.forEach(item => {
-                        const docRef = window.db.collection('media').doc(item.id.toString());
-                        batch.set(docRef, item);
-                    });
-                    await batch.commit();
-                } catch (e) { console.error("Firebase save media failed:", e); }
-            }
-        },
-
         loadCollection: async function(collectionName, localKey) {
             if (window.db) {
                 try {
@@ -193,6 +141,11 @@ const app = {
                 }
             }
             return JSON.parse(localStorage.getItem(localKey)) || [];
+        },
+
+        getMergedMatches: async function(adminMatches) {
+            // This function is deprecated in favor of a direct Firebase read.
+            return adminMatches;
         },
 
         loadRosterPlayers: async function() {
@@ -225,8 +178,8 @@ const app = {
             document.querySelector('.btn-logout')?.addEventListener('click', () => app.auth.logout());
             document.getElementById("eventType")?.addEventListener('change', app.ui.toggleAssistField);
         },
-
-        handlePlayerFormSubmit: function(e) {
+        
+        handlePlayerFormSubmit: async function(e) {
             e.preventDefault();
             const id = document.getElementById("playerId").value || Date.now();
             const player = {
@@ -239,20 +192,32 @@ const app = {
                 goals:       Number(document.getElementById("playerGoals").value) || 0,
                 assists:     Number(document.getElementById("playerAssists").value) || 0
             };
+
+            if (window.db) {
+                try {
+                    await window.db.collection('players').doc(player.id.toString()).set(player, { merge: true });
+                } catch (err) {
+                    console.error("Firebase save player failed:", err);
+                    alert("Error saving player to database.");
+                    return;
+                }
+            }
+
             const idx = app.state.players.findIndex(p => p.id === player.id);
             if (idx > -1) app.state.players[idx] = player; else app.state.players.push(player);
             
-            app.data.savePlayers();
+            localStorage.setItem("adminPlayers", JSON.stringify(app.state.players));
             app.data.addOrUpdateRosterPlayer(player);
             e.target.reset();
             document.getElementById("playerId").value = "";
             app.ui.renderPlayers();
             app.ui.populatePlayerDropdown();
             app.ui.updateDashboard();
-        },
+        },        
 
-        handleMatchFormSubmit: function(e) {
+        handleMatchFormSubmit: async function(e) {
             e.preventDefault();
+            const matchId = document.getElementById("matchId").value || Date.now().toString();
             const match = {
                 id:        document.getElementById("matchId").value || Date.now(),
                 homeTeam:  document.getElementById("homeTeam").value,
@@ -271,6 +236,16 @@ const app = {
                 return;
             }
 
+            if (window.db) {
+                try {
+                    await window.db.collection('matches').doc(matchId).set(match);
+                } catch (err) {
+                    console.error("Firebase save match failed:", err);
+                    alert("Error saving match to database.");
+                    return;
+                }
+            }
+
             const idx = app.state.matches.findIndex(m => m.id == match.id);
             if (idx > -1) {
                 app.stats.revert(app.state.matches[idx]);
@@ -281,7 +256,7 @@ const app = {
 
             if (match.status === 'completed') { app.stats.update(match.events); }
 
-            app.data.saveMatches();
+            localStorage.setItem("adminMatches", JSON.stringify(app.state.matches));
             e.target.reset();
             app.state.currentEvents = [];
             app.ui.renderEventList();
@@ -289,7 +264,7 @@ const app = {
             app.ui.updateDashboard();
         },
 
-        handleNewsFormSubmit: function(e) {
+        handleNewsFormSubmit: async function(e) {
             e.preventDefault();
             const article = {
                 id: document.getElementById("articleId").value || Date.now().toString(),
@@ -302,18 +277,28 @@ const app = {
                 date: new Date().toISOString()
             };
 
+            if (window.db) {
+                try {
+                    await window.db.collection('news').doc(article.id).set(article);
+                } catch (err) {
+                    console.error("Firebase save news failed:", err);
+                    alert("Error saving article to database.");
+                    return;
+                }
+            }
+
             const idx = app.state.news.findIndex(a => a.id == article.id);
             if (idx > -1) {
                 app.state.news[idx] = article;
             } else {
                 app.state.news.unshift(article);
             }
-            app.data.saveNews();
+            localStorage.setItem("adminNews", JSON.stringify(app.state.news));
             e.target.reset();
             app.ui.renderNews();
         },
 
-        handleMediaFormSubmit: function(e) {
+        handleMediaFormSubmit: async function(e) {
             e.preventDefault();
             const mediaItem = {
                 id: document.getElementById("mediaId").value || Date.now().toString(),
@@ -323,13 +308,23 @@ const app = {
                 title: document.getElementById("mediaTitle").value,
             };
 
+            if (window.db) {
+                try {
+                    await window.db.collection('media').doc(mediaItem.id).set(mediaItem);
+                } catch (err) {
+                    console.error("Firebase save media failed:", err);
+                    alert("Error saving media to database.");
+                    return;
+                }
+            }
+
             const idx = app.state.media.findIndex(m => m.id == mediaItem.id);
             if (idx > -1) {
                 app.state.media[idx] = mediaItem;
             } else {
                 app.state.media.unshift(mediaItem);
             }
-            app.data.saveMedia();
+            localStorage.setItem("adminMedia", JSON.stringify(app.state.media));
             e.target.reset();
             app.ui.renderMedia();
         },
@@ -505,7 +500,7 @@ const app = {
             }).join("");
         },
 
-        deleteMatch: function(id) {
+        deleteMatch: async function(id) {
             if (!confirm('Are you sure you want to delete this match? This will also revert any associated goals and assists from the players roster.')) return;
             const idx = app.state.matches.findIndex(m => m.id == id);
             if (idx > -1) {
@@ -514,19 +509,18 @@ const app = {
                     app.stats.revert(match);
                 }
 
-                // Track explicitly deleted base match IDs so they never reload from the static JSON
-                try {
-                    const deletedIds = JSON.parse(localStorage.getItem('deletedBaseMatchIds') || '[]');
-                    if (!deletedIds.includes(Number(match.id))) {
-                        deletedIds.push(Number(match.id));
-                        localStorage.setItem('deletedBaseMatchIds', JSON.stringify(deletedIds));
+                if (window.db) {
+                    try {
+                        await window.db.collection('matches').doc(id.toString()).delete();
+                    } catch(err) {
+                        console.error("Firebase delete match failed:", err);
+                        alert("Error deleting match from database.");
+                        return;
                     }
-                } catch (e) {
-                    console.error("Failed to track deleted match ID:", e);
                 }
 
                 app.state.matches.splice(idx, 1);
-                app.data.saveMatches();
+                localStorage.setItem("adminMatches", JSON.stringify(app.state.matches));
                 this.renderMatches();
                 this.updateDashboard();
             }
@@ -863,38 +857,42 @@ const app = {
             this.switchTab('players');
         },
 
-        deletePlayer: function(id) {
+        deletePlayer: async function(id) {
             if (!confirm('Are you sure you want to delete this player?')) return;
 
             const index = app.state.players.findIndex(p => p.id === id);
             if (index > -1) {
-                const player = app.state.players[index];
-                
-                // Track deleted IDs in localStorage to ensure they don't reappear on reload
-                try {
-                    const deletedIds = JSON.parse(localStorage.getItem('deletedBasePlayerIds') || '[]');
-                    if (!deletedIds.includes(player.id)) {
-                        deletedIds.push(player.id);
-                        localStorage.setItem('deletedBasePlayerIds', JSON.stringify(deletedIds));
+                if (window.db) {
+                    try {
+                        await window.db.collection('players').doc(id.toString()).delete();
+                    } catch(err) {
+                        console.error("Firebase delete player failed:", err);
+                        alert("Error deleting player from database.");
+                        return;
                     }
-                } catch (e) {
-                    console.error("Failed to track deleted player ID:", e);
                 }
 
                 app.state.players.splice(index, 1);
-                app.data.savePlayers();
+                localStorage.setItem("adminPlayers", JSON.stringify(app.state.players));
                 app.ui.renderPlayers();
                 app.ui.updateDashboard();
             }
         },
 
-        deleteNews: function(id) {
+        deleteNews: async function(id) {
             if (!confirm('Are you sure you want to delete this article?')) return;
 
             const index = app.state.news.findIndex(a => a.id == id);
             if (index > -1) {
+                if (window.db) {
+                    try {
+                        await window.db.collection('news').doc(id.toString()).delete();
+                    } catch(err) {
+                        console.error("Firebase delete news failed:", err);
+                    }
+                }
                 app.state.news.splice(index, 1);
-                app.data.saveNews();
+                localStorage.setItem("adminNews", JSON.stringify(app.state.news));
                 app.ui.renderNews();
             }
         },
@@ -943,13 +941,20 @@ const app = {
             this.switchTab('media');
         },
 
-        deleteMedia: function(id) {
+        deleteMedia: async function(id) {
             if (!confirm('Are you sure you want to delete this media item?')) return;
 
             const index = app.state.media.findIndex(m => m.id == id);
             if (index > -1) {
+                if (window.db) {
+                    try {
+                        await window.db.collection('media').doc(id.toString()).delete();
+                    } catch(err) {
+                        console.error("Firebase delete media failed:", err);
+                    }
+                }
                 app.state.media.splice(index, 1);
-                app.data.saveMedia();
+                localStorage.setItem("adminMedia", JSON.stringify(app.state.media));
                 app.ui.renderMedia();
             }
         },
@@ -1003,7 +1008,7 @@ const app = {
                     p.assists = Math.max(0, p.assists - 1);
                 }
             });
-            app.data.savePlayers();
+            localStorage.setItem("adminPlayers", JSON.stringify(app.state.players));
         }
     }
 };

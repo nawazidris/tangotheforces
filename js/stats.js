@@ -16,14 +16,9 @@ const fetchPlayerStats = async () => {
         }
 
         if (data.length === 0) {
-            // Fallback to local storage admin players first
-            const adminStored = JSON.parse(localStorage.getItem('adminPlayers') || '[]');
-            if (adminStored.length > 0) {
-                data = adminStored;
-            } else {
-                const playersResponse = await fetch('data/players.json');
-                data = await playersResponse.json();
-            }
+            console.warn("Firebase fetch failed, falling back to local data.");
+            const playersResponse = await fetch('data/players.json');
+            data = await playersResponse.json();
         }
 
         const seasonMatches = await loadSeasonMatches();
@@ -828,13 +823,8 @@ const loadSeasonMatches = async () => {
         }
 
         if (matches.length === 0) {
-            const adminStored = JSON.parse(localStorage.getItem('adminMatches') || '[]');
-            if (adminStored.length > 0) {
-                matches = adminStored;
-            } else {
-                const response = await fetch('data/matches.json');
-                if (response.ok) matches = await response.json();
-            }
+            const response = await fetch('data/matches.json');
+            if (response.ok) matches = await response.json();
         }
 
         const tangoMatches =
