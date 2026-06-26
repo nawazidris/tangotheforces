@@ -103,7 +103,7 @@
         "id": 11,
         "name": "Tafadzwa Magande",
         "position": "Forward",
-        "image": "images/tife.jpg",
+        "image": "https://placehold.co/95x95?text=KC",
         "stats": {
             "gamesPlayed": 2,
             "goals": 1,

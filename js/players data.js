@@ -10,8 +10,8 @@ const basePlayers = [
     { id: 3,  name: "Abel Makuvise",           nickname: "Svari",    position: "Forward",    number: 11, goals: 0, assists: 0,  playerImage: "images/svari1.jpg" },
     { id: 4,  name: "Vincent Mukumba",         nickname: "Vincho",   position: "Forward",    number: 7,  goals: 0, assists: 0,  playerImage: "images/vincho.jpg" },
     { id: 5,  name: "Shephard Mukarati",       nickname: "PSG",      position: "Forward",    number: 16, goals: 0, assists: 0,  playerImage: "images/psg.jpg" },
-    { id: 6,  name: "Simbarashe Borerwa",      nickname: "Jah Bhora",position: "Forward",    number: 17, goals: 0, assists: 0,  playerImage: "images/tife.jpg" },
-    { id: 6,  name: "Tafadzwa Magande",      nickname: "Tife",position: "Forward",    number: 18, goals: 0, assists: 0,  playerImage: "images/jahbhora.jpg" },
+    { id: 6,  name: "Simbarashe Borerwa",      nickname: "Jah Bhora",position: "Forward",    number: 17, goals: 0, assists: 0,  playerImage: "images/jahbhora.jpg" },
+    { id: 28, name: "Tafadzwa Magande",        nickname: "Tife",     position: "Forward",    number: 18, goals: 0, assists: 0,  playerImage: "images/tife.jpg" },
     { id: 7,  name: "Godfrey Rwodzi",          nickname: "Goda",     position: "Forward",    number: 19, goals: 0, assists: 0,  playerImage: "images/goda.jpg" },
     // Midfielders
     { id: 8,  name: "Alious Jamela",           nickname: "Bambo",    position: "Midfielder", number: 8,  goals: 0, assists: 0, playerImage: "images/jamela.jpg" },
