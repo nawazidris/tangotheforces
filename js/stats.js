@@ -2,6 +2,9 @@ const CLUB_NAME = 'Tango FC';
 const SEASON_START = '2026-03-21';
 
 let statsPlayers = [];
+let filteredPlayers = [];
+let currentPage = 1;
+const rowsPerPage = 5;
 
 const fetchPlayerStats = async () => {
     try {
@@ -23,6 +26,7 @@ const fetchPlayerStats = async () => {
 
         const seasonMatches = await loadSeasonMatches();
         statsPlayers = data;
+        filteredPlayers = [...statsPlayers]; // Initialize filtered list
 
         const leagueSummary = await getLeagueSummary();
 
@@ -32,7 +36,7 @@ const fetchPlayerStats = async () => {
 
         displayTopScorers(data);
 
-        renderGoalsAssistsChart(data);
+        renderGoalsAssistsChart(filteredPlayers);
 
         renderStatsTable(data);
 
@@ -58,16 +62,27 @@ const fetchPlayerStats = async () => {
    PLAYER TABLE
 ========================================= */
 
-const renderStatsTable = (players) => {
+const renderStatsTable = () => {
 
     const statsBody =
         document.querySelector('#stats-table tbody');
 
     if (!statsBody) return;
 
+    // Paginate the filtered players
+    const startIndex = (currentPage - 1) * rowsPerPage;
+    const endIndex = startIndex + rowsPerPage;
+    const paginatedPlayers = filteredPlayers.slice(startIndex, endIndex);
+
     statsBody.innerHTML = '';
 
-    players.forEach(player => {
+    if (paginatedPlayers.length === 0) {
+        statsBody.innerHTML = `<tr><td colspan="6" class="loading-cell"><p>No players match the current filters.</p></td></tr>`;
+        setupPagination(); // Still setup pagination to show 0/0
+        return;
+    }
+
+    paginatedPlayers.forEach(player => {
 
         // Support both nested stats object (stats.goals) and flat fields (player.goals)
         const stats       = player.stats || {};
@@ -100,6 +115,55 @@ const renderStatsTable = (players) => {
         statsBody.appendChild(row);
 
     });
+
+    setupPagination();
+};
+
+const setupPagination = () => {
+    const paginationContainer = document.getElementById('stats-pagination');
+    const paginationInfo = document.getElementById('pagination-info');
+    if (!paginationContainer || !paginationInfo) return;
+
+    const totalPlayers = filteredPlayers.length;
+    const totalPages = Math.ceil(totalPlayers / rowsPerPage);
+
+    const startPlayer = totalPlayers > 0 ? (currentPage - 1) * rowsPerPage + 1 : 0;
+    const endPlayer = Math.min(currentPage * rowsPerPage, totalPlayers);
+    paginationInfo.textContent = `${startPlayer}-${endPlayer} of ${totalPlayers} players`;
+
+    paginationContainer.innerHTML = '';
+
+    if (totalPages <= 1) return;
+
+    // Previous Button
+    const prevButton = document.createElement('button');
+    prevButton.innerHTML = `<i class="fa-solid fa-chevron-left"></i>`;
+    prevButton.disabled = currentPage === 1;
+    prevButton.addEventListener('click', () => {
+        if (currentPage > 1) {
+            currentPage--;
+            renderStatsTable();
+        }
+    });
+    paginationContainer.appendChild(prevButton);
+
+    // Page indicator
+    const pageIndicator = document.createElement('span');
+    pageIndicator.textContent = `Page ${currentPage} of ${totalPages}`;
+    pageIndicator.className = 'page-indicator';
+    paginationContainer.appendChild(pageIndicator);
+
+    // Next Button
+    const nextButton = document.createElement('button');
+    nextButton.innerHTML = `<i class="fa-solid fa-chevron-right"></i>`;
+    nextButton.disabled = currentPage === totalPages;
+    nextButton.addEventListener('click', () => {
+        if (currentPage < totalPages) {
+            currentPage++;
+            renderStatsTable();
+        }
+    });
+    paginationContainer.appendChild(nextButton);
 };
 
 
@@ -366,7 +430,7 @@ const applyStatFilters = () => {
             'positionFilter'
         )?.value || '';
 
-    const filtered = statsPlayers.filter(player => {
+    filteredPlayers = statsPlayers.filter(player => {
 
         const name =
             player.name?.toLowerCase() || '';
@@ -397,7 +461,9 @@ const applyStatFilters = () => {
         );
     });
 
-    renderStatsTable(filtered);
+    currentPage = 1; // Reset to first page on filter change
+    renderStatsTable();
+    renderGoalsAssistsChart(filteredPlayers);
 };
 
 
@@ -424,6 +490,7 @@ const displayTopScorers = (players) => {
             if (goalsB !== goalsA) return goalsB - goalsA;
             return assistsB - assistsA;
         });
+        // .slice(0, 5); // Example: uncomment to show only top 5
 
     if (topScorers.length === 0) {
 
