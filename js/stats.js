@@ -420,24 +420,20 @@ const displayTopScorers = (players) => {
 
     if (!container) return;
 
-    const topScorers = [...players]
+    const topScorers = [...players].filter(p => (p.stats?.goals ?? p.goals ?? 0) > 0)
         .sort((a, b) => {
-
-            return (
-                (b.stats?.goals || 0) -
-                (a.stats?.goals || 0)
-            ) ||
-            (
-                (b.stats?.assists || 0) -
-                (a.stats?.assists || 0)
-            );
-
+            const goalsA = a.stats?.goals ?? a.goals ?? 0;
+            const goalsB = b.stats?.goals ?? b.goals ?? 0;
+            const assistsA = a.stats?.assists ?? a.assists ?? 0;
+            const assistsB = b.stats?.assists ?? b.assists ?? 0;
+            if (goalsB !== goalsA) return goalsB - goalsA;
+            return assistsB - assistsA;
         });
 
     if (topScorers.length === 0) {
 
         container.innerHTML =
-            '<p>No player stats available.</p>';
+            '<p style="padding: 20px 0; text-align: center; color: var(--muted);">No players have scored yet this season.</p>';
 
         return;
     }

@@ -89,6 +89,39 @@
         }
     },
     {
+        "id": 10,
+        "name": "Shule",
+        "position": "Midfielder",
+        "image": "images/shule.jpg",
+        "stats": {
+            "gamesPlayed": 8,
+            "goals": 1,
+            "assists": 1
+        }
+    },
+    {
+        "id": 11,
+        "name": "Tafadzwa Magande",
+        "position": "Forward",
+        "image": "images/tife.jpg",
+        "stats": {
+            "gamesPlayed": 2,
+            "goals": 1,
+            "assists": 1
+        }
+    },
+    {
+        "id": 12,
+        "name": "Maluwa",
+        "position": "Defender",
+        "image": "images/maluwa.jpg",
+        "stats": {
+            "gamesPlayed": 8,
+            "goals": 1,
+            "assists": 0
+        }
+    },
+    {
         "id": 9,
         "name": "Svari",
         "position": "Forward",
