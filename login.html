@@ -27,18 +27,18 @@
             <p>Admin Portal</p>
         </div>
 
-        <form id="loginForm" autocomplete="off">
-
+        <form id="login-form" autocomplete="off">
+            <div id="login-error" class="error-msg" aria-live="polite"></div>
             <div class="form-group">
-                <label for="username">Username</label>
+                <label for="email">Email</label>
                 <div class="input-wrap">
                     <i class="fa-solid fa-user"></i>
                     <input
-                        type="text"
-                        id="username"
-                        placeholder="Enter username"
+                        type="email"
+                        id="email"
+                        placeholder="Enter your email"
                         required
-                        autocomplete="username"
+                        autocomplete="email"
                     >
                 </div>
             </div>
@@ -60,8 +60,6 @@
                 </div>
             </div>
 
-            <p id="error" class="error-msg" aria-live="polite"></p>
-
             <button type="submit" class="btn-login" id="loginBtn">
                 <span id="btnText">Sign In</span>
                 <i class="fa-solid fa-arrow-right" id="btnIcon"></i>
@@ -76,64 +74,16 @@
 
     </div>
 
-    <script>
-        // Password toggle
-        document.getElementById('togglePw').addEventListener('click', () => {
-            const input = document.getElementById('password');
-            const icon  = document.getElementById('togglePwIcon');
-            const isHidden = input.type === 'password';
-            input.type = isHidden ? 'text' : 'password';
-            icon.className = isHidden ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye';
-        });
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 
-        document.getElementById('loginForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            const btn     = document.getElementById('loginBtn');
-            const btnText = document.getElementById('btnText');
-            const btnIcon = document.getElementById('btnIcon');
-            const error   = document.getElementById('error');
+    <!-- Your unique Firebase configuration -->
+    <script src="js/firebase-init.js"></script>
 
-            // Loading state
-            btn.classList.add('loading');
-            btnText.textContent = 'Signing in…';
-            btnIcon.className = 'fa-solid fa-circle-notch fa-spin';
-            error.textContent = '';
-
-            const user = document.getElementById('username').value;
-            const pass = document.getElementById('password').value;
-
-            // In a real app, this would be a server call. For this demo, we use a local user map.
-            const users = {
-                'admin': { pass: 'tango123', role: 'Admin', name: 'Admin User' },
-                'coach': { pass: 'coachpass', role: 'Coach', name: 'Coach Pride' },
-                'logistics': { pass: 'logisticspass', role: 'Logistics', name: 'Milton Bosha' }
-            };
-
-            const handleLogin = (username, password) => {
-                const userData = users[username];
-                if (userData && userData.pass === password) {
-                    return { success: true, user: { name: userData.name, role: userData.role } };
-                }
-                return { success: false };
-            };
-
-            const loginResult = await handleLogin(user, pass);
-
-            if (loginResult.success) {
-                // Store the entire user object in sessionStorage for the app to use
-                sessionStorage.setItem('tangoUser', JSON.stringify(loginResult.user));
-                btnText.textContent = 'Redirecting…';
-                window.location.href = 'admin.html';
-            } else {
-                btn.classList.remove('loading');
-                btnText.textContent = 'Sign In';
-                btnIcon.className = 'fa-solid fa-arrow-right';
-                btn.classList.add('shake');
-                setTimeout(() => btn.classList.remove('shake'), 500);
-                error.textContent = 'Invalid username or password.';
-            }
-        });
-    </script>
+    <!-- The new login script -->
+    <script src="js/login.js"></script>
 
 </body>
 </html>

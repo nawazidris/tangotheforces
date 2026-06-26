@@ -10,8 +10,11 @@ const app = {
     },
 
     init: async function() {
-        if (!this.auth.check()) return;
-        await this.auth.check();
+        const isAuthenticated = await this.auth.check();
+        // If check() returns true, it means we are authenticated but still on the login page.
+        // We must stop execution here to allow the redirect to admin.html to complete.
+        if (isAuthenticated) return;
+
         await this.data.loadAll();
         this.events.bind();
         this.ui.applyRolePermissions();
@@ -25,10 +28,6 @@ const app = {
     // =================================================================
     auth: {
         check: function() {
-            const userJson = sessionStorage.getItem('tangoUser');
-            if (!userJson) {
-                window.location.href = "login.html";
-                return false;
             return new Promise((resolve) => {
                 // Use onAuthStateChanged for real-time auth state monitoring
                 firebase.auth().onAuthStateChanged(async (user) => {
@@ -52,8 +51,10 @@ const app = {
                                 // If user is on login page, redirect them to admin dashboard
                                 if (window.location.pathname.includes('login.html')) {
                                     window.location.href = 'admin.html';
+                                    resolve(true); // Resolve with true to indicate a redirect is happening
+                                    return;
                                 }
-                                resolve(); // Resolve the promise to continue app initialization
+                                resolve(false); // Resolve with false to continue app initialization on other pages
                             } else {
                                 throw new Error("User profile not found in database.");
                             }
@@ -66,6 +67,7 @@ const app = {
                         if (!window.location.pathname.includes('login.html')) {
                             window.location.href = "login.html";
                         }
+                        // On the login page and not authenticated, do nothing and let the user log in.
                     }
                 });
             });
@@ -77,16 +79,6 @@ const app = {
             } catch (error) {
                 console.error("Logout failed:", error);
             }
-            app.state.currentUser = JSON.parse(userJson);
-            const nameEl = document.getElementById('sessionUserName');
-            const roleEl = document.getElementById('sessionUserRole');
-            if (nameEl) nameEl.textContent = app.state.currentUser.name;
-            if (roleEl) roleEl.textContent = `Role: ${app.state.currentUser.role}`;
-            return true;
-        },
-        logout: function() {
-            sessionStorage.clear();
-            window.location.href = "index.html"; // Redirects to site home page
         }
     },
 
@@ -206,7 +198,6 @@ const app = {
             const idx = app.state.players.findIndex(p => p.id === player.id);
             if (idx > -1) app.state.players[idx] = player; else app.state.players.push(player);
             
-            localStorage.setItem("adminPlayers", JSON.stringify(app.state.players));
             app.data.addOrUpdateRosterPlayer(player);
             e.target.reset();
             document.getElementById("playerId").value = "";
@@ -256,7 +247,6 @@ const app = {
 
             if (match.status === 'completed') { app.stats.update(match.events); }
 
-            localStorage.setItem("adminMatches", JSON.stringify(app.state.matches));
             e.target.reset();
             app.state.currentEvents = [];
             app.ui.renderEventList();
@@ -293,7 +283,6 @@ const app = {
             } else {
                 app.state.news.unshift(article);
             }
-            localStorage.setItem("adminNews", JSON.stringify(app.state.news));
             e.target.reset();
             app.ui.renderNews();
         },
@@ -324,7 +313,6 @@ const app = {
             } else {
                 app.state.media.unshift(mediaItem);
             }
-            localStorage.setItem("adminMedia", JSON.stringify(app.state.media));
             e.target.reset();
             app.ui.renderMedia();
         },
@@ -520,7 +508,6 @@ const app = {
                 }
 
                 app.state.matches.splice(idx, 1);
-                localStorage.setItem("adminMatches", JSON.stringify(app.state.matches));
                 this.renderMatches();
                 this.updateDashboard();
             }
@@ -873,7 +860,6 @@ const app = {
                 }
 
                 app.state.players.splice(index, 1);
-                localStorage.setItem("adminPlayers", JSON.stringify(app.state.players));
                 app.ui.renderPlayers();
                 app.ui.updateDashboard();
             }
@@ -892,7 +878,6 @@ const app = {
                     }
                 }
                 app.state.news.splice(index, 1);
-                localStorage.setItem("adminNews", JSON.stringify(app.state.news));
                 app.ui.renderNews();
             }
         },
@@ -954,7 +939,6 @@ const app = {
                     }
                 }
                 app.state.media.splice(index, 1);
-                localStorage.setItem("adminMedia", JSON.stringify(app.state.media));
                 app.ui.renderMedia();
             }
         },
@@ -990,7 +974,6 @@ const app = {
                     if (assistant) assistant.assists++;
                 }
             });
-            app.data.savePlayers();
         },
 
         revert: function(match) {
@@ -1008,7 +991,6 @@ const app = {
                     p.assists = Math.max(0, p.assists - 1);
                 }
             });
-            localStorage.setItem("adminPlayers", JSON.stringify(app.state.players));
         }
     }
 };
