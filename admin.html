@@ -148,8 +148,8 @@
                     <h3 class="form-card-title">
                         <i class="fa-solid fa-user-plus"></i> Add / Edit Player
                     </h3>
-                    <div id="playerFormReadOnlyMsg" class="read-only-banner" style="display: none;">
-                        <i class="fa-solid fa-lock"></i> Your role (Coach) has read-only access. Player profiles are managed by Admin or Logistics.
+                    <div id="ceoReadOnlyMsg" class="read-only-banner" style="display: none;">
+                        <i class="fa-solid fa-eye"></i> Your role (CEO) has view-only access.
                     </div>
                     <form id="playerForm" class="admin-form" data-permission="Admin,Logistics">
                         <input type="hidden" id="playerId">
@@ -190,7 +190,7 @@
                         </div>
 
                         <div class="field-full form-actions">
-                            <button type="submit" class="btn-primary" data-permission="Admin,Logistics">
+                            <button type="submit" class="btn-primary" data-permission="Admin,Coach">
                                 <i class="fa-solid fa-floppy-disk"></i> Save Player
                             </button>
                         </div>
@@ -214,7 +214,7 @@
                     <h3 class="form-card-title">
                         <i class="fa-solid fa-calendar-plus"></i> Add / Edit Match
                     </h3>
-                    <form id="matchForm" class="admin-form">
+                    <form id="matchForm" class="admin-form" data-permission="Admin,Coach">
                         <input type="hidden" id="matchId">
 
                         <div class="field-group">
@@ -296,7 +296,7 @@
                         </div>
 
                         <div class="field-full form-actions">
-                            <button type="submit" class="btn-primary">
+                            <button type="submit" class="btn-primary" data-permission="Admin,Coach">
                                 <i class="fa-solid fa-floppy-disk"></i> Save Match
                             </button>
                         </div>
@@ -325,10 +325,10 @@
                     </p>
 
                     <div style="margin-bottom: 20px; display: flex; gap: 10px; flex-wrap: wrap;">
-                        <button type="button" class="btn-edit" onclick="app.ui.addStandingsRow()" style="background: rgba(16,185,129,0.12); color: var(--green); border-color: rgba(16,185,129,0.2);">
+                        <button type="button" class="btn-edit" onclick="app.ui.addStandingsRow()" style="background: rgba(16,185,129,0.12); color: var(--green); border-color: rgba(16,185,129,0.2);" data-permission="Admin,Coach">
                             <i class="fa-solid fa-plus"></i> Add New Team Row
                         </button>
-                        <button type="button" class="btn-primary" onclick="app.ui.saveStandingsEditor()">
+                        <button type="button" class="btn-primary" onclick="app.ui.saveStandingsEditor()" data-permission="Admin,Coach">
                             <i class="fa-solid fa-floppy-disk"></i> Save Current Table
                         </button>
                     </div>
@@ -363,7 +363,7 @@
                         Alternatively, upload a structured <code>.json</code> or structured text table file below.
                     </p>
 
-                    <label class="file-upload-btn">
+                    <label class="file-upload-btn" data-permission="Admin,Coach">
                         <i class="fa-solid fa-file-arrow-up"></i>
                         Choose File
                         <input type="file" id="standingsFileInput" accept=".json,.txt,.csv">
@@ -384,7 +384,7 @@
                     <h3 class="form-card-title">
                         <i class="fa-solid fa-pen-to-square"></i> Add / Edit Article
                     </h3>
-                    <form id="newsForm" class="admin-form">
+                    <form id="newsForm" class="admin-form" data-permission="Admin,Logistics">
                         <input type="hidden" id="articleId">
 
                         <div class="field-group field-full">
@@ -418,7 +418,7 @@
                         </div>
 
                         <div class="field-full form-actions">
-                            <button type="submit" class="btn-primary">
+                            <button type="submit" class="btn-primary" data-permission="Admin,Logistics">
                                 <i class="fa-solid fa-floppy-disk"></i> Save Article
                             </button>
                         </div>
@@ -442,7 +442,7 @@
                     <h3 class="form-card-title">
                         <i class="fa-solid fa-plus-square"></i> Add / Edit Media
                     </h3>
-                    <form id="mediaForm" class="admin-form">
+                    <form id="mediaForm" class="admin-form" data-permission="Admin,Logistics">
                         <input type="hidden" id="mediaId">
 
                         <div class="field-group">
@@ -469,7 +469,7 @@
                         </div>
 
                         <div class="field-full form-actions">
-                            <button type="submit" class="btn-primary">
+                            <button type="submit" class="btn-primary" data-permission="Admin,Logistics">
                                 <i class="fa-solid fa-floppy-disk"></i> Save Media
                             </button>
                         </div>

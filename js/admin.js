@@ -114,17 +114,8 @@ const app = {
                 mergedPlayers = players;
             }
 
-            // Asynchronously merge base matches from matches.json with overrides and deletions
-            let mergedMatches = [];
-            try {
-                mergedMatches = await this.getMergedMatches(matches);
-            } catch (e) {
-                console.warn("Base matches merge failed, fallback to local matches:", e);
-                mergedMatches = matches;
-            }
-
             app.state.players = mergedPlayers;
-            app.state.matches = mergedMatches;
+            app.state.matches = matches;
             app.state.news = news;
             app.state.media = media;
             await this.loadRosterPlayers();
@@ -385,17 +376,40 @@ const app = {
     // UI & RENDER MODULE
     // =================================================================
     ui: {
+        userHasPermission: function(requiredRoles) {
+            const userRole = app.state.currentUser?.role;
+            if (!userRole) return false;
+            if (requiredRoles.includes(userRole)) {
+                return true;
+            }
+            return false;
+        },
+
         applyRolePermissions: function() {
             const role = app.state.currentUser?.role;
-            if (role === 'Coach') {
-                const readonlyMsg = document.getElementById('playerFormReadOnlyMsg');
-                if (readonlyMsg) readonlyMsg.style.display = 'block';
-                const playerForm = document.getElementById('playerForm');
-                if (playerForm) {
-                    const inputs = playerForm.querySelectorAll('input, select, textarea, button');
-                    inputs.forEach(el => el.setAttribute('disabled', 'true'));
+
+            document.querySelectorAll('[data-permission]').forEach(el => {
+                const requiredRoles = el.getAttribute('data-permission').split(',');
+                if (!this.userHasPermission(requiredRoles)) {
+                    el.setAttribute('disabled', 'true');
+                    el.style.pointerEvents = 'none';
+                    el.style.opacity = '0.6';
                 }
+            });
+
+            // Special handling for CEO (view-only)
+            if (role === 'CEO') {
+                document.querySelectorAll('.admin-form button[type="submit"]').forEach(btn => btn.style.display = 'none');
+                document.querySelectorAll('.admin-form input, .admin-form select, .admin-form textarea').forEach(input => input.setAttribute('disabled', 'true'));
+                const banner = document.getElementById('ceoReadOnlyMsg');
+                if(banner) banner.style.display = 'block';
             }
+
+            // Re-render lists to show/hide action buttons based on role
+            this.renderPlayers();
+            this.renderMatches();
+            this.renderNews();
+            this.renderMedia();
         },
 
         renderAll: function() {
@@ -411,9 +425,8 @@ const app = {
             if (!container) return;
 
             const players = app.state.players;
-            const role = app.state.currentUser?.role;
-            const canEdit   = role === 'Admin' || role === 'Logistics';
-            const canDelete = role === 'Admin';
+            const canEdit = this.userHasPermission(['Admin', 'Coach']);
+            const canDelete = this.userHasPermission(['Admin']);
 
             const positionOrder = { Forward: 1, Midfielder: 2, Defender: 3, Goalkeeper: 4 };
             const sorted = [...players].sort((a, b) =>
@@ -469,6 +482,9 @@ const app = {
         renderMatches: function() {
             const container = document.getElementById("matchesList");
             if (!container) return;
+            const canEdit = this.userHasPermission(['Admin', 'Coach']);
+            const canDelete = this.userHasPermission(['Admin']);
+
             if (app.state.matches.length === 0) {
                 container.innerHTML = `<p style="color:var(--muted);font-size:0.9rem;padding:16px 0;">No matches registered.</p>`;
                 return;
@@ -482,20 +498,26 @@ const app = {
                             <strong>${m.homeTeam} vs ${m.awayTeam}</strong>
                             <span>${m.date || 'No date'} · ${m.venue || 'No venue'} · <span style="color:${colour};">${score}</span></span>
                         </div>
-                        <div class="admin-list-actions">
-                            <button class="btn-edit" onclick="window.app.ui.editMatch(${m.id})">
-                                <i class="fa-solid fa-pen"></i> Edit
-                            </button>
-                            <button class="btn-delete" onclick="window.app.ui.deleteMatch(${m.id})">
-                                <i class="fa-solid fa-trash"></i> Delete
-                            </button>
-                        </div>
+                        ${ (canEdit || canDelete) ? `
+                            <div class="admin-list-actions">
+                                ${canEdit ? `<button class="btn-edit" onclick="window.app.ui.editMatch(${m.id})">
+                                    <i class="fa-solid fa-pen"></i> Edit
+                                </button>` : ''}
+                                ${canDelete ? `<button class="btn-delete" onclick="window.app.ui.deleteMatch(${m.id})">
+                                    <i class="fa-solid fa-trash"></i> Delete
+                                </button>` : ''}
+                            </div>
+                        ` : ''}
                     </div>
                 `;
             }).join("");
         },
 
         deleteMatch: async function(id) {
+            if (!this.userHasPermission(['Admin'])) {
+                alert("You do not have permission to delete matches.");
+                return;
+            }
             if (!confirm('Are you sure you want to delete this match? This will also revert any associated goals and assists from the players roster.')) return;
             const idx = app.state.matches.findIndex(m => m.id == id);
             if (idx > -1) {
@@ -523,6 +545,9 @@ const app = {
         renderNews: function() {
             const container = document.getElementById("newsList");
             if (!container) return;
+            const canEdit = this.userHasPermission(['Admin', 'Logistics']);
+            const canDelete = this.userHasPermission(['Admin']);
+
             if (app.state.news.length === 0) {
                 container.innerHTML = `<p style="color:var(--muted);font-size:0.9rem;padding:16px 0;">No news articles published yet.</p>`;
                 return;
@@ -535,16 +560,16 @@ const app = {
                             <strong>${article.title}</strong>
                             <span>Published on ${date} · Tag: ${article.tag || 'None'}</span>
                         </div>
-                        <div class="admin-list-actions">
-                            <button class="btn-edit" onclick="window.app.ui.editNews('${article.id}')">
-                                <i class="fa-solid fa-pen"></i> Edit
-                            </button>
-                            ${app.state.currentUser?.role === 'Admin' ? `
-                            <button class="btn-delete" onclick="window.app.ui.deleteNews('${article.id}')">
-                                <i class="fa-solid fa-trash"></i> Delete
-                            </button>
-                            ` : ''}
-                        </div>
+                        ${ (canEdit || canDelete) ? `
+                            <div class="admin-list-actions">
+                                ${canEdit ? `<button class="btn-edit" onclick="window.app.ui.editNews('${article.id}')">
+                                    <i class="fa-solid fa-pen"></i> Edit
+                                </button>` : ''}
+                                ${canDelete ? `<button class="btn-delete" onclick="window.app.ui.deleteNews('${article.id}')">
+                                    <i class="fa-solid fa-trash"></i> Delete
+                                </button>` : ''}
+                            </div>
+                        ` : ''}
                     </div>
                 `;
             }).join("");
@@ -553,6 +578,9 @@ const app = {
         renderMedia: function() {
             const container = document.getElementById("mediaList");
             if (!container) return;
+            const canEdit = this.userHasPermission(['Admin', 'Logistics']);
+            const canDelete = this.userHasPermission(['Admin']);
+
             if (app.state.media.length === 0) {
                 container.innerHTML = `<p style="color:var(--muted);font-size:0.9rem;padding:16px 0;">No media assets added yet.</p>`;
                 return;
@@ -575,16 +603,16 @@ const app = {
                                 <span>Type: ${item.type} · Category: ${item.category || 'None'}</span>
                             </div>
                         </div>
-                        <div class="admin-list-actions">
-                            <button class="btn-edit" onclick="window.app.ui.editMedia('${item.id}')">
-                                <i class="fa-solid fa-pen"></i> Edit
-                            </button>
-                            ${app.state.currentUser?.role === 'Admin' ? `
-                            <button class="btn-delete" onclick="window.app.ui.deleteMedia('${item.id}')">
-                                <i class="fa-solid fa-trash"></i> Delete
-                            </button>
-                            ` : ''}
-                        </div>
+                        ${ (canEdit || canDelete) ? `
+                            <div class="admin-list-actions">
+                                ${canEdit ? `<button class="btn-edit" onclick="window.app.ui.editMedia('${item.id}')">
+                                    <i class="fa-solid fa-pen"></i> Edit
+                                </button>` : ''}
+                                ${canDelete ? `<button class="btn-delete" onclick="window.app.ui.deleteMedia('${item.id}')">
+                                    <i class="fa-solid fa-trash"></i> Delete
+                                </button>` : ''}
+                            </div>
+                        ` : ''}
                     </div>
                 `;
             }).join("");
@@ -852,6 +880,10 @@ const app = {
         },
 
         deletePlayer: async function(id) {
+            if (!this.userHasPermission(['Admin'])) {
+                alert("You do not have permission to delete players.");
+                return;
+            }
             if (!confirm('Are you sure you want to delete this player?')) return;
 
             const index = app.state.players.findIndex(p => p.id === id);
@@ -873,6 +905,10 @@ const app = {
         },
 
         deleteNews: async function(id) {
+            if (!this.userHasPermission(['Admin'])) {
+                alert("You do not have permission to delete articles.");
+                return;
+            }
             if (!confirm('Are you sure you want to delete this article?')) return;
 
             const index = app.state.news.findIndex(a => a.id == id);
@@ -934,6 +970,10 @@ const app = {
         },
 
         deleteMedia: async function(id) {
+            if (!this.userHasPermission(['Admin'])) {
+                alert("You do not have permission to delete media.");
+                return;
+            }
             if (!confirm('Are you sure you want to delete this media item?')) return;
 
             const index = app.state.media.findIndex(m => m.id == id);
