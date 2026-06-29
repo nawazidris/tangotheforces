@@ -372,8 +372,10 @@ const app = {
         },
 
         removeMatchEvent: function(i) {
-            app.state.currentEvents.splice(i, 1);
-            app.ui.renderEventList();
+            if (confirm('Are you sure you want to remove this match event?')) {
+                app.state.currentEvents.splice(i, 1);
+                app.ui.renderEventList();
+            }
         }
     },
 
@@ -764,6 +766,12 @@ const app = {
                     <i class="fa-solid fa-trash"></i>
                 </button>
             `;
+            // A better way is to call a function that confirms
+            actionTd.innerHTML = `
+                <button type="button" class="btn-delete" style="padding: 4px 8px; font-size: 0.75rem;" onclick="app.ui.deleteStandingsRow(this)">
+                    <i class="fa-solid fa-trash"></i>
+                </button>
+            `;
             tr.appendChild(actionTd);
             tbody.appendChild(tr);
         },
@@ -782,6 +790,12 @@ const app = {
                 if (tbody) {
                     tbody.innerHTML = '';
                 }
+            }
+        },
+
+        deleteStandingsRow: function(button) {
+            if (confirm('Are you sure you want to remove this team from the editor?')) {
+                button.closest('tr').remove();
             }
         },
 
