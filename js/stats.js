@@ -36,7 +36,7 @@ const fetchPlayerStats = async () => {
 
         displayTopScorers(data);
 
-        renderGoalsAssistsChart(filteredPlayers);
+        renderTeamMetrics(filteredPlayers);
 
         renderStatsTable(data);
 
@@ -463,7 +463,7 @@ const applyStatFilters = () => {
 
     currentPage = 1; // Reset to first page on filter change
     renderStatsTable();
-    renderGoalsAssistsChart(filteredPlayers);
+    renderTeamMetrics(filteredPlayers);
 };
 
 
@@ -546,55 +546,38 @@ const displayTopScorers = (players) => {
    CHARTS
 ========================================= */
 
-const renderGoalsAssistsChart = (players) => {
+const renderTeamMetrics = (players) => {
+    const container = document.getElementById('team-metrics-grid');
+    if (!container) return;
 
-    const canvas =
-        document.getElementById(
-            'goalsAssistsChart'
-        );
+    const calculateTotal = (statName) => {
+        return players.reduce((sum, player) => {
+            const value = player.stats?.[statName] ?? player[statName] ?? 0;
+            return sum + value;
+        }, 0);
+    };
 
-    if (!canvas) return;
+    const metrics = [
+        { label: 'Total Shots', value: calculateTotal('shots') },
+        { label: 'Shots on Target', value: calculateTotal('shotsOnTarget') },
+        { label: 'Chances Created', value: calculateTotal('chancesCreated') },
+        { label: 'Tackles Won', value: calculateTotal('tackles') },
+        { label: 'Interceptions', value: calculateTotal('interceptions') },
+        { label: 'Recoveries', value: calculateTotal('recoveries') },
+    ];
 
-    const totalGoals = players.reduce(
-        (sum, player) => {
-            return sum + (player.stats?.goals || 0);
-        },
-        0
-    );
+    // Calculate Shot Accuracy
+    const totalShots = metrics.find(m => m.label === 'Total Shots').value;
+    const shotsOnTarget = metrics.find(m => m.label === 'Shots on Target').value;
+    const shotAccuracy = totalShots > 0 ? ((shotsOnTarget / totalShots) * 100).toFixed(0) + '%' : '0%';
+    metrics.splice(2, 0, { label: 'Shot Accuracy', value: shotAccuracy });
 
-    const totalAssists = players.reduce(
-        (sum, player) => {
-            return sum + (player.stats?.assists || 0);
-        },
-        0
-    );
-
-    new Chart(canvas, {
-
-        type: 'bar',
-
-        data: {
-
-            labels: ['Goals', 'Assists'],
-
-            datasets: [{
-                label: 'Season Totals',
-                data: [
-                    totalGoals,
-                    totalAssists
-                ]
-            }]
-        },
-
-        options: {
-            responsive: true,
-            plugins: {
-                legend: {
-                    display: false
-                }
-            }
-        }
-    });
+    container.innerHTML = metrics.map(metric => `
+        <div class="metric-card glass-card">
+            <span>${metric.label}</span>
+            <h2>${metric.value}</h2>
+        </div>
+    `).join('');
 };
 
 

@@ -168,7 +168,13 @@ const app = {
                 number:      Number(document.getElementById("playerNumber").value) || null,
                 playerImage: document.getElementById("playerImage").value || 'images/idris.jpg',
                 goals:       Number(document.getElementById("playerGoals").value) || 0,
-                assists:     Number(document.getElementById("playerAssists").value) || 0
+                assists:     Number(document.getElementById("playerAssists").value) || 0,
+                shots:             Number(document.getElementById("playerShots").value) || 0,
+                shotsOnTarget:     Number(document.getElementById("playerShotsOnTarget").value) || 0,
+                chancesCreated:    Number(document.getElementById("playerChancesCreated").value) || 0,
+                tackles:           Number(document.getElementById("playerTackles").value) || 0,
+                interceptions:     Number(document.getElementById("playerInterceptions").value) || 0,
+                recoveries:        0 // This field is not in the form, so we default it.
             };
 
             if (window.db) {
@@ -875,6 +881,11 @@ const app = {
             document.getElementById("playerImage").value = player.playerImage || '';
             document.getElementById("playerGoals").value = player.goals;
             document.getElementById("playerAssists").value = player.assists;
+            document.getElementById("playerShots").value = player.shots || 0;
+            document.getElementById("playerShotsOnTarget").value = player.shotsOnTarget || 0;
+            document.getElementById("playerChancesCreated").value = player.chancesCreated || 0;
+            document.getElementById("playerTackles").value = player.tackles || 0;
+            document.getElementById("playerInterceptions").value = player.interceptions || 0;
             this.switchTab('players');
         },
 
