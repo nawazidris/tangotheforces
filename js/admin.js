@@ -772,6 +772,19 @@ const app = {
             this.addStandingsEditorRow();
         },
 
+        clearStandingsEditor: function() {
+            if (!this.userHasPermission(['Admin', 'Coach'])) {
+                alert("You do not have permission to modify standings.");
+                return;
+            }
+            if (confirm('Are you sure you want to clear the entire standings editor? This action cannot be undone.')) {
+                const tbody = document.getElementById('standingsEditorBody');
+                if (tbody) {
+                    tbody.innerHTML = '';
+                }
+            }
+        },
+
         saveStandingsEditor: async function() {
             const tbody = document.getElementById('standingsEditorBody');
             if (!tbody) return;
@@ -794,15 +807,23 @@ const app = {
                 rows: rows
             };
 
+            if (!confirm(`You are about to save a table with ${rows.length} teams. This will overwrite the current public standings. Are you sure you want to continue?`)) {
+                return;
+            }
+
             localStorage.setItem('leagueStandingsJson', JSON.stringify(parsed));
             if (window.db) {
                 try {
                     await window.db.collection('settings').doc('standings').set({ data: JSON.stringify(parsed) });
-                } catch (e) { console.error('Firebase save standings failed:', e); }
+                } catch (e) { 
+                    console.error('Firebase save standings failed:', e); 
+                    alert('Failed to save standings to the database. Please try again.');
+                    return;
+                }
             }
 
             this.renderStandingsPreview(parsed);
-            alert('League Standings saved.');
+            alert('League Standings saved successfully.');
         },
 
         parseStandingText: function(text) {

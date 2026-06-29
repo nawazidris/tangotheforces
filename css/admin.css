@@ -843,6 +843,20 @@ body {
     border-bottom: 1px solid rgba(255,255,255,0.04);
     color: var(--muted);
 }
+.paste-upload-box {
+    background: rgba(0,0,0,0.2);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px;
+    margin-top: -10px;
+    margin-bottom: 30px;
+}
+
+.paste-upload-box textarea {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.85rem;
+    line-height: 1.6;
+}
 
 .standings-preview tbody tr:hover td {
     background: rgba(255,255,255,0.03);

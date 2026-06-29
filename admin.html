@@ -370,6 +370,9 @@
                         <button type="button" class="btn-primary" onclick="app.ui.saveStandingsEditor()" data-permission="Admin,Coach">
                             <i class="fa-solid fa-floppy-disk"></i> Save Current Table
                         </button>
+                        <button type="button" class="btn-delete" onclick="app.ui.clearStandingsEditor()" data-permission="Admin,Coach" style="margin-left: auto;">
+                            <i class="fa-solid fa-eraser"></i> Clear Editor
+                        </button>
                     </div>
 
                     <div style="overflow-x: auto; margin-bottom: 30px;">
@@ -398,20 +401,23 @@
                     <h3 class="form-card-title" style="margin-top: 30px; border-top: 1px solid var(--border); padding-top: 20px;">
                         <i class="fa-solid fa-upload"></i> Alternative Upload Method
                     </h3>
-                    <p class="form-card-desc">
-                        Paste your plain text log into the text area below and click "Parse Text" to load it into the editor.
-                    </p>
-
-                    <div class="field-group field-full">
-                        <textarea id="standingsTextInput" rows="10" placeholder="Paste your plain text standings here..."></textarea>
+                    
+                    <div class="paste-upload-box">
+                        <p class="form-card-desc">
+                            Paste your plain text log into the text area below and click "Parse Text" to load it into the editor.
+                        </p>
+    
+                        <div class="field-group field-full">
+                            <textarea id="standingsTextInput" rows="10" placeholder="e.g.&#10;1 Flesk FC 13 9 4 0 36 7 +29 31&#10;2 Careful Driving Academy 14 8 4 2..."></textarea>
+                        </div>
+                        <div class="form-actions">
+                            <button type="button" class="btn-primary" onclick="app.ui.parseAndLoadStandings()">
+                                <i class="fa-solid fa-wand-magic-sparkles"></i> Parse & Load
+                            </button>
+                        </div>
                     </div>
-                    <div style="margin-bottom: 30px;">
-                        <button type="button" class="btn-secondary" onclick="app.ui.parseAndLoadStandings()">
-                            <i class="fa-solid fa-wand-magic-sparkles"></i> Parse Text & Load into Editor
-                        </button>
-                    </div>
 
-                    <p class="form-card-desc" style="border-top: 1px solid var(--border); padding-top: 20px;">
+                    <p class="form-card-desc" style="margin-top: 30px;">
                         Alternatively, upload a structured <code>.json</code> or structured text table file below.
                     </p>
 
