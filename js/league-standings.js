@@ -41,19 +41,28 @@ const standingsApp = {
         },
 
         loadStandings: async function() {
-            const localRaw = localStorage.getItem('leagueStandingsJson');
-            if (localRaw) {
-                const parsed = this.safeParseJson(localRaw);
-                if (parsed) return parsed;
-                console.warn('Invalid local standings JSON, falling back to log.json');
+            // Firebase-first approach
+            if (window.db) {
+                try {
+                    const doc = await window.db.collection('settings').doc('standings').get();
+                    if (doc.exists && doc.data().data) {
+                        const parsed = this.safeParseJson(doc.data().data);
+                        if (parsed) return parsed;
+                    }
+                } catch (e) {
+                    console.error("Firebase fetch standings failed, falling back to local files.", e);
+                }
             }
 
+            // Fallback to localStorage
+            const localRaw = localStorage.getItem('leagueStandingsJson');
+            if (localRaw) return this.safeParseJson(localRaw);
+
+            // Final fallback to static JSON file
             try {
                 const res = await fetch('data/log.json');
                 if (!res.ok) { console.warn('Could not fetch data/log.json:', res.statusText); return null; }
-                const json = await res.json();
-                if (!json || !json.headers || !json.rows) { console.warn('Invalid log.json structure'); return null; }
-                return json;
+                return await res.json();
             } catch (e) {
                 console.warn('Failed to load data/log.json:', e);
                 return null;
@@ -139,17 +148,19 @@ const standingsApp = {
 
         buildRow: function(row, matches) {
             const [pos, name, played, w, d, l, gf, ga, gd, pts] = row;
-            const { TANGO_FC_NAME, CHAMPION_ZONE, EUROPA_ZONE, RELEGATION_POS } = standingsApp.config;
+            const { TANGO_FC_NAME } = standingsApp.config;
+            const totalTeams = standingsApp.state.standings.rows.length;
 
             const isTango = (name || '').toLowerCase().includes(TANGO_FC_NAME);
-            const isChampion = parseInt(pos) === CHAMPION_ZONE;
-            const isEuropa = parseInt(pos) > CHAMPION_ZONE && parseInt(pos) <= EUROPA_ZONE;
-            const isRelegation = parseInt(pos) >= RELEGATION_POS;
+            const position = parseInt(pos);
+            const isTopFour = position >= 1 && position <= 4;
+            const isMidTable = position >= 5 && position <= 7;
+            const isRelegation = position >= (totalTeams - 3);
 
             let rowClass = '';
             if (isTango) rowClass = 'row-tango';
-            else if (isChampion) rowClass = 'zone-champion';
-            else if (isEuropa) rowClass = 'zone-europa';
+            else if (isTopFour) rowClass = 'zone-top-four';
+            else if (isMidTable) rowClass = 'zone-mid-table';
             else if (isRelegation) rowClass = 'zone-relegation';
 
             const gdNum = parseInt(gd) || 0;

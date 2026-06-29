@@ -27,6 +27,7 @@ body {
     min-height: 100vh;
     display: flex;
     align-items: center;
+    padding: 20px;
     justify-content: center;
     overflow: hidden;
     position: relative;

@@ -1021,6 +1021,30 @@ body {
     .hero-left h2 {
         font-size: 2.8rem;
     }
+
+}
+
+@media (max-width: 480px) {
+    .stats-strip {
+        grid-template-columns: 1fr;
+    }
+
+    .stat-pill {
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .stat-pill:last-child {
+        border-bottom: none;
+    }
+
+    .achievements-grid {
+        grid-template-columns: 1fr;
+    }
+}
+/* League Table Zone Highlighting */
+.row-tango {
+    background: rgba(16, 185, 129, 0.15);
 }
 
 @media (max-width: 480px) {
