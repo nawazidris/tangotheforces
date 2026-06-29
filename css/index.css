@@ -732,11 +732,12 @@ body {
 
 .news-date {
     color: var(--muted);
-    font-size: 0.82rem;
-    margin-bottom: 10px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    margin-bottom: 12px;
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
 }
 
 .news-body h3 {

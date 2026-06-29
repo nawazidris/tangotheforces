@@ -105,7 +105,7 @@ async function initializeNews() {
         const [featured, ...secondary] = articles;
 
         const featuredHtml = buildNewsCard(featured, true);
-        const secondaryHtml = secondary.slice(0, 2).map(article => buildNewsCard(article, false)).join('');
+        const secondaryHtml = secondary.slice(0, 4).map(article => buildNewsCard(article, false)).join('');
 
         newsGrid.innerHTML = featuredHtml + secondaryHtml;
 
@@ -116,23 +116,37 @@ async function initializeNews() {
 }
 
 async function getLatestNews() {
-    // Firebase-first approach
+    let firebaseNews = [];
+    let staticNews = [];
+
+    // Attempt to fetch live news from Firebase
     if (window.db) {
         try {
-            // Fetch articles from Firestore, ordered by date descending
             const snapshot = await window.db.collection('news').orderBy('date', 'desc').get();
             if (!snapshot.empty) {
-                return snapshot.docs.map(doc => doc.data());
+                firebaseNews = snapshot.docs.map(doc => doc.data());
             }
         } catch (e) {
-            console.error("Firebase fetch news failed, falling back to other sources.", e);
+            console.error("Firebase fetch news failed, will use fallback.", e);
         }
     }
 
-    // Fallback for when Firebase is not available or empty.
-    // In a future update, this could check a static news.json file.
-    console.warn("No news found in Firebase. The news section will be empty.");
-    return [];
+    // Fetch static/default news from JSON file
+    try {
+        const response = await fetch('data/news.json');
+        if (response.ok) {
+            staticNews = await response.json();
+        }
+    } catch (e) {
+        console.error("Could not fetch static news.json", e);
+    }
+
+    // Combine and de-duplicate, giving priority to Firebase articles
+    const combined = new Map(staticNews.map(article => [article.id, article]));
+    firebaseNews.forEach(article => combined.set(article.id, article));
+
+    // Sort the final combined list by date, newest first
+    return Array.from(combined.values()).sort((a, b) => new Date(b.date) - new Date(a.date));
 }
 
 function buildNewsCard(article, isFeatured) {

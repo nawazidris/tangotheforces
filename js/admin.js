@@ -808,22 +808,31 @@ const app = {
         parseStandingText: function(text) {
             if (!text || typeof text !== 'string') return null;
             const lines = text.trim().split(/\r?\n/).map(l => l.trim()).filter(Boolean);
-            if (lines.length < 2) return null;
+            if (lines.length === 0) return null;
 
-            const headers = lines[0].match(/\S+/g) || [];
-            if (headers.length < 3) return null;
+            const defaultHeaders = ["Pos", "Team", "P", "W", "D", "L", "GF", "GA", "GD", "PTS"];
+            let dataRows = lines;
+            let headers = defaultHeaders;
 
-            const rows = lines.slice(1).map(line => {
+            // Check if the first line is a header or data
+            const firstLineIsData = /^\d/.test(lines[0]);
+            if (!firstLineIsData) {
+                // If it's not data, assume it's a header row
+                headers = lines[0].match(/\S+/g) || defaultHeaders;
+                dataRows = lines.slice(1);
+            }
+
+            const rows = dataRows.map(line => {
                 const tokens = line.match(/\S+/g) || [];
-                if (tokens.length === headers.length) return tokens;
-                if (tokens.length >= headers.length + 1) {
+                // Check if there are enough tokens for at least position + 8 stats
+                if (tokens.length >= 9) {
                     const position = tokens[0];
                     const stats    = tokens.slice(-8);
                     const teamName = tokens.slice(1, tokens.length - 8).join(' ');
                     return [position, teamName, ...stats];
                 }
                 return null;
-            }).filter(row => row && row.length === headers.length);
+            }).filter(row => row !== null);
 
             return rows.length ? { headers, rows } : null;
         },

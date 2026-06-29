@@ -1,0 +1,33 @@
+[
+    {
+  "id": "static-news-3",
+  "title": "🏆 MOSSL Champions 2025🏆!",
+  "subtitle": "Tango FC secured the title with 86 points and a strong finish that showed unity on and off the pitch.",
+  "tag": "The Forces",
+  "tagColor": "gold-tag",
+  "image": "images/trophy.jpg",
+  "content": "",
+  "date": "2026-02-22T12:00:00.000Z"
+},
+
+  {
+    "id": "static-news-1",
+    "title": "🎯 Pre-Season Training Camp",
+    "subtitle": "Players are back in camp for focused fitness, tactical drills, and team cohesion ahead of the new season.",
+    "tag": "Training",
+    "tagColor": "blue-tag",
+    "image": "images/tango1111.jpg",
+    "content": "",
+    "date": "2026-02-28T12:00:00.000Z"
+  },
+  {
+    "id": "static-news-2",
+    "title": "👥 New Signings Announced",
+    "subtitle": "Tango FC has added fresh attacking and defensive talent to strengthen the squad ahead of the new campaign.",
+    "tag": "Transfers",
+    "tagColor": "green-tag",
+    "image": "images/new00.jpeg",
+    "content": "",
+    "date": "2026-03-10T12:00:00.000Z"
+  }
+]
