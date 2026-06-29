@@ -895,64 +895,6 @@ body {
     }
 }
 /* =============================================
-   ADMIN PLAYERS LIST — roster card layout
-   Append these rules to your css/admin.css
-============================================= */
-
-/* Section header e.g. "FORWARD REGISTERED ROSTER (8 PLAYERS)" */
-.roster-group-header {
-    font-size: 0.72rem;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    color: var(--muted);
-    padding: 20px 0 10px;
-    border-bottom: 1px solid var(--border);
-    margin-bottom: 10px;
-}
-
-/* Two-column grid of player cards */
-.admin-players-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    margin-bottom: 24px;
-}
-
-@media (max-width: 700px) {
-    .admin-players-grid {
-        grid-template-columns: 1fr;
-    }
-}
-/* =============================================
-   ADMIN PLAYERS LIST — roster card layout
-   Append these rules to your css/admin.css
-============================================= */
-
-/* Section header e.g. "FORWARD REGISTERED ROSTER (8 PLAYERS)" */
-.roster-group-header {
-    font-size: 0.72rem;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    color: var(--muted);
-    padding: 20px 0 10px;
-    border-bottom: 1px solid var(--border);
-    margin-bottom: 10px;
-}
-
-/* Two-column grid of player cards */
-.admin-players-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    margin-bottom: 24px;
-}
-
-@media (max-width: 700px) {
-    .admin-players-grid {
-        grid-template-columns: 1fr;
-    }
-}
-/* =============================================
    PAGINATION CONTROLS
 ============================================= */
 .pagination-controls-wrapper {
@@ -1003,38 +945,4 @@ body {
 .stats-table-wrapper .table-container {
     border-top-left-radius: 0;
     border-top-right-radius: 0;
-}
-
-/* Individual player card */
-.admin-player-card {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    background: rgba(255,255,255,0.04);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 12px 14px;
-    transition: background 0.2s ease, border-color 0.2s ease;
-}
-
-.admin-player-card:hover {
-    background: rgba(255,255,255,0.07);
-    border-color: rgba(255,255,255,0.14);
-}
-
-/* Individual player card */
-.admin-player-card {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    background: rgba(255,255,255,0.04);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 12px 14px;
-    transition: background 0.2s ease, border-color 0.2s ease;
-}
-
-.admin-player-card:hover {
-    background: rgba(255,255,255,0.07);
-    border-color: rgba(255,255,255,0.14);
 }

@@ -18,7 +18,7 @@ async function loadComponent(tag, url, isNav = false) {
         const template = document.createElement('template');
         template.innerHTML = text;
 
-        for (const element of elements
+        for (const element of elements) {
             const content = template.content.cloneNode(true);
             element.replaceWith(content);
         }

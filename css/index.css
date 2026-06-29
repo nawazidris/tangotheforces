@@ -157,6 +157,11 @@ body {
 }
 
 
+@media (max-width: 768px) {
+    .nav-links {
+        display: none;
+    }
+}
 /* =========================================
    SHARED UTILITIES
 ========================================= */
@@ -965,10 +970,6 @@ body {
 }
 
 @media (max-width: 768px) {
-    .nav-links {
-        display: none;
-    }
-
     .mobile-menu-btn {
         display: block;
     }

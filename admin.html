@@ -8,6 +8,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="css/index.css">
     <link rel="stylesheet" href="css/admin.css">
     <meta name="description" content="Tango FC admin dashboard.">
     <link rel="icon" type="image/jpeg" href="images/tangoforces.jpg">
@@ -398,6 +399,19 @@
                         <i class="fa-solid fa-upload"></i> Alternative Upload Method
                     </h3>
                     <p class="form-card-desc">
+                        Paste your plain text log into the text area below and click "Parse Text" to load it into the editor.
+                    </p>
+
+                    <div class="field-group field-full">
+                        <textarea id="standingsTextInput" rows="10" placeholder="Paste your plain text standings here..."></textarea>
+                    </div>
+                    <div style="margin-bottom: 30px;">
+                        <button type="button" class="btn-secondary" onclick="app.ui.parseAndLoadStandings()">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i> Parse Text & Load into Editor
+                        </button>
+                    </div>
+
+                    <p class="form-card-desc" style="border-top: 1px solid var(--border); padding-top: 20px;">
                         Alternatively, upload a structured <code>.json</code> or structured text table file below.
                     </p>
 

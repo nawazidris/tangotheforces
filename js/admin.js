@@ -837,6 +837,21 @@ const app = {
             return rows.length ? { headers, rows } : null;
         },
 
+        parseAndLoadStandings: function() {
+            const textInput = document.getElementById('standingsTextInput');
+            if (!textInput) return;
+
+            const text = textInput.value;
+            const parsed = this.parseStandingText(text);
+
+            if (parsed && parsed.rows.length > 0) {
+                this.loadStandingsToEditor(parsed);
+                alert(`${parsed.rows.length} rows were successfully parsed and loaded into the editor.`);
+            } else {
+                alert("Could not parse any valid rows from the provided text. Please check the format.");
+            }
+        },
+
         renderStandingsPreview: function(parsed) {
             const preview = document.getElementById('standingsAdminPreview');
             if (!preview) return;
