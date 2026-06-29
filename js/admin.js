@@ -921,15 +921,20 @@ const app = {
             preview.appendChild(table);
         },
 
-        loadAdminStandings: function() {
-            const stored = localStorage.getItem('leagueStandingsJson');
-            if (!stored) return;
-            try { 
-                const parsed = JSON.parse(stored);
-                this.renderStandingsPreview(parsed); 
-                this.loadStandingsToEditor(parsed);
+        loadAdminStandings: async function() {
+            if (!window.db) {
+                console.warn("Cannot load admin standings. Firebase is not connected.");
+                return;
             }
-            catch (e) { console.warn('Could not restore cached standings values.', e); }
+            try {
+                const doc = await window.db.collection('settings').doc('standings').get();
+                if (doc.exists && doc.data().data) {
+                    const parsed = JSON.parse(doc.data().data);
+                    this.renderStandingsPreview(parsed);
+                    this.loadStandingsToEditor(parsed);
+                }
+            }
+            catch (e) { console.error('Could not load and parse standings from Firebase.', e); }
         },
 
         editPlayer: function(id) {

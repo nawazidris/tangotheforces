@@ -65,11 +65,20 @@ function updateTimer(days, hours, minutes, seconds) {
 
 async function getNextUpcomingMatch() {
     try {
-        const adminMatches = JSON.parse(localStorage.getItem('adminMatches') || '[]');
-        const response = await fetch('data/matches.json');
-        const staticMatches = response.ok ? await response.json() : [];
-        
-        const allMatches = [...adminMatches, ...staticMatches];
+        let allMatches = [];
+        if (window.db) {
+            try {
+                const snapshot = await window.db.collection('matches').get();
+                if (!snapshot.empty) {
+                    allMatches = snapshot.docs.map(doc => doc.data());
+                }
+            } catch (e) { /* Fallback below */ }
+        }
+
+        if (allMatches.length === 0) {
+            const response = await fetch('data/matches.json');
+            allMatches = response.ok ? await response.json() : [];
+        }
 
         const upcoming = allMatches
             .filter(m => m.status === 'upcoming' && new Date(`${m.date}T${m.time || '00:00'}`) > new Date())
