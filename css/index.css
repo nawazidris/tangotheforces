@@ -115,10 +115,17 @@ body {
 
 .mobile-nav {
     display: none;
-    flex-direction: column;
-    background: rgba(7,17,31,0.98);
+    position: fixed;
+    top: 85px; /* Height of main-header */
+    left: 0;
+    width: 100%;
+    background: rgba(7, 17, 31, 0.98);
+    backdrop-filter: blur(18px);
     border-bottom: 1px solid var(--border);
-    padding: 10px 6%;
+    padding: 24px 20px;
+    z-index: 999;
+    flex-direction: column;
+    gap: 16px;
 }
 
 .mobile-nav.open {
@@ -135,7 +142,8 @@ body {
 .mobile-nav a {
     color: white;
     text-decoration: none;
-    padding: 10px 14px;
+    font-size: 1rem;
+    font-weight: 700;
     border-radius: 10px;
     display: block;
     opacity: 0.8;

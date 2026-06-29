@@ -809,7 +809,7 @@ footer {
 .mobile-nav {
     display: none;
     position: fixed;
-    top: 90px;
+    top: 85px;
     left: 0;
     width: 100%;
     background: rgba(7, 17, 31, 0.98);

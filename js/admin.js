@@ -553,11 +553,14 @@ const app = {
             const canEdit = this.userHasPermission(['Admin', 'Logistics']);
             const canDelete = this.userHasPermission(['Admin']);
 
-            if (app.state.news.length === 0) {
+            const sortedNews = [...app.state.news].sort((a, b) => new Date(b.date) - new Date(a.date));
+
+            if (sortedNews.length === 0) {
                 container.innerHTML = `<p style="color:var(--muted);font-size:0.9rem;padding:16px 0;">No news articles published yet.</p>`;
                 return;
             }
-            container.innerHTML = app.state.news.map(article => {
+
+            container.innerHTML = sortedNews.map(article => {
                 const date = new Date(article.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
                 return `
                     <div class="admin-list-item">

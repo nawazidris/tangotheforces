@@ -116,18 +116,22 @@ async function initializeNews() {
 }
 
 async function getLatestNews() {
-    // Prioritize news from admin panel (localStorage)
-    const adminNewsRaw = localStorage.getItem('adminNews');
-    if (adminNewsRaw) {
-        const adminNews = JSON.parse(adminNewsRaw);
-        if (adminNews.length > 0) {
-            // Sort by date descending to get the latest first
-            return adminNews.sort((a, b) => new Date(b.date) - new Date(a.date));
+    // Firebase-first approach
+    if (window.db) {
+        try {
+            // Fetch articles from Firestore, ordered by date descending
+            const snapshot = await window.db.collection('news').orderBy('date', 'desc').get();
+            if (!snapshot.empty) {
+                return snapshot.docs.map(doc => doc.data());
+            }
+        } catch (e) {
+            console.error("Firebase fetch news failed, falling back to other sources.", e);
         }
     }
 
-    // Fallback to a static file if localStorage is empty (optional)
-    // For now, we'll just return an empty array if no admin news exists.
+    // Fallback for when Firebase is not available or empty.
+    // In a future update, this could check a static news.json file.
+    console.warn("No news found in Firebase. The news section will be empty.");
     return [];
 }
 
