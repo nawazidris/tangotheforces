@@ -6,6 +6,7 @@ const app = {
         rosterPlayers: [],
         news: [],
         media: [],
+        teamMetrics: {},
         currentUser: null,
     },
 
@@ -19,6 +20,7 @@ const app = {
         this.events.bind();
         this.ui.applyRolePermissions();
         this.ui.renderAll();
+        this.ui.populateTeamMetricsForm();
         this.ui.updateDashboard();
         this.ui.loadAdminStandings();
     },
@@ -159,6 +161,7 @@ const app = {
             // Ensure media is synced to localStorage for gallery/videos pages
             localStorage.setItem('adminMedia', JSON.stringify(app.state.media));
             
+            app.state.teamMetrics = await this.loadTeamMetrics();
             await this.loadRosterPlayers();
         },
 
@@ -177,6 +180,37 @@ const app = {
         getMergedMatches: async function(adminMatches) {
             // This function is deprecated in favor of a direct Firebase read.
             return adminMatches;
+        },
+
+        loadTeamMetrics: async function() {
+            let metrics = {};
+
+            if (window.db) {
+                try {
+                    const doc = await window.db.collection('settings').doc('teamMetrics').get();
+                    if (doc.exists) {
+                        const raw = doc.data();
+                        if (raw && typeof raw === 'object') {
+                            metrics = raw;
+                        } else if (raw && typeof raw.data === 'string') {
+                            metrics = JSON.parse(raw.data);
+                        }
+                    }
+                } catch (e) {
+                    console.error('Failed to load team metrics from Firebase:', e);
+                }
+            }
+
+            if (!metrics || typeof metrics !== 'object' || !Object.keys(metrics).length) {
+                try {
+                    const saved = localStorage.getItem('teamMetrics');
+                    if (saved) metrics = JSON.parse(saved);
+                } catch (e) {
+                    console.error('Failed to load saved team metrics from localStorage:', e);
+                }
+            }
+
+            return metrics || {};
         },
 
         loadRosterPlayers: async function() {
@@ -203,6 +237,7 @@ const app = {
         bind: function() {
             document.getElementById("playerForm")?.addEventListener("submit", this.handlePlayerFormSubmit);
             document.getElementById("matchForm")?.addEventListener("submit", this.handleMatchFormSubmit);
+            document.getElementById("teamMetricsForm")?.addEventListener("submit", this.handleTeamMetricsSubmit);
             document.getElementById("standingsFileInput")?.addEventListener("change", this.handleStandingsUpload);
             document.getElementById("newsForm")?.addEventListener("submit", this.handleNewsFormSubmit);
             document.getElementById("mediaForm")?.addEventListener("submit", this.handleMediaFormSubmit);
@@ -210,6 +245,32 @@ const app = {
             document.getElementById("eventType")?.addEventListener('change', app.ui.toggleAssistField);
         },
         
+        handleTeamMetricsSubmit: async function(e) {
+            e.preventDefault();
+            const metrics = {
+                shots: Number(document.getElementById('teamMetricsShots').value) || 0,
+                shotsOnTarget: Number(document.getElementById('teamMetricsShotsOnTarget').value) || 0,
+                chancesCreated: Number(document.getElementById('teamMetricsChancesCreated').value) || 0,
+                tackles: Number(document.getElementById('teamMetricsTackles').value) || 0,
+                interceptions: Number(document.getElementById('teamMetricsInterceptions').value) || 0,
+                recoveries: Number(document.getElementById('teamMetricsRecoveries').value) || 0,
+            };
+
+            localStorage.setItem('teamMetrics', JSON.stringify(metrics));
+            if (window.db) {
+                try {
+                    await window.db.collection('settings').doc('teamMetrics').set(metrics, { merge: true });
+                } catch (err) {
+                    console.error('Firebase save team metrics failed:', err);
+                    alert('Failed to save team metrics to Firebase.');
+                    return;
+                }
+            }
+
+            app.state.teamMetrics = metrics;
+            alert('Team metrics saved successfully.');
+        },
+
         handlePlayerFormSubmit: async function(e) {
             e.preventDefault();
             const id = document.getElementById("playerId").value || Date.now();
@@ -492,6 +553,7 @@ const app = {
             this.renderNews();
             this.renderMedia();
             this.populatePlayerDropdown();
+            this.populateTeamMetricsForm();
         },
 
         renderPlayers: function() {
@@ -726,6 +788,25 @@ const app = {
                     </div>
                 `;
             }).join("");
+        },
+
+        populateTeamMetricsForm: function() {
+            const metrics = app.state.teamMetrics || {};
+            const fieldMap = {
+                shots: 'teamMetricsShots',
+                shotsOnTarget: 'teamMetricsShotsOnTarget',
+                chancesCreated: 'teamMetricsChancesCreated',
+                tackles: 'teamMetricsTackles',
+                interceptions: 'teamMetricsInterceptions',
+                recoveries: 'teamMetricsRecoveries'
+            };
+
+            Object.entries(fieldMap).forEach(([key, id]) => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.value = metrics[key] ?? 0;
+                }
+            });
         },
 
         populatePlayerDropdown: function() {

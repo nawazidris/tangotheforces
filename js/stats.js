@@ -29,6 +29,7 @@ const fetchPlayerStats = async () => {
         filteredPlayers = [...statsPlayers]; // Initialize filtered list
 
         const leagueSummary = await getLeagueSummary();
+        const configuredTeamMetrics = await loadConfiguredTeamMetrics();
 
         updateStatsSummary(data, leagueSummary);
 
@@ -36,7 +37,7 @@ const fetchPlayerStats = async () => {
 
         displayTopScorers(data);
 
-        renderTeamMetrics(filteredPlayers);
+        renderTeamMetrics(filteredPlayers, configuredTeamMetrics);
 
         renderStatsTable(data);
 
@@ -556,7 +557,38 @@ const displayTopScorers = (players) => {
    CHARTS
 ========================================= */
 
-const renderTeamMetrics = (players) => {
+const loadConfiguredTeamMetrics = async () => {
+    let configured = null;
+
+    if (window.db) {
+        try {
+            const doc = await window.db.collection('settings').doc('teamMetrics').get();
+            if (doc.exists) {
+                const raw = doc.data();
+                if (raw && typeof raw === 'object') {
+                    configured = raw;
+                } else if (raw && typeof raw.data === 'string') {
+                    configured = JSON.parse(raw.data);
+                }
+            }
+        } catch (e) {
+            console.error('Failed to load configured team metrics from Firebase:', e);
+        }
+    }
+
+    if (!configured || typeof configured !== 'object' || !Object.keys(configured).length) {
+        try {
+            const saved = localStorage.getItem('teamMetrics');
+            if (saved) configured = JSON.parse(saved);
+        } catch (e) {
+            console.error('Failed to load configured team metrics from localStorage:', e);
+        }
+    }
+
+    return configured;
+};
+
+const renderTeamMetrics = (players, configuredMetrics = null) => {
     const container = document.getElementById('team-metrics-grid');
     if (!container) return;
 
@@ -567,16 +599,22 @@ const renderTeamMetrics = (players) => {
         }, 0);
     };
 
+    const getMetricValue = (statName, fallbackValue) => {
+        if (configuredMetrics && typeof configuredMetrics === 'object' && configuredMetrics[statName] != null) {
+            return Number(configuredMetrics[statName]) || 0;
+        }
+        return fallbackValue;
+    };
+
     const metrics = [
-        { label: 'Total Shots', value: calculateTotal('shots') },
-        { label: 'Shots on Target', value: calculateTotal('shotsOnTarget') },
-        { label: 'Chances Created', value: calculateTotal('chancesCreated') },
-        { label: 'Tackles Won', value: calculateTotal('tackles') },
-        { label: 'Interceptions', value: calculateTotal('interceptions') },
-        { label: 'Recoveries', value: calculateTotal('recoveries') },
+        { label: 'Total Shots', value: getMetricValue('shots', calculateTotal('shots')) },
+        { label: 'Shots on Target', value: getMetricValue('shotsOnTarget', calculateTotal('shotsOnTarget')) },
+        { label: 'Chances Created', value: getMetricValue('chancesCreated', calculateTotal('chancesCreated')) },
+        { label: 'Tackles Won', value: getMetricValue('tackles', calculateTotal('tackles')) },
+        { label: 'Interceptions', value: getMetricValue('interceptions', calculateTotal('interceptions')) },
+        { label: 'Recoveries', value: getMetricValue('recoveries', calculateTotal('recoveries')) },
     ];
 
-    // Calculate Shot Accuracy
     const totalShots = metrics.find(m => m.label === 'Total Shots').value;
     const shotsOnTarget = metrics.find(m => m.label === 'Shots on Target').value;
     const shotAccuracy = totalShots > 0 ? ((shotsOnTarget / totalShots) * 100).toFixed(0) + '%' : '0%';

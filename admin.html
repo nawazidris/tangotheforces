@@ -136,6 +136,46 @@
                         <li>All data is saved to <strong>Firebase</strong> and reflected on the public site immediately.</li>
                     </ul>
                 </div>
+
+                <div class="glass-card form-card" style="margin-top: 24px;">
+                    <h3 class="form-card-title">
+                        <i class="fa-solid fa-chart-line"></i> Team Metrics
+                    </h3>
+                    <p class="form-card-desc">
+                        Update season-wide team performance values that appear on the public stats page.
+                    </p>
+                    <form id="teamMetricsForm" class="admin-form" data-permission="Admin,Coach">
+                        <div class="field-group">
+                            <label>Total Shots</label>
+                            <input type="number" id="teamMetricsShots" value="0" min="0">
+                        </div>
+                        <div class="field-group">
+                            <label>Shots on Target</label>
+                            <input type="number" id="teamMetricsShotsOnTarget" value="0" min="0">
+                        </div>
+                        <div class="field-group">
+                            <label>Chances Created</label>
+                            <input type="number" id="teamMetricsChancesCreated" value="0" min="0">
+                        </div>
+                        <div class="field-group">
+                            <label>Tackles</label>
+                            <input type="number" id="teamMetricsTackles" value="0" min="0">
+                        </div>
+                        <div class="field-group">
+                            <label>Interceptions</label>
+                            <input type="number" id="teamMetricsInterceptions" value="0" min="0">
+                        </div>
+                        <div class="field-group">
+                            <label>Recoveries</label>
+                            <input type="number" id="teamMetricsRecoveries" value="0" min="0">
+                        </div>
+                        <div class="field-full form-actions">
+                            <button type="submit" class="btn-primary">
+                                <i class="fa-solid fa-floppy-disk"></i> Save Team Metrics
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </section>
 
             <!-- ── PLAYERS ── -->
