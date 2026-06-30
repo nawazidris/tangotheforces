@@ -29,8 +29,19 @@ const app = {
     auth: {
         check: function() {
             return new Promise((resolve) => {
+                let settled = false;
+
+                const finish = (value) => {
+                    if (!settled) {
+                        settled = true;
+                        resolve(value);
+                    }
+                };
+
                 // Use onAuthStateChanged for real-time auth state monitoring
                 firebase.auth().onAuthStateChanged(async (user) => {
+                    if (settled) return;
+
                     if (user) {
                         // User is signed in. Fetch their custom data from Firestore.
                         try {
@@ -57,26 +68,34 @@ const app = {
 
                                 // If user is on login page, redirect them to admin dashboard
                                 if (window.location.pathname.includes('login.html')) {
-                                    window.location.href = 'admin.html';
-                                    resolve(true); // Resolve with true to indicate a redirect is happening
+                                    window.location.replace('admin.html');
+                                    finish(true);
                                     return;
                                 }
-                                resolve(false); // Resolve with false to continue app initialization on other pages
+
+                                finish(false);
                             } else {
                                 throw new Error("User profile not found in database.");
                             }
                         } catch (error) {
                             console.error("Auth check failed:", error);
-                            this.logout(); // Log out if profile data is missing/corrupt
+                            this.logout();
+                            finish(true);
                         }
                     } else {
                         // User is not signed in. Redirect to login page.
                         if (!window.location.pathname.includes('login.html')) {
-                            window.location.href = "login.html";
+                            window.location.replace('login.html');
                         }
-                        // On the login page and not authenticated, do nothing and let the user log in.
+                        finish(true);
                     }
                 });
+
+                setTimeout(() => {
+                    if (!settled && window.location.pathname.includes('login.html')) {
+                        finish(true);
+                    }
+                }, 4000);
             });
         },
         logout: async function() {
@@ -106,6 +125,10 @@ const app = {
             app.state.matches = matches;
             app.state.news = news;
             app.state.media = media;
+            
+            // Ensure media is synced to localStorage for gallery/videos pages
+            localStorage.setItem('adminMedia', JSON.stringify(app.state.media));
+            
             await this.loadRosterPlayers();
         },
 
@@ -305,6 +328,10 @@ const app = {
             } else {
                 app.state.media.unshift(mediaItem);
             }
+            
+            // Save media to localStorage
+            localStorage.setItem('adminMedia', JSON.stringify(app.state.media));
+            
             e.target.reset();
             app.ui.renderMedia();
         },
@@ -467,12 +494,12 @@ const app = {
 
                 return `
                     <div class="admin-player-card">
-                        ${thumb}
+                        <div class="player-thumb">${thumb}</div>
                         <div style="flex:1;min-width:0;">
-                            <strong style="display:block;font-size:0.95rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${p.name}</strong>
-                            <span style="color:var(--muted);font-size:0.8rem;">#${p.number || '—'} · ${p.position || 'Forward'}</span>
+                            <strong>${p.name}</strong>
+                            <span>#${p.number || '—'} · ${p.position || 'Forward'}</span>
                         </div>
-                        <div style="display:flex;gap:6px;flex-shrink:0;">${editBtn} ${deleteBtn}</div>
+                        <div class="card-actions">${editBtn} ${deleteBtn}</div>
                     </div>`;
             };
 
@@ -1114,6 +1141,8 @@ const app = {
                     }
                 }
                 app.state.media.splice(index, 1);
+                // Save media to localStorage
+                localStorage.setItem('adminMedia', JSON.stringify(app.state.media));
                 app.ui.renderMedia();
             }
         },

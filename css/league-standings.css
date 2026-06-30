@@ -492,8 +492,8 @@ body {
     box-shadow: 0 0 8px currentColor;
 }
 
-.legend-dot.champion   { background: var(--gold); color: var(--gold); }
-.legend-dot.europa     { background: var(--blue); color: var(--blue); }
+.legend-dot.champion   { background: var(--blue); color: var(--blue); }
+.legend-dot.europa     { background: var(--gold); color: var(--gold); }
 .legend-dot.tango      { background: var(--green); color: var(--green); }
 .legend-dot.relegation { background: var(--red); color: var(--red); }
 
@@ -608,12 +608,22 @@ body {
 .gd-zero { color: var(--muted); }
 
 /* Row zone highlights */
-tr.zone-champion td { border-left: 3px solid var(--gold); }
+/* Top 4: Blue */
+tr.zone-top-four td { border-left: 3px solid var(--blue); }
+tr.zone-top-four td:first-child { padding-left: 11px; }
+
+/* Mid-table (5-7): Yellow/Gold */
+tr.zone-mid-table td { border-left: 3px solid var(--gold); }
+tr.zone-mid-table td:first-child { padding-left: 11px; }
+
+/* Legacy class support */
+tr.zone-champion td { border-left: 3px solid var(--blue); }
 tr.zone-champion td:first-child { padding-left: 11px; }
 
-tr.zone-europa td { border-left: 3px solid var(--blue); }
+tr.zone-europa td { border-left: 3px solid var(--gold); }
 tr.zone-europa td:first-child { padding-left: 11px; }
 
+/* Relegation (last 3-4): Red */
 tr.zone-relegation td { border-left: 3px solid var(--red); }
 tr.zone-relegation td:first-child { padding-left: 11px; }
 

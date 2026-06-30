@@ -45,8 +45,30 @@ const galleryPhotos = [
     { id: 502, src: 'images/IMG_3520.jpg', title: 'Official Champions Victory Group Photo', sub: 'champions' },
     { id: 502, src: 'images/IMG_3662.jpg', title: 'Official Champions Victory Group Photo', sub: 'champions' }
  ];
+let allPhotos = [];
 let currentImages = [];
 let currentIndex = 0;
+
+async function initializeGallery() {
+    const container = document.getElementById('galleryContainer');
+    if (!container) return;
+
+    try {
+        const dynamicMedia = JSON.parse(localStorage.getItem('adminMedia') || '[]').filter(item => item.type === 'photo');
+        
+        // Merge static and dynamic, preventing duplicates based on src/url
+        const mediaMap = new Map();
+        galleryPhotos.forEach(item => mediaMap.set(item.src, { ...item, sub: item.sub }));
+        dynamicMedia.forEach(item => mediaMap.set(item.url, { id: item.id, src: item.url, title: item.title, sub: item.category }));
+        allPhotos = Array.from(mediaMap.values());
+
+        renderGallery('all');
+    } catch (error) {
+        console.error("Failed to initialize gallery:", error);
+        allPhotos = [...galleryPhotos];
+        renderGallery('all');
+    }
+}
 
 function renderGallery(filterType = 'all') {
     const grids = {
@@ -64,10 +86,10 @@ function renderGallery(filterType = 'all') {
     Object.values(grids).forEach(g => { if (g) g.innerHTML = ''; });
 
     if (filterType === 'all') {
-        currentImages = [...galleryPhotos];
+        currentImages = [...allPhotos];
         Object.values(sections).forEach(s => { if (s) s.style.display = 'block'; });
     } else {
-        currentImages = galleryPhotos.filter(p => p.sub === filterType);
+        currentImages = allPhotos.filter(p => p.sub === filterType);
         Object.keys(sections).forEach(key => {
             if (sections[key]) {
                 sections[key].style.display = key === filterType ? 'block' : 'none';
@@ -151,5 +173,5 @@ document.addEventListener('keydown', (e) => {
 });
 
 document.addEventListener('DOMContentLoaded', () => {
-    renderGallery('all');
+    initializeGallery();
 });

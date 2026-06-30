@@ -4,6 +4,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const loginForm = document.getElementById('login-form');
     if (!loginForm) return;
 
+    firebase.auth().onAuthStateChanged((user) => {
+        if (user) {
+            window.location.replace('admin.html');
+        }
+    });
+
     // Add password visibility toggle logic
     const toggleButton = document.getElementById('togglePw');
     if (toggleButton) {

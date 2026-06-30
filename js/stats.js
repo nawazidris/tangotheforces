@@ -147,11 +147,21 @@ const setupPagination = () => {
     });
     paginationContainer.appendChild(prevButton);
 
-    // Page indicator
-    const pageIndicator = document.createElement('span');
-    pageIndicator.textContent = `Page ${currentPage} of ${totalPages}`;
-    pageIndicator.className = 'page-indicator';
-    paginationContainer.appendChild(pageIndicator);
+    // Page number buttons
+    const pageButtonsWrapper = document.createElement('span');
+    pageButtonsWrapper.className = 'page-buttons-wrapper';
+    
+    for (let i = 1; i <= totalPages; i++) {
+        const pageBtn = document.createElement('button');
+        pageBtn.textContent = i;
+        pageBtn.className = i === currentPage ? 'page-btn active' : 'page-btn';
+        pageBtn.addEventListener('click', () => {
+            currentPage = i;
+            renderStatsTable();
+        });
+        pageButtonsWrapper.appendChild(pageBtn);
+    }
+    paginationContainer.appendChild(pageButtonsWrapper);
 
     // Next Button
     const nextButton = document.createElement('button');

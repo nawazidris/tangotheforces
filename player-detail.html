@@ -9,50 +9,13 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="css/player-detail.css">
+    <link rel="stylesheet" href="css/index.css">
+    <script src="js/components.js" defer></script>
 </head>
 <body>
 
-    <header class="main-header">
-        <div class="header-brand">
-            <img src="images/tangoforces.jpg" alt="Tango FC Logo">
-            <div>
-                <h1>Tango FC</h1>
-                <p>The Forces</p>
-            </div>
-        </div>
-
-        <nav>
-            <ul class="nav-links">
-                <li><a href="index.html">Home</a></li>
-                <li><a href="technical-team.html">Technical Team</a></li>
-                <li><a href="roster.html" class="active">Roster</a></li>
-                <li><a href="matches.html">Matches</a></li>
-                <li><a href="stats.html">Stats</a></li>
-                <li><a href="league-standings.html">Standings</a></li>
-                <li><a href="history.html">History</a></li>
-                <li><a href="videos.html">Videos</a></li>
-                <li><a href="gallery.html">Gallery</a></li>
-            </ul>
-        </nav>
-
-        <button class="mobile-menu-btn" id="menuBtn" aria-label="Open menu">
-            <i class="fa-solid fa-bars"></i>
-        </button>
-    </header>
-
-    <div class="mobile-nav" id="mobileNav">
-        <ul>
-            <li><a href="index.html">Home</a></li>
-            <li><a href="technical-team.html">Technical Team</a></li>
-            <li><a href="roster.html">Roster</a></li>
-            <li><a href="matches.html">Matches</a></li>
-            <li><a href="stats.html">Stats</a></li>
-            <li><a href="league-standings.html">Standings</a></li>
-            <li><a href="history.html">History</a></li>
-            <li><a href="videos.html">Videos</a></li>
-            <li><a href="gallery.html">Gallery</a></li>
-        </ul>
-    </div>
+    <main-header></main-header>
+    <mobile-nav></mobile-nav>
 
     <main>
         <section class="detail-hero">
@@ -70,29 +33,9 @@
     </main>
 
     <footer class="main-footer">
-        <div class="footer-brand">
-            <img src="images/tangoforces.jpg" alt="Tango FC">
-            <div>
-                <strong>Tango Football Club</strong>
-                <span>Est. 2015 · Masvingo, Zimbabwe</span>
-            </div>
-        </div>
-        <nav class="footer-nav">
-            <a href="roster.html">Roster</a>
-            <a href="matches.html">Matches</a>
-            <a href="stats.html">Stats</a>
-            <a href="history.html">History</a>
-            <a href="gallery.html">Gallery</a>
-        </nav>
-        <p class="footer-copy">© 2026 Tango Football Club. All rights reserved.</p>
     </footer>
 
     <script src="js/players-data.js"></script>
     <script src="js/player-detail.js"></script>
-    <script>
-        const menuBtn = document.getElementById('menuBtn');
-        const mobileNav = document.getElementById('mobileNav');
-        menuBtn.addEventListener('click', () => mobileNav.classList.toggle('open'));
-    </script>
 </body>
 </html>
