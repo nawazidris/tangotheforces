@@ -161,6 +161,33 @@ body {
     .nav-links {
         display: none;
     }
+    
+    .main-header {
+        padding: 16px 4%;
+    }
+    
+    .header-brand {
+        gap: 10px;
+    }
+    
+    .header-brand img {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .header-brand h1 {
+        font-size: 1rem;
+    }
+    
+    .header-brand p {
+        font-size: 0.7rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .main-header {
+        padding: 12px 3%;
+    }
 }
 /* =========================================
    SHARED UTILITIES
@@ -201,6 +228,39 @@ body {
     font-size: 1rem;
 }
 
+@media (max-width: 768px) {
+    .section-spacing {
+        padding: 40px 4%;
+    }
+
+    .section-title {
+        margin-bottom: 24px;
+    }
+
+    .section-title h2 {
+        font-size: 1.6rem;
+        margin-bottom: 6px;
+    }
+
+    .section-title p {
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .section-spacing {
+        padding: 30px 3%;
+    }
+
+    .section-title {
+        margin-bottom: 16px;
+    }
+
+    .section-title h2 {
+        font-size: 1.4rem;
+    }
+}
+
 .btn-primary,
 .btn-secondary {
     display: inline-flex;
@@ -212,6 +272,24 @@ body {
     font-weight: 600;
     font-size: 0.95rem;
     transition: 0.3s ease;
+}
+
+@media (max-width: 768px) {
+    .btn-primary,
+    .btn-secondary {
+        padding: 12px 20px;
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .btn-primary,
+    .btn-secondary {
+        padding: 11px 16px;
+        font-size: 0.85rem;
+        width: 100%;
+        justify-content: center;
+    }
 }
 
 .btn-primary {
@@ -935,6 +1013,43 @@ body {
    RESPONSIVE
 ========================================= */
 
+@media (max-width: 768px) {
+    .hero-left h2 {
+        font-size: 2.2rem;
+    }
+    
+    .hero-left p {
+        font-size: 0.95rem;
+    }
+    
+    .hero-right {
+        display: none !important;
+    }
+    
+    .hero-section {
+        padding: 50px 4%;
+    }
+}
+
+@media (max-width: 480px) {
+    .hero-left h2 {
+        font-size: 1.8rem;
+    }
+    
+    .hero-left p {
+        font-size: 0.9rem;
+    }
+    
+    .hero-section {
+        padding: 40px 3%;
+    }
+    
+    .hero-buttons {
+        flex-direction: column;
+        gap: 10px;
+    }
+}
+
 @media (max-width: 1100px) {
     .hero-content {
         grid-template-columns: 1fr;
@@ -1024,14 +1139,34 @@ body {
 
 }
 
+@media (max-width: 768px) {
+    .stats-strip {
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+    }
+    
+    .stat-pill {
+        padding: 16px 12px;
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+    }
+    
+    .stat-pill:nth-child(odd) {
+        border-right: 1px solid var(--border);
+        border-bottom: none;
+    }
+}
+
 @media (max-width: 480px) {
     .stats-strip {
         grid-template-columns: 1fr;
+        gap: 0;
     }
 
     .stat-pill {
         border-right: none;
         border-bottom: 1px solid var(--border);
+        padding: 14px 10px;
     }
 
     .stat-pill:last-child {
@@ -1040,28 +1175,13 @@ body {
 
     .achievements-grid {
         grid-template-columns: 1fr;
+    }
+    
+    .stat-pill strong {
+        font-size: 1.5rem;
     }
 }
 /* League Table Zone Highlighting */
 .row-tango {
     background: rgba(16, 185, 129, 0.15);
-}
-
-@media (max-width: 480px) {
-    .stats-strip {
-        grid-template-columns: 1fr;
-    }
-
-    .stat-pill {
-        border-right: none;
-        border-bottom: 1px solid var(--border);
-    }
-
-    .stat-pill:last-child {
-        border-bottom: none;
-    }
-
-    .achievements-grid {
-        grid-template-columns: 1fr;
-    }
 }

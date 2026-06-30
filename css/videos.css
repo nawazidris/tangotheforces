@@ -422,3 +422,85 @@ body {
     .footer-brand { flex-direction: column; }
     .footer-nav { justify-content: center; }
 }
+@media (max-width: 768px) {
+    .main-header {
+        padding: 16px 4%;
+    }
+    
+    .header-brand img {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .header-brand h1 {
+        font-size: 1rem;
+    }
+    
+    .section-header {
+        padding: 40px 4% 20px;
+    }
+    
+    .section-header h2 {
+        font-size: 1.8rem;
+    }
+    
+    #videoFilters {
+        padding: 16px 4%;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+    
+    #videoFilters button {
+        padding: 8px 14px;
+        font-size: 0.85rem;
+    }
+    
+    .videos-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+        padding: 20px 4%;
+    }
+    
+    .video-card {
+        aspect-ratio: 16 / 9;
+    }
+}
+
+@media (max-width: 480px) {
+    .main-header {
+        padding: 12px 3%;
+    }
+    
+    .header-brand img {
+        width: 36px;
+        height: 36px;
+    }
+    
+    .header-brand h1 {
+        font-size: 0.9rem;
+    }
+    
+    .section-header {
+        padding: 30px 3% 16px;
+    }
+    
+    .section-header h2 {
+        font-size: 1.4rem;
+    }
+    
+    #videoFilters {
+        padding: 12px 3%;
+        gap: 6px;
+    }
+    
+    #videoFilters button {
+        padding: 7px 12px;
+        font-size: 0.8rem;
+    }
+    
+    .videos-grid {
+        grid-template-columns: 1fr;
+        gap: 10px;
+        padding: 16px 3%;
+    }
+}

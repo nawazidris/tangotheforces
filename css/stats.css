@@ -30,6 +30,51 @@ body {
         url('../images/stadium-bg.jpg') center/cover;
 }
 
+@media (max-width: 768px) {
+    .hero-section {
+        padding: 50px 4%;
+    }
+    
+    .hero-content {
+        grid-template-columns: 1fr;
+        gap: 24px;
+    }
+    
+    .hero-left h2 {
+        font-size: clamp(2rem, 5vw, 3rem);
+        margin-bottom: 16px;
+    }
+    
+    .hero-left p {
+        font-size: 0.95rem;
+        margin-bottom: 20px;
+    }
+    
+    .hero-right {
+        width: 100% !important;
+        max-width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .hero-section {
+        padding: 40px 3%;
+    }
+    
+    .hero-left h2 {
+        font-size: 1.8rem;
+    }
+    
+    .hero-left p {
+        font-size: 0.9rem;
+    }
+    
+    .hero-buttons {
+        gap: 10px;
+        flex-direction: column;
+    }
+}
+
 .hero-content {
     position: relative;
     z-index: 2;
@@ -709,9 +754,127 @@ footer {
 
 @media (max-width: 768px) {
 
+    .hero-section {
+        padding: 50px 3%;
+    }
+
+    .hero-content {
+        gap: 20px;
+    }
+
+    .hero-card {
+        padding: 28px;
+    }
+
+    .hero-card strong {
+        font-size: 4rem;
+    }
+
+    .hero-left h2 {
+        font-size: 3rem;
+    }
+
+    .hero-left p {
+        font-size: 0.95rem;
+    }
+
+    .hero-buttons {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .summary-grid,
+    .advanced-grid,
+    .top-scorers-grid,
+    .recent-form-grid,
+    .charts-layout {
+        grid-template-columns: 1fr;
+        gap: 18px;
+        padding: 0 3% 40px;
+    }
+
+    .summary-card,
+    .metric-card,
+    .chart-card,
+    .top-scorer-card,
+    .recent-match-card,
+    .form-card {
+        padding: 22px;
+    }
+
+    .summary-card {
+        gap: 16px;
+    }
+
+    .summary-icon {
+        width: 60px;
+        height: 60px;
+    }
+
+    .summary-card h3 {
+        font-size: 1.4rem;
+    }
+
+    .metric-card h2 {
+        font-size: 1.8rem;
+    }
+
+    .section-spacing {
+        padding: 50px 3%;
+    }
+
+    .section-title h2 {
+        font-size: 1.8rem;
+    }
+
+    .featured-player-section {
+        padding: 24px 3% 40px;
+    }
+
+    .featured-player-card {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 24px;
+        padding: 28px;
+    }
+
+    .featured-right h2 {
+        font-size: 2.2rem;
+    }
+
+    .featured-right p,
+    .featured-stats strong {
+        font-size: 1.2rem;
+    }
+
+    .featured-stats {
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .stats-table-wrapper {
+        padding: 20px 3%;
+    }
+
+    .table-header {
+        display: grid;
+        gap: 16px;
+    }
+
+    .filters {
+        gap: 10px;
+        width: 100%;
+    }
+
+    .filters input,
+    .filters select {
+        width: 100%;
+    }
+
     .recent-match-card {
         flex-direction: column;
         align-items: flex-start;
+        gap: 14px;
     }
 
     .recent-match-result {
@@ -721,6 +884,93 @@ footer {
 
     .top-scorer-card {
         padding: 24px;
+    }
+}
+
+@media (max-width: 480px) {
+
+    .hero-section {
+        padding: 32px 3%;
+    }
+
+    .hero-left h2 {
+        font-size: 1.9rem;
+    }
+
+    .hero-left p {
+        font-size: 0.9rem;
+    }
+
+    .hero-card {
+        padding: 20px;
+    }
+
+    .summary-grid,
+    .advanced-grid,
+    .top-scorers-grid,
+    .recent-form-grid,
+    .charts-layout {
+        padding: 0 3% 30px;
+        gap: 14px;
+    }
+
+    .summary-card,
+    .metric-card,
+    .chart-card,
+    .top-scorer-card,
+    .recent-match-card,
+    .form-card {
+        padding: 18px;
+    }
+
+    .summary-icon {
+        width: 50px;
+        height: 50px;
+        font-size: 1.1rem;
+    }
+
+    .section-title h2 {
+        font-size: 1.6rem;
+    }
+
+    .featured-player-card {
+        padding: 20px;
+        gap: 20px;
+    }
+
+    .featured-right h2 {
+        font-size: 1.8rem;
+    }
+
+    .featured-left img {
+        min-height: 220px;
+    }
+
+    .featured-stats {
+        gap: 14px;
+    }
+
+    .stats-table-wrapper {
+        padding: 16px 3%;
+    }
+
+    #stats-table th,
+    #stats-table td {
+        padding: 12px;
+    }
+
+    .player-cell img {
+        width: 44px;
+        height: 44px;
+    }
+
+    .top-player-image {
+        width: 80px;
+        height: 80px;
+    }
+
+    .recent-match-card {
+        padding: 14px;
     }
 }
 

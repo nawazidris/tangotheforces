@@ -440,3 +440,63 @@
 
     .matches-hero-content h2 { font-size: 2rem; }
 }
+@media (max-width: 768px) {
+    .matches-hero {
+        padding: 40px 4%;
+    }
+    
+    .matches-hero h2 {
+        font-size: 1.8rem;
+    }
+    
+    .fixtures-filters {
+        padding: 16px 4%;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+    
+    .fixtures-filters button {
+        padding: 8px 14px;
+        font-size: 0.85rem;
+    }
+    
+    .fixtures-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+        padding: 20px 4%;
+    }
+    
+    .match-card {
+        padding: 16px;
+    }
+}
+
+@media (max-width: 480px) {
+    .matches-hero {
+        padding: 30px 3%;
+    }
+    
+    .matches-hero h2 {
+        font-size: 1.4rem;
+    }
+    
+    .fixtures-filters {
+        padding: 12px 3%;
+        gap: 6px;
+    }
+    
+    .fixtures-filters button {
+        padding: 7px 12px;
+        font-size: 0.8rem;
+    }
+    
+    .fixtures-grid {
+        padding: 16px 3%;
+        gap: 10px;
+    }
+    
+    .match-card {
+        padding: 12px;
+        font-size: 0.9rem;
+    }
+}

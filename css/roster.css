@@ -15,6 +15,65 @@
     border-bottom: 1px solid var(--border);
 }
 
+@media (max-width: 768px) {
+    .roster-hero {
+        padding: 40px 4% 0;
+    }
+    
+    .roster-hero-content {
+        padding-bottom: 32px;
+    }
+    
+    .roster-hero-content h2 {
+        font-size: clamp(1.8rem, 4vw, 2.4rem);
+    }
+    
+    .squad-stats {
+        flex-wrap: wrap;
+    }
+    
+    .sq-item {
+        flex: 1 1 calc(50% - 4px);
+        padding: 12px 8px;
+        min-width: 120px;
+    }
+    
+    .sq-divider {
+        display: none;
+    }
+}
+
+@media (max-width: 480px) {
+    .roster-hero {
+        padding: 30px 3% 0;
+    }
+    
+    .roster-hero-content {
+        padding-bottom: 20px;
+    }
+    
+    .roster-hero-content h2 {
+        font-size: 1.6rem;
+    }
+    
+    .roster-hero-content p {
+        font-size: 0.9rem;
+    }
+    
+    .sq-item {
+        flex: 1 1 calc(50% - 2px);
+        padding: 10px 6px;
+    }
+    
+    .sq-item strong {
+        font-size: 1.4rem;
+    }
+    
+    .sq-item span {
+        font-size: 0.65rem;
+    }
+}
+
 .roster-hero-content {
     max-width: 1200px;
     margin: 0 auto;
