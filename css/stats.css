@@ -788,9 +788,22 @@ footer {
     .top-scorers-grid,
     .recent-form-grid,
     .charts-layout {
-        grid-template-columns: 1fr;
-        gap: 18px;
-        padding: 0 3% 40px;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 16px;
+        padding: 0 3% 36px;
+    }
+
+    .summary-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .advanced-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .top-scorers-grid,
+    .recent-form-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
     .summary-card,
@@ -799,110 +812,125 @@ footer {
     .top-scorer-card,
     .recent-match-card,
     .form-card {
-        padding: 22px;
+        padding: 20px;
     }
 
     .summary-card {
-        gap: 16px;
+        gap: 14px;
     }
 
     .summary-icon {
-        width: 60px;
-        height: 60px;
+        width: 56px;
+        height: 56px;
     }
 
     .summary-card h3 {
-        font-size: 1.4rem;
+        font-size: 1.3rem;
     }
 
     .metric-card h2 {
-        font-size: 1.8rem;
+        font-size: 1.7rem;
     }
 
     .section-spacing {
-        padding: 50px 3%;
+        padding: 42px 3%;
     }
 
     .section-title h2 {
-        font-size: 1.8rem;
+        font-size: 1.75rem;
+    }
+
+    .section-title p {
+        font-size: 0.88rem;
     }
 
     .featured-player-section {
-        padding: 24px 3% 40px;
+        padding: 24px 3% 34px;
     }
 
     .featured-player-card {
         display: grid;
         grid-template-columns: 1fr;
-        gap: 24px;
-        padding: 28px;
+        gap: 22px;
+        padding: 26px;
     }
 
     .featured-right h2 {
-        font-size: 2.2rem;
+        font-size: 2.1rem;
     }
 
     .featured-right p,
     .featured-stats strong {
-        font-size: 1.2rem;
+        font-size: 1.15rem;
     }
 
     .featured-stats {
         flex-direction: column;
-        gap: 16px;
+        gap: 14px;
     }
 
     .stats-table-wrapper {
-        padding: 20px 3%;
+        padding: 18px 3%;
     }
 
     .table-header {
         display: grid;
-        gap: 16px;
+        gap: 14px;
     }
 
     .filters {
-        gap: 10px;
+        gap: 8px;
         width: 100%;
     }
 
     .filters input,
     .filters select {
         width: 100%;
+        padding: 10px 12px;
     }
 
     .recent-match-card {
         flex-direction: column;
         align-items: flex-start;
-        gap: 14px;
+        gap: 12px;
     }
 
     .recent-match-result {
-        width: 50px;
-        height: 50px;
+        width: 48px;
+        height: 48px;
+        font-size: 1.1rem;
+    }
+
+    .recent-match-score {
+        font-size: 1rem;
     }
 
     .top-scorer-card {
-        padding: 24px;
+        padding: 22px;
+    }
+
+    .top-player-image {
+        width: 85px;
+        height: 85px;
     }
 }
 
 @media (max-width: 480px) {
 
     .hero-section {
-        padding: 32px 3%;
+        padding: 28px 3%;
     }
 
     .hero-left h2 {
-        font-size: 1.9rem;
+        font-size: 1.8rem;
     }
 
     .hero-left p {
-        font-size: 0.9rem;
+        font-size: 0.88rem;
     }
 
     .hero-card {
-        padding: 20px;
+        padding: 18px;
     }
 
     .summary-grid,
@@ -910,8 +938,9 @@ footer {
     .top-scorers-grid,
     .recent-form-grid,
     .charts-layout {
-        padding: 0 3% 30px;
-        gap: 14px;
+        grid-template-columns: 1fr;
+        padding: 0 3% 28px;
+        gap: 12px;
     }
 
     .summary-card,
@@ -920,57 +949,105 @@ footer {
     .top-scorer-card,
     .recent-match-card,
     .form-card {
-        padding: 18px;
+        padding: 16px;
     }
 
     .summary-icon {
-        width: 50px;
-        height: 50px;
-        font-size: 1.1rem;
+        width: 48px;
+        height: 48px;
+        font-size: 1rem;
     }
 
-    .section-title h2 {
+    .summary-card h3 {
+        font-size: 1.2rem;
+    }
+
+    .metric-card h2 {
         font-size: 1.6rem;
     }
 
+    .section-spacing {
+        padding: 36px 3%;
+    }
+
+    .section-title h2 {
+        font-size: 1.5rem;
+    }
+
+    .section-title p {
+        font-size: 0.82rem;
+    }
+
     .featured-player-card {
-        padding: 20px;
-        gap: 20px;
+        padding: 18px;
+        gap: 18px;
     }
 
     .featured-right h2 {
-        font-size: 1.8rem;
+        font-size: 1.7rem;
     }
 
     .featured-left img {
-        min-height: 220px;
+        min-height: 200px;
     }
 
     .featured-stats {
-        gap: 14px;
+        gap: 12px;
     }
 
     .stats-table-wrapper {
-        padding: 16px 3%;
+        padding: 14px 3%;
+    }
+
+    .table-header {
+        gap: 12px;
+    }
+
+    .filters input,
+    .filters select {
+        padding: 10px 12px;
+        font-size: 0.84rem;
+    }
+
+    #stats-table {
+        font-size: 0.75rem;
+        table-layout: fixed;
+        width: 100%;
     }
 
     #stats-table th,
     #stats-table td {
-        padding: 12px;
+        padding: 10px 8px;
+        line-height: 1.3;
+        word-break: break-word;
+        white-space: normal;
     }
 
     .player-cell img {
-        width: 44px;
-        height: 44px;
+        width: 40px;
+        height: 40px;
     }
 
     .top-player-image {
-        width: 80px;
-        height: 80px;
+        width: 70px;
+        height: 70px;
     }
 
     .recent-match-card {
         padding: 14px;
+    }
+
+    .recent-match-detail {
+        gap: 4px;
+    }
+
+    .recent-match-score {
+        font-size: 1rem;
+    }
+
+    .position-badge {
+        padding: 6px 10px;
+        font-size: 0.8rem;
     }
 }
 

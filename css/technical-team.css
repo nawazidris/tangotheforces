@@ -351,6 +351,10 @@ body {
    RESPONSIVE LAYOUT BREAKPOINTS
 ========================================= */
 @media (max-width: 900px) {
+    .technical-row {
+        gap: 20px;
+    }
+
     .technical-row .technical-card {
         width: calc(50% - 15px);
         max-width: 340px;
@@ -367,11 +371,66 @@ body {
     .main-footer { flex-direction: column; text-align: center; }
     .footer-brand { flex-direction: column; }
     .footer-nav { justify-content: center; }
+
+    .technical-team {
+        padding: 0 4% 60px;
+    }
+
+    .technical-row {
+        gap: 16px;
+    }
+
+    .technical-row .technical-card {
+        width: calc(50% - 12px);
+        max-width: 100%;
+        padding: 20px;
+    }
+
+    .technical-card {
+        width: auto;
+    }
+
+    .technical-card h3 {
+        font-size: 1.1rem;
+    }
+
+    .member-role,
+    .member-title,
+    .member-description,
+    .member-info .experience {
+        font-size: 0.8rem;
+    }
+
+    .technical-image {
+        width: 88px;
+        height: 88px;
+    }
 }
 
 @media (max-width: 640px) {
+    .technical-row {
+        gap: 12px;
+    }
+
     .technical-row .technical-card {
         width: 100%;
-        max-width: 360px;
+        max-width: 100%;
+        padding: 16px;
+    }
+
+    .technical-card h3 {
+        font-size: 1rem;
+    }
+
+    .member-role,
+    .member-title,
+    .member-description,
+    .member-info .experience {
+        font-size: 0.78rem;
+    }
+
+    .technical-image {
+        width: 80px;
+        height: 80px;
     }
 }
