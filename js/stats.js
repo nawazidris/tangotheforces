@@ -6,6 +6,36 @@ let filteredPlayers = [];
 let currentPage = 1;
 const rowsPerPage = 5;
 
+const getPositionSortWeight = (position = '') => {
+    const normalizedPosition = String(position || '').toLowerCase();
+
+    if (normalizedPosition.includes('forward') || normalizedPosition.includes('striker') || normalizedPosition.includes('winger')) return 0;
+    if (normalizedPosition.includes('mid')) return 1;
+    if (normalizedPosition.includes('def')) return 2;
+    if (normalizedPosition.includes('keeper') || normalizedPosition.includes('goal')) return 3;
+
+    return 4;
+};
+
+const sortPlayersByTablePriority = (players) => {
+    return [...players].sort((a, b) => {
+        const goalsA = a.stats?.goals ?? a.goals ?? 0;
+        const goalsB = b.stats?.goals ?? b.goals ?? 0;
+        const assistsA = a.stats?.assists ?? a.assists ?? 0;
+        const assistsB = b.stats?.assists ?? b.assists ?? 0;
+
+        if (goalsB !== goalsA) return goalsB - goalsA;
+        if (assistsB !== assistsA) return assistsB - assistsA;
+
+        const positionWeightA = getPositionSortWeight(a.position);
+        const positionWeightB = getPositionSortWeight(b.position);
+
+        if (positionWeightA !== positionWeightB) return positionWeightA - positionWeightB;
+
+        return (a.name || '').localeCompare(b.name || '');
+    });
+};
+
 const fetchPlayerStats = async () => {
     try {
         let data = [];
@@ -25,7 +55,7 @@ const fetchPlayerStats = async () => {
         }
 
         const seasonMatches = await loadSeasonMatches();
-        statsPlayers = data;
+        statsPlayers = sortPlayersByTablePriority(data);
         filteredPlayers = [...statsPlayers]; // Initialize filtered list
 
         const leagueSummary = await getLeagueSummary();
@@ -78,7 +108,7 @@ const renderStatsTable = () => {
     statsBody.innerHTML = '';
 
     if (paginatedPlayers.length === 0) {
-        statsBody.innerHTML = `<tr><td colspan="6" class="loading-cell"><p>No players match the current filters.</p></td></tr>`;
+        statsBody.innerHTML = `<tr><td colspan="5" class="loading-cell"><p>No players match the current filters.</p></td></tr>`;
         setupPagination(); // Still setup pagination to show 0/0
         return;
     }
@@ -90,7 +120,6 @@ const renderStatsTable = () => {
         const goals       = stats.goals       ?? player.goals       ?? 0;
         const assists     = stats.assists     ?? player.assists     ?? 0;
         const cleanSheets = stats.cleanSheets ?? player.cleansheets ?? 0;
-        const gamesPlayed = stats.gamesPlayed ?? player.matches     ?? 0;
         // Support both playerImage (roster schema) and image (legacy schema)
         const playerImg   = player.playerImage || player.image || 'images/default-player.png';
 
@@ -107,7 +136,6 @@ const renderStatsTable = () => {
                 </div>
             </td>
             <td><span class="position-badge">${player.position || '-'}</span></td>
-            <td>${gamesPlayed}</td>
             <td>${goals}</td>
             <td>${assists}</td>
             <td>${cleanSheets}</td>
@@ -441,7 +469,7 @@ const applyStatFilters = () => {
             'positionFilter'
         )?.value || '';
 
-    filteredPlayers = statsPlayers.filter(player => {
+    filteredPlayers = sortPlayersByTablePriority(statsPlayers.filter(player => {
 
         const name =
             player.name?.toLowerCase() || '';
@@ -470,7 +498,7 @@ const applyStatFilters = () => {
             matchesTeam &&
             matchesPosition
         );
-    });
+    }));
 
     currentPage = 1; // Reset to first page on filter change
     renderStatsTable();
