@@ -5,26 +5,39 @@ document.addEventListener('DOMContentLoaded', () => {
     setupFilters();
 });
 
-function loadPlayers() {
+async function loadPlayers() {
     const container = document.getElementById('rosterPlayers');
     if (!container) return;
 
     try {
-        // Safe check for the external merge helper
-        if (typeof getMergedPlayers === 'function') {
-            allPlayers = getMergedPlayers();
-        } else {
-            console.warn("getMergedPlayers helper is not available. Falling back to LocalStorage.");
-            const localAdmin = localStorage.getItem('adminPlayers');
-            const localAll = localStorage.getItem('allPlayers');
-            allPlayers = localAdmin ? JSON.parse(localAdmin) : (localAll ? JSON.parse(localAll) : []);
+        if (window.db) {
+            try {
+                const snapshot = await window.db.collection('players').get();
+                if (!snapshot.empty) {
+                    allPlayers = snapshot.docs
+                        .map(doc => doc.data())
+                        .filter(player => player && player.id != null)
+                        .sort((a, b) => (a.number || 0) - (b.number || 0));
+                }
+            } catch (firebaseError) {
+                console.error('Failed to fetch roster players from Firebase:', firebaseError);
+            }
+        }
+
+        if (!Array.isArray(allPlayers) || allPlayers.length === 0) {
+            if (typeof getMergedPlayers === 'function') {
+                allPlayers = getMergedPlayers();
+            } else {
+                const localAdmin = localStorage.getItem('adminPlayers');
+                const localAll = localStorage.getItem('allPlayers');
+                allPlayers = localAdmin ? JSON.parse(localAdmin) : (localAll ? JSON.parse(localAll) : basePlayers || []);
+            }
         }
     } catch (e) {
-        console.error("Error loading player data profiles:", e);
-        allPlayers = [];
+        console.error('Error loading player data profiles:', e);
+        allPlayers = basePlayers || [];
     }
 
-    // Ensure allPlayers is treated as an array to prevent crashes
     if (!Array.isArray(allPlayers)) {
         allPlayers = [];
     }
