@@ -1086,15 +1086,10 @@ footer {
     font-weight: 700;
 }
 
-.dashboard-heading {
-    padding: 50px 6% 10px;
-}
-
-.dashboard-heading h1 {
-    font-size: 3rem;
-    margin-bottom: 10px;
-}
-
+    @media (max-width: 768px) {
+        .nav-links { display: none; }
+        .mobile-menu-btn { display: block; }
+    }
 .dashboard-heading p {
     color: var(--muted);
     max-width: 700px;
