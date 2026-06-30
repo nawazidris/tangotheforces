@@ -95,56 +95,103 @@ function renderMatches(filter) {
 
 function createMatchCard(match) {
     const card = document.createElement('div');
-    card.className = 'match-card';
 
     const isCompleted = match.status === 'completed';
-    const homeLogo = match.homeTeam.toLowerCase().includes('tango') ? 'images/tangoforces.jpg' : 'images/default-badge.png';
-    const awayLogo = match.awayTeam.toLowerCase().includes('tango') ? 'images/tangoforces.jpg' : 'images/default-badge.png';
+
+    // Determine result relative to Tango
+    const tangoHome = (match.homeTeam || '').toLowerCase().includes('tango');
+    const tangoAway = (match.awayTeam || '').toLowerCase().includes('tango');
+    const diff = (match.homeScore || 0) - (match.awayScore || 0);
+
+    let result = null; // 'win' | 'draw' | 'lose' | null
+    if (isCompleted) {
+        if (tangoHome) {
+            result = diff > 0 ? 'win' : diff === 0 ? 'draw' : 'lose';
+        } else if (tangoAway) {
+            result = diff < 0 ? 'win' : diff === 0 ? 'draw' : 'lose';
+        }
+    }
+
+    // Build card class list
+    const statusClass = isCompleted ? 'status-completed' : 'status-upcoming';
+    const resultClass = result ? `result-${result}` : '';
+    card.className = ['match-card', statusClass, resultClass].filter(Boolean).join(' ');
+
+    // Badge in header
+    let badgeClass, badgeText;
+    if (isCompleted) {
+        badgeClass = result ? `badge-${result}` : 'badge-draw';
+        badgeText  = result === 'win' ? 'WIN' : result === 'draw' ? 'DRAW' : 'LOSS';
+    } else {
+        badgeClass = 'badge-upcoming';
+        // Format time as HH:MM if available, else 'Upcoming'
+        if (match.time) {
+            badgeText = match.time;
+        } else {
+            badgeText = 'Upcoming';
+        }
+    }
+
+    // Date formatted as e.g. "Sat, 28 Jun"
+    const dateStr = new Date(match.date).toLocaleDateString('en-GB', {
+        weekday: 'short', day: 'numeric', month: 'short'
+    });
+
+    // Score / VS block
+    const scoreContent = isCompleted
+        ? `<div class="card-score">${match.homeScore ?? 0} – ${match.awayScore ?? 0}</div>`
+        : `<div class="card-vs">VS</div>`;
+
+    // Events columns
+    let eventsHtml = '';
+    if (match.events && match.events.length > 0) {
+        const homeEvents = match.events.filter(e => e.team === 'home' ||
+            (tangoHome && e.team !== 'away') ||
+            (!tangoHome && !tangoAway && e.team === 'home'));
+        const awayEvents = match.events.filter(e => e.team === 'away' ||
+            (tangoAway && e.team !== 'home') ||
+            (!tangoHome && !tangoAway && e.team === 'away'));
+
+        // Fall back: split by index if no team field
+        const allHaveTeam = match.events.every(e => e.team);
+        const homeEvts = allHaveTeam ? homeEvents : match.events.filter((_, i) => i % 2 === 0);
+        const awayEvts = allHaveTeam ? awayEvents : match.events.filter((_, i) => i % 2 !== 0);
+
+        const renderEvent = e => {
+            const icon = e.type === 'goal' ? '⚽' : e.type === 'yellowcard' ? '🟨' : e.type === 'redcard' ? '🟥' : '•';
+            const min  = e.minute ? `${e.minute}'` : '';
+            const assist = e.assist ? ` (${e.assist})` : '';
+            return `<span>${icon} ${min} ${e.player || ''}${assist}</span>`;
+        };
+
+        eventsHtml = `
+            <div class="card-events">
+                <div class="events-col events-home">${homeEvts.map(renderEvent).join('')}</div>
+                <div class="events-col events-away">${awayEvts.map(renderEvent).join('')}</div>
+            </div>`;
+    }
 
     card.innerHTML = `
-        <div class="team team-home">
-            <span class="team-name">${match.homeTeam}</span>
-            <img src="${homeLogo}" alt="${match.homeTeam} logo" class="team-logo">
+        <div class="card-header">
+            <span class="card-competition"><i class="fa-solid fa-trophy"></i> ${match.competition || 'Friendly'}</span>
+            <span class="card-date-badge ${badgeClass}">${badgeText}</span>
+            <span class="card-venue"><i class="fa-solid fa-location-dot"></i> ${match.venue || 'TBA'}</span>
         </div>
-        <div class="match-score">
-            <div class="score-display">
-                ${isCompleted ? `${match.homeScore} - ${match.awayScore}` : 'vs'}
+        <div class="card-scoreline">
+            <div class="card-team home">
+                <div class="card-team-name">${match.homeTeam}</div>
+                <div class="card-date" style="font-size:0.7rem;color:var(--muted);margin-top:4px">${dateStr}</div>
             </div>
-            <div class="score-status">${isCompleted ? 'Full Time' : (match.time || '')}</div>
+            <div class="card-score-block">
+                ${scoreContent}
+            </div>
+            <div class="card-team away">
+                <div class="card-team-name">${match.awayTeam}</div>
+            </div>
         </div>
-        <div class="team team-away">
-            <img src="${awayLogo}" alt="${match.awayTeam} logo" class="team-logo">
-            <span class="team-name">${match.awayTeam}</span>
-        </div>
-        <div class="match-details">
-            <span><i class="fa-solid fa-calendar-day"></i> ${new Date(match.date).toLocaleDateString(undefined, { weekday: 'short', month: 'long', day: 'numeric' })}</span>
-            <span><i class="fa-solid fa-location-dot"></i> ${match.venue || 'TBA'}</span>
-            ${match.events && match.events.length > 0 ? `<button class="events-toggle" onclick="toggleEvents(this)">Show Events</button>` : ''}
-        </div>
-        ${match.events && match.events.length > 0 ? createEventsSection(match.events) : ''}
+        ${eventsHtml}
     `;
     return card;
-}
-
-function createEventsSection(events) {
-    const eventsHtml = events.map(event => `
-        <div class="event-item">
-            <span class="event-icon">${event.type === 'goal' ? '⚽' : '🟨'}</span>
-            <span>${event.minute ? `${event.minute}'` : ''}</span>
-            <strong>${event.player}</strong>
-            ${event.assist ? `(assist: ${event.assist})` : ''}
-        </div>
-    `).join('');
-    return `<div class="match-events">${eventsHtml}</div>`;
-}
-
-function toggleEvents(button) {
-    const eventsSection = button.closest('.match-card').querySelector('.match-events');
-    if (eventsSection) {
-        const isVisible = eventsSection.style.display === 'block';
-        eventsSection.style.display = isVisible ? 'none' : 'block';
-        button.textContent = isVisible ? 'Show Events' : 'Hide Events';
-    }
 }
 
 function setupFilters() {

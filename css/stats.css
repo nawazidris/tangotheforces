@@ -1,88 +1,25 @@
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
+/* =========================================
+   STATS PAGE — Design system provided by index.css
+   ========================================= */
 
-:root {
-    --bg: #050b14;
-    --bg2: #091321;
-    --card: rgba(255,255,255,0.03);
-    --card-hover: rgba(255,255,255,0.06);
-    --border: rgba(255,255,255,0.08);
-    --border-hover: rgba(255,255,255,0.15);
-    --text: #ffffff;
-    --muted: #a1a1aa;
-    --blue: #3b82f6;
-    --blue-dark: #2563eb;
-    --blue-glow: rgba(59, 130, 246, 0.4);
-    --green: #10b981;
-    --green-glow: rgba(16, 185, 129, 0.4);
-    --red: #ef4444;
-    --red-glow: rgba(239, 68, 68, 0.4);
-    --gold: #f59e0b;
-    --gold-glow: rgba(245, 158, 11, 0.4);
-}
-
+/* Ensure body padding top is 0 — header is sticky via index.css */
 body {
     font-family: 'Inter', sans-serif;
     background: var(--bg);
     color: var(--text);
 }
 
-.main-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 20px 6%;
-    border-bottom: 1px solid var(--border);
-    background: rgba(0,0,0,0.4);
-    backdrop-filter: blur(10px);
-    position: sticky;
-    top: 0;
-    z-index: 1000;
-}
-
-.header-brand {
+/* League position loading spinner in hero card */
+.position-loading {
     display: flex;
     align-items: center;
-    gap: 15px;
+    justify-content: center;
+    min-height: 60px;
 }
 
-.header-brand img {
-    width: 55px;
-    height: 55px;
-    border-radius: 50%;
-    object-fit: cover;
-}
-
-.header-brand h1 {
-    font-size: 1.2rem;
-}
-
-.header-brand p {
-    color: var(--muted);
-    font-size: 0.85rem;
-}
-
-.nav-links {
-    display: flex;
-    gap: 20px;
-    list-style: none;
-}
-
-.nav-links a {
-    color: white;
-    text-decoration: none;
-    opacity: 0.8;
-    transition: 0.3s ease;
-}
-
-.nav-links a:hover,
-.nav-links .active {
-    opacity: 1;
-    color: var(--blue);
-}
+/* =========================================
+   HERO SECTION
+   ========================================= */
 
 .hero-section {
     position: relative;
@@ -555,17 +492,7 @@ footer {
         flex-direction: column;
     }
 
-    .nav-links {
-        display: none;
-    }
-
-    .mobile-menu-btn {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        padding: 8px;
-        color: white;
-    }
+    /* Note: .nav-links visibility is handled by index.css */
 }
 
 @media (max-width: 768px) {

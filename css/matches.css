@@ -8,11 +8,12 @@
    ========================================= */
 
 .matches-hero {
-    padding: 70px 6% 0;
+    padding: 60px 6% 0;
     background:
-        linear-gradient(rgba(7,17,31,0.60), rgba(7,17,31,0.92)),
+        linear-gradient(rgba(7,17,31,0.55), rgba(7,17,31,0.92)),
         url('../images/stadium-bg.jpg') center/cover no-repeat;
     border-bottom: 1px solid var(--border);
+    margin-top: 0;
 }
 
 .matches-hero-content {
@@ -97,11 +98,13 @@
 
 .filter-bar {
     position: sticky;
-    top: 81px; /* same height as main-header */
+    top: 93px; /* exact height of main-header: 20px padding-top + 52px logo + 20px padding-bottom + 1px border */
     z-index: 900;
-    background: rgba(7,17,31,0.92);
-    backdrop-filter: blur(14px);
+    background: rgba(7,17,31,0.95);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
     border-bottom: 1px solid var(--border);
+    box-shadow: 0 4px 24px rgba(0,0,0,0.3);
 }
 
 .filter-inner {
@@ -176,14 +179,14 @@
 
 .matches-section {
     padding: 36px 6% 70px;
-    max-width: 1440px;
-    margin: 0 auto;
 }
 
 .matches-container {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 16px;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
 @media (min-width: 1100px) {
@@ -391,7 +394,7 @@
 
 @media (max-width: 768px) {
     .filter-bar {
-        top: 70px;
+        top: 80px; /* mobile header is slightly shorter */
     }
 
     .quick-stats {
@@ -403,15 +406,19 @@
     .qs-divider { display: none; }
 
     .qs-item {
-        border: 1px solid var(--border);
-        border-collapse: collapse;
         padding: 14px 6px;
+        border-right: 1px solid var(--border);
+    }
+
+    .qs-item:last-child {
+        border-right: none;
     }
 
     .qs-item strong { font-size: 1.4rem; }
 
     .matches-container {
         grid-template-columns: 1fr;
+        max-width: 100%;
     }
 
     .matches-section {

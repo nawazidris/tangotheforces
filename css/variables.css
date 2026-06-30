@@ -1,0 +1,59 @@
+/* =========================================
+   TANGO FC — SHARED DESIGN TOKENS
+   Import this file first in every page CSS.
+   Usage: @import url("variables.css");
+   ========================================= */
+
+*,
+*::before,
+*::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    /* ── Background ── */
+    --bg:  #050b14;
+    --bg2: #091321;
+
+    /* ── Cards / Surfaces ── */
+    --card:       rgba(255, 255, 255, 0.03);
+    --card-hover: rgba(255, 255, 255, 0.06);
+
+    /* ── Borders ── */
+    --border:       rgba(255, 255, 255, 0.08);
+    --border-hover: rgba(255, 255, 255, 0.15);
+
+    /* ── Typography ── */
+    --text:  #ffffff;
+    --muted: #a1a1aa;
+
+    /* ── Brand colours ── */
+    --blue:      #3b82f6;
+    --blue-dark: #2563eb;
+    --blue-glow: rgba(59, 130, 246, 0.4);
+
+    --green:      #10b981;
+    --green-glow: rgba(16, 185, 129, 0.4);
+
+    --red:      #ef4444;
+    --red-glow: rgba(239, 68, 68, 0.4);
+
+    --gold:      #f59e0b;
+    --gold-glow: rgba(245, 158, 11, 0.4);
+
+    /* ── Sizing ── */
+    --header-h:  93px;   /* sticky main-header height */
+    --radius-sm: 10px;
+    --radius-md: 14px;
+    --radius-lg: 20px;
+    --radius-xl: 24px;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+}
