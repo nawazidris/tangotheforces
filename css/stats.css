@@ -70,8 +70,19 @@ body {
     }
     
     .hero-buttons {
-        gap: 10px;
-        flex-direction: column;
+        gap: 8px;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        align-items: stretch;
+    }
+
+    .hero-buttons .btn-primary,
+    .hero-buttons .btn-secondary {
+        flex: 1 1 0;
+        text-align: center;
+        padding: 10px 12px;
+        font-size: 0.9rem;
+        white-space: nowrap;
     }
 }
 
