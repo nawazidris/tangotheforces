@@ -509,7 +509,13 @@
 
                         <div class="field-group">
                             <label>Category</label>
-                            <input type="text" id="mediaCategory" placeholder="e.g. matchday, champions">
+                            <input type="text" id="mediaCategory" list="mediaCategorySuggestions" placeholder="e.g. matchday, champions">
+                            <datalist id="mediaCategorySuggestions">
+                                <option value="newseason">2026 Season</option>
+                                <option value="matchday">Matchday</option>
+                                <option value="champions">Champions</option>
+                            </datalist>
+                            <small>Suggested categories: newseason, matchday, champions.</small>
                         </div>
 
                         <div class="field-group field-full">

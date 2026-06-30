@@ -12,6 +12,25 @@ let currentVideos = [];
 const lightbox = document.getElementById("lightbox");
 const lightboxVideo = document.getElementById("lightboxVideo");
 
+function normalizeVideoCategory(category) {
+    const raw = category ? category.toString().trim().toLowerCase().replace(/\s+/g, ' ') : '';
+    const mapping = {
+        '2026 season': 'newseason',
+        'new season': 'newseason',
+        'newseason': 'newseason',
+        'season': 'newseason',
+        'matchday': 'matchday',
+        'match day': 'matchday',
+        'match': 'matchday',
+        'champions': 'champions',
+        'champion': 'champions',
+        'celebration': 'champions',
+        'victory': 'champions',
+        'trophy': 'champions'
+    };
+    return mapping[raw] || raw || 'general';
+}
+
 async function initializeVideos() {
     const container = document.getElementById('videoContainer');
     if (!container) return;
@@ -19,7 +38,9 @@ async function initializeVideos() {
     container.innerHTML = '<p>Loading videos...</p>';
 
     try {
-        const dynamicMedia = JSON.parse(localStorage.getItem('adminMedia') || '[]').filter(item => item.type === 'video');
+        const dynamicMedia = JSON.parse(localStorage.getItem('adminMedia') || '[]')
+            .filter(item => item.type === 'video')
+            .map(item => ({ ...item, category: normalizeVideoCategory(item.category) }));
         
         // Merge static and dynamic, preventing duplicates based on URL
         const mediaMap = new Map();

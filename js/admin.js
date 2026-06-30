@@ -108,6 +108,32 @@ const app = {
         }
     },
 
+    utils: {
+        normalizeMediaType: function(type) {
+            const raw = type ? type.toString().trim().toLowerCase() : '';
+            return raw === 'video' ? 'video' : 'image';
+        },
+
+        normalizeMediaCategory: function(category) {
+            const raw = category ? category.toString().trim().toLowerCase().replace(/\s+/g, ' ') : '';
+            const mapping = {
+                '2026 season': 'newseason',
+                'new season': 'newseason',
+                'newseason': 'newseason',
+                'season': 'newseason',
+                'matchday': 'matchday',
+                'match day': 'matchday',
+                'match': 'matchday',
+                'champions': 'champions',
+                'champion': 'champions',
+                'celebration': 'champions',
+                'victory': 'champions',
+                'trophy': 'champions'
+            };
+            return mapping[raw] || raw;
+        }
+    },
+
     // =================================================================
     // DATA MODULE
     // =================================================================
@@ -124,7 +150,11 @@ const app = {
             app.state.players = players;
             app.state.matches = matches;
             app.state.news = news;
-            app.state.media = media;
+            app.state.media = media.map(item => ({
+                ...item,
+                type: app.utils.normalizeMediaType(item.type),
+                category: app.utils.normalizeMediaCategory(item.category)
+            }));
             
             // Ensure media is synced to localStorage for gallery/videos pages
             localStorage.setItem('adminMedia', JSON.stringify(app.state.media));
@@ -304,10 +334,20 @@ const app = {
 
         handleMediaFormSubmit: async function(e) {
             e.preventDefault();
+            const rawType = document.getElementById("mediaType").value;
+            const rawCategory = document.getElementById("mediaCategory").value;
+            const mediaType = app.utils.normalizeMediaType(rawType);
+            const mediaCategory = app.utils.normalizeMediaCategory(rawCategory);
+
+            if (!mediaCategory) {
+                alert("Please provide a valid media category. Suggested options: newseason, matchday, champions.");
+                return;
+            }
+
             const mediaItem = {
                 id: document.getElementById("mediaId").value || Date.now().toString(),
-                type: document.getElementById("mediaType").value,
-                category: document.getElementById("mediaCategory").value,
+                type: mediaType,
+                category: mediaCategory,
                 url: document.getElementById("mediaUrl").value,
                 title: document.getElementById("mediaTitle").value,
             };

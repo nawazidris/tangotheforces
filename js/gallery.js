@@ -49,12 +49,37 @@ let allPhotos = [];
 let currentImages = [];
 let currentIndex = 0;
 
+function normalizeGalleryCategory(category) {
+    const raw = category ? category.toString().trim().toLowerCase().replace(/\s+/g, ' ') : '';
+    const mapping = {
+        '2026 season': 'newseason',
+        'new season': 'newseason',
+        'newseason': 'newseason',
+        'season': 'newseason',
+        'matchday': 'matchday',
+        'match day': 'matchday',
+        'match': 'matchday',
+        'champions': 'champions',
+        'champion': 'champions',
+        'celebration': 'champions',
+        'victory': 'champions',
+        'trophy': 'champions'
+    };
+    return mapping[raw] || raw;
+}
+
 async function initializeGallery() {
     const container = document.getElementById('galleryContainer');
     if (!container) return;
 
     try {
-        const dynamicMedia = JSON.parse(localStorage.getItem('adminMedia') || '[]').filter(item => item.type === 'photo');
+        const dynamicMedia = JSON.parse(localStorage.getItem('adminMedia') || '[]')
+            .filter(item => item.type === 'photo' || item.type === 'image')
+            .map(item => ({
+                ...item,
+                category: normalizeGalleryCategory(item.category)
+            }))
+            .filter(item => ['newseason', 'matchday', 'champions'].includes(item.category));
         
         // Merge static and dynamic, preventing duplicates based on src/url
         const mediaMap = new Map();
