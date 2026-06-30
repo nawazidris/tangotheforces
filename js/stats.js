@@ -588,6 +588,19 @@ const loadConfiguredTeamMetrics = async () => {
     return configured;
 };
 
+const getMetricIcon = (label) => {
+    const icons = {
+        'Total Shots': 'fa-futbol',
+        'Shots on Target': 'fa-bullseye',
+        'Shot Accuracy': 'fa-percent',
+        'Chances Created': 'fa-wand-magic-sparkles',
+        'Tackles Won': 'fa-shield-halved',
+        'Interceptions': 'fa-hand',
+        'Recoveries': 'fa-recycle'
+    };
+    return icons[label] || 'fa-chart-line';
+};
+
 const renderTeamMetrics = (players, configuredMetrics = null) => {
     const container = document.getElementById('team-metrics-grid');
     if (!container) return;
@@ -622,6 +635,9 @@ const renderTeamMetrics = (players, configuredMetrics = null) => {
 
     container.innerHTML = metrics.map(metric => `
         <div class="metric-card glass-card">
+            <div class="metric-icon">
+                <i class="fa-solid ${getMetricIcon(metric.label)}"></i>
+            </div>
             <span>${metric.label}</span>
             <h2>${metric.value}</h2>
         </div>
