@@ -5,6 +5,25 @@ document.addEventListener('DOMContentLoaded', () => {
     setupFilters();
 });
 
+const getPositionPriority = (position = '') => {
+    const normalized = String(position).trim().toLowerCase();
+    if (normalized.includes('forward') || normalized.includes('striker') || normalized.includes('winger')) return 0;
+    if (normalized.includes('mid')) return 1;
+    if (normalized.includes('def')) return 2;
+    if (normalized.includes('goal') || normalized.includes('keeper') || normalized.includes('goalkeeper')) return 3;
+    return 4;
+};
+
+const sortRosterPlayers = (players) => {
+    return [...players].sort((a, b) => {
+        const priorityA = getPositionPriority(a.position);
+        const priorityB = getPositionPriority(b.position);
+        if (priorityA !== priorityB) return priorityA - priorityB;
+        if ((a.number || 0) !== (b.number || 0)) return (a.number || 0) - (b.number || 0);
+        return String(a.name || '').localeCompare(String(b.name || ''), undefined, { sensitivity: 'base' });
+    });
+};
+
 async function loadPlayers() {
     const container = document.getElementById('rosterPlayers');
     if (!container) return;
@@ -14,10 +33,9 @@ async function loadPlayers() {
             try {
                 const snapshot = await window.db.collection('players').get();
                 if (!snapshot.empty) {
-                    allPlayers = snapshot.docs
+                    allPlayers = sortRosterPlayers(snapshot.docs
                         .map(doc => doc.data())
-                        .filter(player => player && player.id != null)
-                        .sort((a, b) => (a.number || 0) - (b.number || 0));
+                        .filter(player => player && player.id != null));
                 }
             } catch (firebaseError) {
                 console.error('Failed to fetch roster players from Firebase:', firebaseError);
@@ -168,7 +186,7 @@ function filterPlayers(position) {
     if (position === 'all') {
         renderPlayers(allPlayers);
     } else {
-        const filtered = allPlayers.filter(p => p && p.position === position);
+        const filtered = sortRosterPlayers(allPlayers.filter(p => p && p.position === position));
         renderPlayers(filtered);
     }
 }

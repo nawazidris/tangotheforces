@@ -184,7 +184,7 @@ body {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px,1fr));
     gap: 24px;
-    padding: 50px 6%;
+    padding: 30px 6%;
 }
 
 .summary-card .summary-icon i {
@@ -237,7 +237,7 @@ body {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(180px,1fr));
     gap: 20px;
-    padding: 0 6% 50px;
+    padding: 0 6% 30px;
 }
 
 .metric-card {
@@ -280,11 +280,11 @@ body {
 }
 
 .section-spacing {
-    padding: 80px 6%;
+    padding: 40px 6%;
 }
 
 .section-title {
-    margin-bottom: 35px;
+    margin-bottom: 24px;
 }
 
 .section-title h2 {

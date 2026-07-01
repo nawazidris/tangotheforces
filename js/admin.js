@@ -283,6 +283,7 @@ const app = {
                 playerImage: document.getElementById("playerImage").value || 'images/idris.jpg',
                 goals:       Number(document.getElementById("playerGoals").value) || 0,
                 assists:     Number(document.getElementById("playerAssists").value) || 0,
+                cleansheets: Number(document.getElementById("playerCleanSheets").value) || 0,
                 shots:             Number(document.getElementById("playerShots").value) || 0,
                 shotsOnTarget:     Number(document.getElementById("playerShotsOnTarget").value) || 0,
                 chancesCreated:    Number(document.getElementById("playerChancesCreated").value) || 0,
@@ -626,16 +627,27 @@ const app = {
                 return;
             }
             container.innerHTML = app.state.matches.map(m => {
-                const score = m.status === 'completed' ? `${m.homeScore} – ${m.awayScore}` : 'Upcoming';
-                const colour = m.status === 'completed' ? 'var(--green)' : 'var(--gold)';
+                const completed = m.status === 'completed';
+                const statusClass = completed ? 'status-completed' : 'status-upcoming';
+                const badgeText = completed ? 'Completed' : 'Upcoming';
+                const score = completed ? `${m.homeScore} – ${m.awayScore}` : 'Upcoming';
                 return `
-                    <div class="admin-list-item">
-                        <div class="admin-list-item-info">
-                            <strong>${m.homeTeam} vs ${m.awayTeam}</strong>
-                            <span>${m.date || 'No date'} · ${m.venue || 'No venue'} · <span style="color:${colour};">${score}</span></span>
+                    <div class="admin-match-card ${statusClass}">
+                        <div class="admin-match-card-header">
+                            <div class="admin-match-card-info">
+                                <strong>${m.homeTeam} vs ${m.awayTeam}</strong>
+                                <div class="admin-match-card-meta">
+                                    <span>${m.date || 'No date'}</span>
+                                    <span>${m.venue || 'No venue'}</span>
+                                </div>
+                            </div>
+                            <div class="admin-match-card-status">
+                                <span class="admin-match-badge ${completed ? 'badge-completed' : 'badge-upcoming'}">${badgeText}</span>
+                                ${completed ? `<span class="admin-match-score">${score}</span>` : ''}
+                            </div>
                         </div>
                         ${ (canEdit || canDelete) ? `
-                            <div class="admin-list-actions">
+                            <div class="admin-match-card-actions">
                                 ${canEdit ? `<button class="btn-edit" onclick="window.app.ui.editMatch(${m.id})">
                                     <i class="fa-solid fa-pen"></i> Edit
                                 </button>` : ''}
@@ -1096,6 +1108,7 @@ const app = {
             document.getElementById("playerImage").value = player.playerImage || '';
             document.getElementById("playerGoals").value = player.goals;
             document.getElementById("playerAssists").value = player.assists;
+            document.getElementById("playerCleanSheets").value = player.cleansheets || 0;
             document.getElementById("playerShots").value = player.shots || 0;
             document.getElementById("playerShotsOnTarget").value = player.shotsOnTarget || 0;
             document.getElementById("playerChancesCreated").value = player.chancesCreated || 0;
