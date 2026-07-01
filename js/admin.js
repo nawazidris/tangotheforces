@@ -570,13 +570,6 @@ const app = {
                 (positionOrder[a.position] || 9) - (positionOrder[b.position] || 9)
             );
 
-            const groups = {};
-            sorted.forEach(p => {
-                const pos = p.position || 'Other';
-                if (!groups[pos]) groups[pos] = [];
-                groups[pos].push(p);
-            });
-
             if (players.length === 0) {
                 container.innerHTML = '<p style="color:var(--muted);font-size:0.9rem;padding:16px 0;">No squad entries detected.</p>';
                 return;
@@ -585,20 +578,20 @@ const app = {
             const buildCard = (p) => {
                 const img = p.playerImage || p.image || '';
                 const thumb = img
-                    ? `<img src="${img}" alt="${p.name}" style="width:44px;height:44px;border-radius:10px;object-fit:cover;flex-shrink:0;">`
-                    : `<div style="width:44px;height:44px;border-radius:10px;background:rgba(59,130,246,0.15);display:flex;align-items:center;justify-content:center;font-size:0.7rem;font-weight:600;color:var(--blue);flex-shrink:0;">${p.name.substring(0,3)}</div>`;
+                    ? `<img src="${img}" alt="${p.name}">`
+                    : `<div class="player-initials">${p.name.substring(0,3)}</div>`;
 
                 const editBtn = canEdit
-                    ? `<button class="btn-edit" onclick="window.app.ui.editPlayer(${p.id})" style="padding:6px 14px;font-size:0.8rem;"><i class="fa-solid fa-pen"></i> EDIT</button>`
+                    ? `<button class="btn-edit" onclick="window.app.ui.editPlayer(${p.id})"><i class="fa-solid fa-pen"></i> EDIT</button>`
                     : '';
                 const deleteBtn = canDelete
-                    ? `<button class="btn-delete" onclick="window.app.ui.deletePlayer(${p.id})" style="padding:6px 10px;font-size:0.8rem;"><i class="fa-solid fa-trash"></i></button>`
+                    ? `<button class="btn-delete" onclick="window.app.ui.deletePlayer(${p.id})"><i class="fa-solid fa-trash"></i></button>`
                     : '';
 
                 return `
                     <div class="admin-player-card">
                         <div class="player-thumb">${thumb}</div>
-                        <div style="flex:1;min-width:0;">
+                        <div class="player-details">
                             <strong>${p.name}</strong>
                             <span>#${p.number || '—'} · ${p.position || 'Forward'}</span>
                         </div>
@@ -606,14 +599,7 @@ const app = {
                     </div>`;
             };
 
-            let html = '';
-            Object.entries(groups).forEach(([pos, groupPlayers]) => {
-                html += `
-                    <div class="roster-group-header">${pos.toUpperCase()} REGISTERED ROSTER (${groupPlayers.length} PLAYERS)</div>
-                    <div class="admin-players-grid">${groupPlayers.map(buildCard).join('')}</div>`;
-            });
-
-            container.innerHTML = html;
+            container.innerHTML = `<div class="admin-players-grid">${sorted.map(buildCard).join('')}</div>`;
         },
 
         renderMatches: function() {
@@ -628,8 +614,6 @@ const app = {
             }
             container.innerHTML = app.state.matches.map(m => {
                 const completed = m.status === 'completed';
-                const badgeText = completed ? 'WIN' : 'UPCOMING';
-                const badgeClass = completed ? 'match-card__badge--win' : 'match-card__badge--draw';
                 const score = completed ? `${m.homeScore} – ${m.awayScore}` : 'TBD';
                 return `
                     <div class="match-card">
@@ -648,7 +632,6 @@ const app = {
                             </div>
                             <div class="match-card__result">
                                 <span class="match-card__score">${score}</span>
-                                <span class="match-card__badge ${badgeClass}">${badgeText}</span>
                             </div>
                         </div>
                         <div class="match-card__actions">

@@ -186,93 +186,95 @@
                     <p>Add or edit squad members and statistics</p>
                 </div>
 
-                <div class="glass-card form-card">
-                    <h3 class="form-card-title">
-                        <i class="fa-solid fa-user-plus"></i> Add / Edit Player
-                    </h3>
-                    <div id="ceoReadOnlyMsg" class="read-only-banner" style="display: none;">
-                        <i class="fa-solid fa-eye"></i> Your role (CEO) has view-only access.
+                <div class="players-tab-layout">
+                    <div class="glass-card form-card players-form-card">
+                        <h3 class="form-card-title">
+                            <i class="fa-solid fa-user-plus"></i> Add / Edit Player
+                        </h3>
+                        <div id="ceoReadOnlyMsg" class="read-only-banner" style="display: none;">
+                            <i class="fa-solid fa-eye"></i> Your role (CEO) has view-only access.
+                        </div>
+                        <form id="playerForm" class="admin-form" data-permission="Admin,Logistics">
+                            <input type="hidden" id="playerId">
+
+                            <div class="field-group">
+                                <label>Full Name *</label>
+                                <input type="text" id="playerName" placeholder="e.g. John Moyo" required>
+                            </div>
+                            <div class="field-group">
+                                <label>Nickname</label>
+                                <input type="text" id="playerNickname" placeholder="e.g. The Flash">
+                            </div>
+                            <div class="field-group">
+                                <label>Position</label>
+                                <select id="playerPosition">
+                                    <option>Forward</option>
+                                    <option>Midfielder</option>
+                                    <option>Defender</option>
+                                    <option>Goalkeeper</option>
+                                </select>
+                            </div>
+                            <div class="field-group">
+                                <label>Squad Number</label>
+                                <input type="number" id="playerNumber" placeholder="e.g. 10" min="1" max="99">
+                            </div>
+                            <div class="field-group field-full">
+                                <label>Image Path</label>
+                                <input type="text" id="playerImage" placeholder="images/player.jpg">
+                            </div>
+
+                            <div class="field-group">
+                                <label>Goals</label>
+                                <input type="number" id="playerGoals" value="0" min="0">
+                            </div>
+                            <div class="field-group">
+                                <label>Assists</label>
+                                <input type="number" id="playerAssists" value="0" min="0">
+                            </div>
+                            <div class="field-group">
+                                <label>Clean Sheets</label>
+                                <input type="number" id="playerCleanSheets" value="0" min="0">
+                            </div>
+                            <div class="field-group">
+                                <label>Shots</label>
+                                <input type="number" id="playerShots" value="0" min="0">
+                            </div>
+                            <div class="field-group">
+                                <label>Shots on Target</label>
+                                <input type="number" id="playerShotsOnTarget" value="0" min="0">
+                            </div>
+                            <div class="field-group">
+                                <label>Chances Created</label>
+                                <input type="number" id="playerChancesCreated" value="0" min="0">
+                            </div>
+                            <div class="field-group">
+                                <label>Tackles</label>
+                                <input type="number" id="playerTackles" value="0" min="0">
+                            </div>
+                            <div class="field-group">
+                                <label>Interceptions</label>
+                                <input type="number" id="playerInterceptions" value="0" min="0">
+                            </div>
+
+                            <div class="field-full form-actions">
+                                <button type="submit" class="btn-primary" data-permission="Admin,Coach">
+                                    <i class="fa-solid fa-floppy-disk"></i> Save Player
+                                </button>
+                            </div>
+                        </form>
                     </div>
-                    <form id="playerForm" class="admin-form" data-permission="Admin,Logistics">
-                        <input type="hidden" id="playerId">
 
-                        <div class="field-group">
-                            <label>Full Name *</label>
-                            <input type="text" id="playerName" placeholder="e.g. John Moyo" required>
+                    <div class="glass-card form-card players-list-card">
+                        <div class="list-header">
+                            <h3 class="list-title">Squad Roster</h3>
+                            <div class="list-actions">
+                                <button class="btn-secondary" onclick="app.ui.downloadPlayerData()">
+                                    <i class="fa-solid fa-download"></i> Download players.json
+                                </button>
+                            </div>
                         </div>
-                        <div class="field-group">
-                            <label>Nickname</label>
-                            <input type="text" id="playerNickname" placeholder="e.g. The Flash">
-                        </div>
-                        <div class="field-group">
-                            <label>Position</label>
-                            <select id="playerPosition">
-                                <option>Forward</option>
-                                <option>Midfielder</option>
-                                <option>Defender</option>
-                                <option>Goalkeeper</option>
-                            </select>
-                        </div>
-                        <div class="field-group">
-                            <label>Squad Number</label>
-                            <input type="number" id="playerNumber" placeholder="e.g. 10" min="1" max="99">
-                        </div>
-                        <div class="field-group field-full">
-                            <label>Image Path</label>
-                            <input type="text" id="playerImage" placeholder="images/player.jpg">
-                        </div>
-                        
-                        <div class="field-group">
-                            <label>Goals</label>
-                            <input type="number" id="playerGoals" value="0" min="0">
-                        </div>
-                        <div class="field-group">
-                            <label>Assists</label>
-                            <input type="number" id="playerAssists" value="0" min="0">
-                        </div>
-                        <div class="field-group">
-                            <label>Clean Sheets</label>
-                            <input type="number" id="playerCleanSheets" value="0" min="0">
-                        </div>
-                        <div class="field-group">
-                            <label>Shots</label>
-                            <input type="number" id="playerShots" value="0" min="0">
-                        </div>
-                        <div class="field-group">
-                            <label>Shots on Target</label>
-                            <input type="number" id="playerShotsOnTarget" value="0" min="0">
-                        </div>
-                        <div class="field-group">
-                            <label>Chances Created</label>
-                            <input type="number" id="playerChancesCreated" value="0" min="0">
-                        </div>
-                        <div class="field-group">
-                            <label>Tackles</label>
-                            <input type="number" id="playerTackles" value="0" min="0">
-                        </div>
-                        <div class="field-group">
-                            <label>Interceptions</label>
-                            <input type="number" id="playerInterceptions" value="0" min="0">
-                        </div>
-
-                        <div class="field-full form-actions">
-                            <button type="submit" class="btn-primary" data-permission="Admin,Coach">
-                                <i class="fa-solid fa-floppy-disk"></i> Save Player
-                            </button>
-                        </div>
-                    </form>
-                </div>
-
-                <div class="list-section">
-                    <div class="list-header">
-                        <h3 class="list-title">Squad Roster</h3>
-                        <div class="list-actions">
-                            <button class="btn-secondary" onclick="app.ui.downloadPlayerData()">
-                                <i class="fa-solid fa-download"></i> Download players.json
-                            </button>
-                        </div>
+                        <div id="playersList"></div>
                     </div>
-                    <div id="playersList" class="admin-list"></div>
                 </div>
             </section>
 
@@ -283,11 +285,12 @@
                     <p>Log fixtures, results, and match events</p>
                 </div>
 
-                <div class="glass-card form-card">
-                    <h3 class="form-card-title">
-                        <i class="fa-solid fa-calendar-plus"></i> Add / Edit Match
-                    </h3>
-                    <form id="matchForm" class="admin-form" data-permission="Admin,Coach">
+                <div class="matches-tab-layout">
+                    <div class="glass-card form-card matches-form-card">
+                        <h3 class="form-card-title">
+                            <i class="fa-solid fa-calendar-plus"></i> Add / Edit Match
+                        </h3>
+                        <form id="matchForm" class="admin-form" data-permission="Admin,Coach">
                         <input type="hidden" id="matchId">
 
                         <div class="field-group">
@@ -368,24 +371,25 @@
                             <div id="eventList" class="event-list"></div>
                         </div>
 
-                        <div class="field-full form-actions">
-                            <button type="submit" class="btn-primary" data-permission="Admin,Coach">
-                                <i class="fa-solid fa-floppy-disk"></i> Save Match
-                            </button>
-                        </div>
-                    </form>
-                </div>
-
-                <div class="list-section">
-                    <div class="list-header">
-                        <h3 class="list-title">Match Log</h3>
-                        <div class="list-actions">
-                            <button class="btn-secondary" onclick="app.ui.downloadMatchData()">
-                                <i class="fa-solid fa-download"></i> Download matches.json
-                            </button>
-                        </div>
+                            <div class="field-full form-actions">
+                                <button type="submit" class="btn-primary" data-permission="Admin,Coach">
+                                    <i class="fa-solid fa-floppy-disk"></i> Save Match
+                                </button>
+                            </div>
+                        </form>
                     </div>
-                    <div id="matchesList" class="admin-list"></div>
+
+                    <div class="glass-card form-card matches-log-panel">
+                        <div class="list-header">
+                            <h3 class="list-title">Match Log</h3>
+                            <div class="list-actions">
+                                <button class="btn-secondary" onclick="app.ui.downloadMatchData()">
+                                    <i class="fa-solid fa-download"></i> Download matches.json
+                                </button>
+                            </div>
+                        </div>
+                        <div id="matchesList" class="admin-list"></div>
+                    </div>
                 </div>
             </section>
 
