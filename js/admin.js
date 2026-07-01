@@ -628,34 +628,37 @@ const app = {
             }
             container.innerHTML = app.state.matches.map(m => {
                 const completed = m.status === 'completed';
-                const statusClass = completed ? 'status-completed' : 'status-upcoming';
-                const badgeText = completed ? 'Completed' : 'Upcoming';
-                const score = completed ? `${m.homeScore} – ${m.awayScore}` : 'Upcoming';
+                const badgeText = completed ? 'WIN' : 'UPCOMING';
+                const badgeClass = completed ? 'match-card__badge--win' : 'match-card__badge--draw';
+                const score = completed ? `${m.homeScore} – ${m.awayScore}` : 'TBD';
                 return `
-                    <div class="admin-match-card ${statusClass}">
-                        <div class="admin-match-card-header">
-                            <div class="admin-match-card-info">
-                                <strong>${m.homeTeam} vs ${m.awayTeam}</strong>
-                                <div class="admin-match-card-meta">
-                                    <span>${m.date || 'No date'}</span>
-                                    <span>${m.venue || 'No venue'}</span>
-                                </div>
+                    <div class="match-card">
+                        <div class="match-card__info">
+                            <div class="match-card__competition">
+                                <i class="ti ti-trophy" aria-hidden="true"></i> LEAGUE
                             </div>
-                            <div class="admin-match-card-status">
-                                <span class="admin-match-badge ${completed ? 'badge-completed' : 'badge-upcoming'}">${badgeText}</span>
-                                ${completed ? `<span class="admin-match-score">${score}</span>` : ''}
+                            <p class="match-card__title">${m.homeTeam} vs ${m.awayTeam}</p>
+                            <div class="match-card__meta">
+                                <span class="match-card__meta-item">
+                                    <i class="ti ti-calendar" aria-hidden="true"></i> ${m.date || 'No date'}
+                                </span>
+                                <span class="match-card__meta-item">
+                                    <i class="ti ti-map-pin" aria-hidden="true"></i> ${m.venue || 'No venue'}
+                                </span>
+                            </div>
+                            <div class="match-card__result">
+                                <span class="match-card__score">${score}</span>
+                                <span class="match-card__badge ${badgeClass}">${badgeText}</span>
                             </div>
                         </div>
-                        ${ (canEdit || canDelete) ? `
-                            <div class="admin-match-card-actions">
-                                ${canEdit ? `<button class="btn-edit" onclick="window.app.ui.editMatch(${m.id})">
-                                    <i class="fa-solid fa-pen"></i> Edit
-                                </button>` : ''}
-                                ${canDelete ? `<button class="btn-delete" onclick="window.app.ui.deleteMatch(${m.id})">
-                                    <i class="fa-solid fa-trash"></i> Delete
-                                </button>` : ''}
-                            </div>
-                        ` : ''}
+                        <div class="match-card__actions">
+                            ${canEdit ? `<button class="match-card__btn match-card__btn--edit" onclick="window.app.ui.editMatch(${m.id})">
+                                <i class="ti ti-edit" aria-hidden="true"></i> Edit
+                            </button>` : ''}
+                            ${canDelete ? `<button class="match-card__btn match-card__btn--delete" onclick="window.app.ui.deleteMatch(${m.id})">
+                                <i class="ti ti-trash" aria-hidden="true"></i> Delete
+                            </button>` : ''}
+                        </div>
                     </div>
                 `;
             }).join("");

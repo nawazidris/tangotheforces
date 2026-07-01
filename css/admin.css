@@ -734,6 +734,144 @@ body {
     font-size: 0.78rem;
 }
 
+/* ── Match card wrapper ── */
+.match-card {
+    background: #151f2e;
+    border: 0.5px solid rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+    padding: 10px 14px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    width: 260px;
+    font-family: system-ui, -apple-system, sans-serif;
+}
+
+/* ── Left content ── */
+.match-card__info {
+    flex: 1;
+    min-width: 0;
+}
+
+.match-card__competition {
+    font-size: 11px;
+    color: #4a90d9;
+    font-weight: 500;
+    letter-spacing: 0.03em;
+    margin-bottom: 3px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.match-card__competition i {
+    font-size: 11px;
+}
+
+.match-card__title {
+    font-size: 13px;
+    font-weight: 500;
+    color: #e8eaf0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin: 0;
+}
+
+.match-card__meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 4px;
+}
+
+.match-card__meta-item {
+    font-size: 11px;
+    color: #6b7a8d;
+    display: flex;
+    align-items: center;
+    gap: 3px;
+}
+
+.match-card__meta-item i {
+    font-size: 11px;
+}
+
+.match-card__result {
+    margin-top: 6px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.match-card__score {
+    font-size: 15px;
+    font-weight: 500;
+    color: #e8eaf0;
+}
+
+.match-card__badge {
+    font-size: 10px;
+    font-weight: 500;
+    border-radius: 4px;
+    padding: 2px 7px;
+}
+
+.match-card__badge--win {
+    background: #1a3a2a;
+    color: #3db87a;
+}
+
+.match-card__badge--loss {
+    background: #3d1a1a;
+    color: #e05555;
+}
+
+.match-card__badge--draw {
+    background: #2a2a1a;
+    color: #d4a017;
+}
+
+/* ── Right actions ── */
+.match-card__actions {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    flex-shrink: 0;
+}
+
+.match-card__btn {
+    border-radius: 6px;
+    padding: 5px 10px;
+    font-size: 11px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-family: inherit;
+    transition: opacity 0.15s;
+}
+
+.match-card__btn:hover {
+    opacity: 0.8;
+}
+
+.match-card__btn i {
+    font-size: 12px;
+}
+
+.match-card__btn--edit {
+    background: #1a2a3a;
+    border: 0.5px solid rgba(74, 144, 217, 0.3);
+    color: #4a90d9;
+}
+
+.match-card__btn--delete {
+    background: #2a1a1a;
+    border: 0.5px solid rgba(220, 80, 80, 0.3);
+    color: #e05555;
+}
+
 .admin-match-card {
     position: relative;
     background: var(--card);
