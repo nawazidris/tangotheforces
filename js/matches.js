@@ -248,6 +248,3 @@ function updateQuickStats(matches) {
     document.getElementById('qs-gf').textContent = gf;
     document.getElementById('qs-upcoming').textContent = upcoming;
 }
-
-// Make function globally accessible for inline onclick
-window.toggleEvents = toggleEvents;
