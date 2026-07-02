@@ -1414,7 +1414,7 @@ body {
     }
 
     .admin-sidebar {
-        width: 120px;
+        width: 100%;
         position: relative;
         top: 0;
         height: auto;
@@ -1427,24 +1427,25 @@ body {
 
     .sidebar-nav {
         flex-direction: row;
-        flex-wrap: nowrap;
+        flex-wrap: wrap;
         align-items: center;
         justify-content: flex-start;
         gap: 6px;
-        width: fit-content;
+        width: 100%;
         padding: 6px;
         background: rgba(0,0,0,0.2);
         border-radius: 14px;
     }
 
     .sidebar-btn {
-        flex: 0 0 auto;
+        flex: 1 1 calc(33.333% - 6px);
+        justify-content: center;
         gap: 6px;
-        padding: 8px 12px;
+        padding: 8px 10px;
         border-radius: 10px;
         white-space: nowrap;
         font-weight: 600;
-        font-size: 0.8rem;
+        font-size: 0.78rem;
         background: transparent;
         color: var(--muted);
         border: none;
