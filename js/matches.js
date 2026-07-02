@@ -160,7 +160,7 @@ function createMatchCard(match) {
         const renderEvent = e => {
             const icon = e.type === 'goal' ? '⚽' : e.type === 'yellowcard' ? '🟨' : e.type === 'redcard' ? '🟥' : '•';
             const min  = e.minute ? `${e.minute}'` : '';
-            const assist = e.assist ? ` (${e.assist})` : '';
+            const assist = e.assist ? ` <span class="assist-label clr-gold">🅰 ${e.assist}</span>` : '';
             return `<span>${icon} ${min} ${e.player || ''}${assist}</span>`;
         };
 

@@ -839,6 +839,25 @@ tr.row-tango .team-initials {
     }
 }
 
+@media (max-width: 600px) {
+    .hero-content {
+        grid-template-columns: 1fr minmax(0, 320px);
+        gap: 20px;
+    }
+
+    .hero-pos-card {
+        max-width: none;
+        width: 100%;
+    }
+
+    .hero-buttons {
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 12px;
+        justify-content: flex-start;
+    }
+}
+
 @media (max-width: 480px) {
     .summary-strip {
         grid-template-columns: 1fr;

@@ -387,6 +387,13 @@
     display: block;
 }
 
+.assist-label {
+    color: var(--text);
+    opacity: 0.75;
+    margin-left: 6px;
+    font-weight: 600;
+}
+
 
 /* =========================================
    RESPONSIVE
