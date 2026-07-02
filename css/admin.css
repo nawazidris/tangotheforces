@@ -1170,6 +1170,18 @@ body {
     width: 36px;
 }
 
+@media (min-width: 601px) {
+    .admin-player-card .card-actions .btn-edit {
+        font-size: 10px;
+        min-height: 28px;
+        padding: 5px 7px;
+    }
+
+    .admin-player-card .card-actions .btn-edit i {
+        font-size: 0.8em;
+    }
+}
+
 .admin-player-card .card-actions .btn-edit:hover {
     background: #1d4ed8;
 }
