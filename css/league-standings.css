@@ -856,6 +856,25 @@ tr.row-tango .team-initials {
         gap: 12px;
         justify-content: flex-start;
     }
+
+    /* Force table to compact and remove the global min-width */
+    #standingsTable {
+        min-width: 0;
+        table-layout: fixed;
+    }
+
+    .table-scroll { overflow-x: hidden; }
+
+    .standings-table th.th-pos { width: 30px; padding: 0 4px; }
+    .standings-table th.th-team { width: auto; max-width: 72px; padding-left: 6px; text-align: left; }
+    .standings-table th.th-pts { width: 36px; padding: 0 4px; }
+
+    .team-cell { display: inline-flex; align-items: center; gap: 6px; padding: 0 4px !important; min-width: 0; }
+    .team-initials { display: none; }
+    .team-name { max-width: 64px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: inline-block; }
+
+    /* Tighten other columns a bit */
+    .standings-table th, .standings-table td { padding: 6px 4px; }
 }
 
 @media (max-width: 480px) {
@@ -906,6 +925,48 @@ tr.row-tango .team-initials {
         white-space: normal;
         word-break: break-word;
     }
+
+    .standings-table th.th-pos {
+        width: 34px;
+    }
+
+    .standings-table th.th-team {
+        min-width: 0;
+        padding-left: 10px;
+    }
+
+    .standings-table th.th-pts {
+        width: 42px;
+    }
+
+    .team-cell {
+        gap: 6px;
+        padding-left: 4px !important;
+        min-width: 0;
+    }
+
+    .team-initials {
+        width: 22px;
+        height: 22px;
+        font-size: 0.55rem;
+    }
+
+    .team-name {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        min-width: 0;
+    }
+
+    .form-badges {
+        gap: 2px;
+    }
+
+    .fb {
+        width: 18px;
+        height: 18px;
+        font-size: 0.55rem;
+    }
     
     .legend {
         padding: 14px 4%;
@@ -949,6 +1010,29 @@ tr.row-tango .team-initials {
         white-space: normal;
         word-break: break-word;
         line-height: 1.2;
+    }
+
+    .standings-table th.th-pos {
+        width: 28px;
+    }
+
+    .standings-table th.th-team {
+        padding-left: 8px;
+    }
+
+    .team-cell {
+        gap: 5px;
+        padding-left: 2px !important;
+    }
+
+    .team-initials {
+        width: 20px;
+        height: 20px;
+        font-size: 0.5rem;
+    }
+
+    .team-name {
+        font-size: 0.72rem;
     }
     
     .standings-table tr {
