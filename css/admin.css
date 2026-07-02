@@ -1052,13 +1052,13 @@ body {
     gap: 18px 20px;
 }
 
-@media (max-width: 1100px) and (max-device-width: 8in) {
+@media (max-device-width: 8in) {
     .admin-players-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 }
 
-@media (max-width: 760px) and (max-device-width: 8in) {
+@media (max-device-width: 8in) {
     .admin-players-grid {
         grid-template-columns: 1fr;
     }
@@ -1400,7 +1400,7 @@ body {
    RESPONSIVE
 ========================================= */
 
-@media (max-width: 1024px) and (max-device-width: 8in) {
+@media (max-device-width: 8in) {
     .matches-tab-layout,
     .players-tab-layout {
         grid-template-columns: 1fr;
@@ -1411,7 +1411,7 @@ body {
     }
 }
 
-@media (max-width: 900px) and (max-device-width: 8in) {
+@media (max-device-width: 8in) {
     .admin-sidebar {
         width: 68px;
     }
@@ -1429,11 +1429,13 @@ body {
     }
 }
 
-@media (max-width: 680px) and (max-device-width: 8in) {
+@media (max-device-width: 8in) {
     .admin-sidebar {
         width: 100%;
-        padding: 6px 4px;
+        padding: 8px;
         overflow-x: auto;
+        background: rgba(0,0,0,0.3);
+        border-bottom: 1px solid var(--border);
     }
 
     .sidebar-nav {
@@ -1443,18 +1445,34 @@ body {
         align-items: center;
         justify-content: flex-start;
         width: fit-content;
+        padding: 8px;
+        background: rgba(0,0,0,0.2);
+        border-radius: 16px;
     }
 
     .sidebar-btn {
         flex: 0 0 auto;
-        gap: 2px;
-        padding: 4px 6px;
-        border-radius: 999px;
+        gap: 8px;
+        padding: 10px 20px;
+        border-radius: 12px;
         white-space: nowrap;
+        font-weight: 600;
+        font-size: 0.85rem;
+        background: transparent;
+        color: var(--muted);
+        border: none;
+    }
+
+    .sidebar-btn.active {
+        background: rgba(59,130,246,0.15);
+        color: var(--blue);
+        box-shadow: none;
+        border: none;
     }
 
     .sidebar-btn i {
-        font-size: 0.85rem;
+        font-size: 0.9rem;
+        width: auto;
     }
 
     .sidebar-btn span {
@@ -1463,11 +1481,11 @@ body {
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
-        font-size: 0.78rem;
+        font-size: 0.85rem;
     }
 }
 
-@media (max-width: 768px) and (max-device-width: 8in) {
+@media (max-device-width: 8in) {
     .admin-layout {
         flex-direction: column;
     }
@@ -1565,7 +1583,7 @@ body {
     }
 }
 
-@media (max-width: 600px) and (max-device-width: 8in) {
+@media (max-device-width: 8in) {
     .admin-main {
         padding: 12px;
     }
@@ -1631,7 +1649,7 @@ body {
     }
 }
 
-@media (max-width: 420px) and (max-device-width: 8in) {
+@media (max-device-width: 8in) {
     .admin-main {
         padding: 10px;
     }
@@ -1662,7 +1680,44 @@ body {
     }
 
     .admin-sidebar {
-        padding: 8px 4px;
+        padding: 8px;
+    }
+
+    .sidebar-nav {
+        gap: 8px;
+        width: fit-content;
+        padding: 8px;
+        background: rgba(0,0,0,0.2);
+        border-radius: 16px;
+    }
+
+    .sidebar-btn {
+        gap: 8px;
+        padding: 10px 20px;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 0.85rem;
+        background: transparent;
+        color: var(--muted);
+    }
+
+    .sidebar-btn.active {
+        background: rgba(59,130,246,0.15);
+        color: var(--blue);
+        box-shadow: none;
+        border: none;
+    }
+
+    .sidebar-btn i {
+        font-size: 0.9rem;
+        width: auto;
+    }
+
+    .sidebar-btn span {
+        font-size: 0.85rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 
     .admin-sidebar,
@@ -1683,28 +1738,6 @@ body {
         padding: 4px 8px;
         font-size: 10px;
         min-height: 28px;
-    }
-
-    .sidebar-nav {
-        gap: 8px;
-        width: fit-content;
-    }
-
-    .sidebar-btn {
-        gap: 2px;
-        padding: 3px 5px;
-    }
-
-    .sidebar-btn i {
-        font-size: 0.8rem;
-        width: 16px;
-    }
-
-    .sidebar-btn span {
-        font-size: 0.75rem;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
     }
 }
 
