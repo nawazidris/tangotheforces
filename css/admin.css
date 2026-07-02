@@ -1475,7 +1475,7 @@ body {
 
     .matches-tab-layout,
     .players-tab-layout {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-template-columns: 1fr;
         gap: 14px;
     }
 
@@ -1484,6 +1484,11 @@ body {
     .matches-form-card,
     .matches-log-panel {
         padding: 16px;
+    }
+
+    .admin-players-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
     }
 
     #matchesList.admin-list {
