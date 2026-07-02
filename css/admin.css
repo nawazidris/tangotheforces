@@ -1432,29 +1432,38 @@ body {
 @media (max-width: 680px) and (max-device-width: 8in) {
     .admin-sidebar {
         width: 100%;
-        padding: 8px 6px;
+        padding: 6px 4px;
         overflow-x: auto;
     }
 
     .sidebar-nav {
         flex-direction: row;
         flex-wrap: nowrap;
-        gap: 4px;
+        gap: 8px;
         align-items: center;
+        justify-content: flex-start;
+        width: fit-content;
     }
 
     .sidebar-btn {
         flex: 0 0 auto;
-        gap: 4px;
-        padding: 8px 10px;
+        gap: 2px;
+        padding: 4px 6px;
         border-radius: 999px;
         white-space: nowrap;
+    }
+
+    .sidebar-btn i {
+        font-size: 0.85rem;
     }
 
     .sidebar-btn span {
         display: inline-block;
         max-width: none;
         white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        font-size: 0.78rem;
     }
 }
 
@@ -1600,6 +1609,8 @@ body {
 
     .admin-player-card .card-actions button {
         flex: 1 1 48%;
+        padding: 5px 8px;
+        font-size: 11px;
     }
 
     .admin-player-card .player-thumb {
@@ -1647,11 +1658,11 @@ body {
     .topbar-left,
     .topbar-right {
         flex-wrap: wrap;
-        gap: 10px;
+        gap: 2px;
     }
 
     .admin-sidebar {
-        padding: 12px 10px;
+        padding: 8px 4px;
     }
 
     .admin-sidebar,
@@ -1669,16 +1680,31 @@ body {
 
     .admin-player-card .card-actions button {
         flex: 1 1 100%;
+        padding: 4px 8px;
+        font-size: 10px;
+        min-height: 28px;
+    }
+
+    .sidebar-nav {
+        gap: 8px;
+        width: fit-content;
     }
 
     .sidebar-btn {
-        gap: 8px;
+        gap: 2px;
+        padding: 3px 5px;
+    }
+
+    .sidebar-btn i {
+        font-size: 0.8rem;
+        width: 16px;
     }
 
     .sidebar-btn span {
-        font-size: 0.82rem;
-        white-space: normal;
-        overflow-wrap: anywhere;
+        font-size: 0.75rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 }
 
