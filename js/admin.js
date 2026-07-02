@@ -1169,6 +1169,17 @@ const app = {
             document.getElementById("playerTackles").value = player.tackles || 0;
             document.getElementById("playerInterceptions").value = player.interceptions || 0;
             this.switchTab('players');
+
+            requestAnimationFrame(() => {
+                const form = document.getElementById('playerForm');
+                const target = document.getElementById('playerName');
+                if (form) {
+                    form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+                if (target) {
+                    target.focus({ preventScroll: true });
+                }
+            });
         },
 
         deletePlayer: async function(id) {
