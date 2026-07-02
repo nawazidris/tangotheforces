@@ -1681,6 +1681,28 @@ body {
         flex-direction: row;
     }
 
+    .admin-player-card {
+        flex-direction: row;
+        align-items: center;
+        flex-wrap: nowrap;
+    }
+
+    .admin-player-card .player-details {
+        flex: 1 1 auto;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+    }
+
+    .admin-player-card .card-actions {
+        margin-left: auto;
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 6px;
+    }
+
     .admin-sidebar {
         width: var(--sidebar-w);
         position: sticky;
