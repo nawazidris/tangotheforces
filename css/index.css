@@ -610,6 +610,7 @@ body {
     line-height: 1.8;
     margin-bottom: 18px;
     font-size: 1rem;
+    text-align: justify;
 }
 
 .values-grid {
@@ -1179,6 +1180,62 @@ body {
     
     .stat-pill strong {
         font-size: 1.5rem;
+    }
+}
+
+@media (min-width: 601px) {
+    .hero-section {
+        padding: 64px 5%;
+    }
+
+    .hero-content {
+        grid-template-columns: 1.15fr 0.85fr;
+        gap: 28px;
+    }
+
+    .hero-buttons {
+        flex-direction: row;
+        justify-content: flex-start;
+        gap: 12px;
+    }
+
+    .stats-strip {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .values-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 600px) {
+    .hero-section {
+        padding: 40px 4%;
+    }
+
+    .hero-left h2 {
+        font-size: 2rem;
+    }
+
+    .hero-buttons {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+        align-items: stretch;
+    }
+
+    .hero-buttons a {
+        justify-content: center;
+        text-align: center;
+    }
+
+    .stats-strip {
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+    }
+
+    .values-grid {
+        grid-template-columns: 1fr;
     }
 }
 /* League Table Zone Highlighting */
