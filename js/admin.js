@@ -439,6 +439,59 @@ const app = {
             app.ui.renderMedia();
         },
 
+        exportStandingsAsJson: function() {
+            // Get standings from the editor table
+            const tbody = document.getElementById('standingsEditorBody');
+            if (!tbody || tbody.children.length === 0) {
+                alert('No standings data to export. Please load or add standings first.');
+                return;
+            }
+
+            const rows = [];
+            tbody.querySelectorAll('tr').forEach(tr => {
+                const cells = tr.querySelectorAll('input[type="text"]');
+                if (cells.length >= 10) {
+                    rows.push([
+                        cells[0].value, // Pos
+                        cells[1].value, // Team
+                        cells[2].value, // P
+                        cells[3].value, // W
+                        cells[4].value, // D
+                        cells[5].value, // L
+                        cells[6].value, // GF
+                        cells[7].value, // GA
+                        cells[8].value, // GD
+                        cells[9].value  // PTS
+                    ]);
+                }
+            });
+
+            if (rows.length === 0) {
+                alert('No valid standings data found in the editor.');
+                return;
+            }
+
+            // Create the JSON structure matching log.json format
+            const standingsData = {
+                headers: ["Pos", "Team", "P", "W", "D", "L", "GF", "GA", "GD", "Pts"],
+                rows: rows
+            };
+
+            // Create blob and trigger download
+            const jsonString = JSON.stringify(standingsData, null, 2);
+            const blob = new Blob([jsonString], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'log.json';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+
+            alert('Standings exported as log.json. Please replace the file in data/log.json and commit the changes.');
+        },
+
         handleStandingsUpload: function(event) {
             const file = event.target.files[0];
             if (!file) return;
