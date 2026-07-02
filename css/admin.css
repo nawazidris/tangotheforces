@@ -1138,9 +1138,12 @@ body {
 .admin-player-card .card-actions {
     display: flex;
     flex-direction: column;
-    align-items: flex-end;
+    align-items: stretch;
     gap: 6px;
     flex-shrink: 0;
+    margin-left: auto;
+    width: auto;
+    min-width: 36px;
 }
 
 .admin-player-card .card-actions button {
@@ -1151,16 +1154,20 @@ body {
     font-size: 12px;
     font-weight: 500;
     border-radius: 8px;
-    padding: 6px 10px;
+    padding: 6px 8px;
     cursor: pointer;
     white-space: nowrap;
     min-width: 32px;
+    min-height: 32px;
+    line-height: 1;
+    flex: 0 0 auto;
 }
 
 .admin-player-card .card-actions .btn-edit {
     background: #2563eb;
     color: #fff;
     border: none;
+    width: 36px;
 }
 
 .admin-player-card .card-actions .btn-edit:hover {
@@ -1168,13 +1175,13 @@ body {
 }
 
 .admin-player-card .card-actions .btn-delete {
-    width: 100%;
+    width: 36px;
     background: #3a1f24;
     color: #f26a6a;
     border: none;
     border-radius: 8px;
     justify-content: center;
-    padding: 6px 10px;
+    padding: 6px 8px;
 }
 
 .admin-player-card .card-actions .btn-delete:hover {
@@ -1400,67 +1407,48 @@ body {
    RESPONSIVE
 ========================================= */
 
-@media (max-device-width: 8in) {
-    .matches-tab-layout,
-    .players-tab-layout {
-        grid-template-columns: 1fr;
+/* Small screens (phones) */
+@media (max-width: 599px) {
+    .admin-layout {
+        flex-direction: column;
     }
 
-    #matchesList.admin-list {
-        grid-template-columns: 1fr;
-    }
-}
-
-@media (max-device-width: 8in) {
     .admin-sidebar {
-        width: 68px;
-    }
-
-    .sidebar-btn span {
-        display: none;
-    }
-
-    .topbar-session-info {
-        display: none;
-    }
-
-    .admin-main {
-        padding: 20px;
-    }
-}
-
-@media (max-device-width: 8in) {
-    .admin-sidebar {
-        width: 100%;
+        width: 120px;
+        position: relative;
+        top: 0;
+        height: auto;
+        border-right: none;
+        border-bottom: 1px solid var(--border);
         padding: 8px;
         overflow-x: auto;
         background: rgba(0,0,0,0.3);
-        border-bottom: 1px solid var(--border);
     }
 
     .sidebar-nav {
         flex-direction: row;
         flex-wrap: nowrap;
-        gap: 8px;
         align-items: center;
         justify-content: flex-start;
+        gap: 6px;
         width: fit-content;
-        padding: 8px;
+        padding: 6px;
         background: rgba(0,0,0,0.2);
-        border-radius: 16px;
+        border-radius: 14px;
     }
 
     .sidebar-btn {
         flex: 0 0 auto;
-        gap: 8px;
-        padding: 10px 20px;
-        border-radius: 12px;
+        gap: 6px;
+        padding: 8px 12px;
+        border-radius: 10px;
         white-space: nowrap;
         font-weight: 600;
-        font-size: 0.85rem;
+        font-size: 0.8rem;
         background: transparent;
         color: var(--muted);
         border: none;
+        min-height: 34px;
     }
 
     .sidebar-btn.active {
@@ -1471,7 +1459,7 @@ body {
     }
 
     .sidebar-btn i {
-        font-size: 0.9rem;
+        font-size: 0.85rem;
         width: auto;
     }
 
@@ -1481,58 +1469,65 @@ body {
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
-        font-size: 0.85rem;
-    }
-}
-
-@media (max-device-width: 8in) {
-    .admin-layout {
-        flex-direction: column;
+        font-size: 0.8rem;
     }
 
-    .admin-sidebar {
-        width: 100%;
-        position: relative;
-        top: 0;
-        height: auto;
-        border-right: none;
-        border-bottom: 1px solid var(--border);
-        padding: 16px 14px;
+    .matches-tab-layout,
+    .players-tab-layout {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px;
     }
 
-    .sidebar-btn {
-        justify-content: flex-start;
-        padding: 10px 12px;
-    }
-
-    .sidebar-btn span {
-        display: inline-block;
-        white-space: normal;
-        max-width: calc(100% - 32px);
-    }
-
-    .admin-main {
+    .players-form-card,
+    .players-list-card,
+    .matches-form-card,
+    .matches-log-panel {
         padding: 16px;
     }
 
+    #matchesList.admin-list {
+        grid-template-columns: 1fr;
+    }
+
+    .topbar-session-info,
+    .topbar-link {
+        display: none;
+    }
+
+    .topbar-left,
+    .topbar-right {
+        flex-wrap: wrap;
+        gap: 2px;
+    }
+
+    .admin-main {
+        padding: 12px;
+        width: 100%;
+    }
+
     .form-card {
-        padding: 22px;
+        padding: 16px;
+        margin-bottom: 16px;
     }
 
     .admin-form {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
         gap: 12px;
+    }
+
+    .field-full {
+        grid-column: 1 / -1;
     }
 
     .field-group input,
     .field-group select,
     .field-group textarea {
-        padding: 10px 12px;
-        font-size: 0.85rem;
+        padding: 10px 11px;
+        font-size: 0.82rem;
     }
 
     .field-group label {
-        font-size: 0.72rem;
+        font-size: 0.7rem;
     }
 
     .form-actions {
@@ -1543,11 +1538,26 @@ body {
         width: 100%;
     }
 
+    .form-card-title {
+        font-size: 0.95rem;
+    }
+
+    .btn-primary,
+    .btn-secondary {
+        font-size: 0.85rem;
+        padding: 10px 14px;
+    }
+
+    .dash-cards {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+    }
+
     .admin-list-item {
         flex-direction: column;
         align-items: flex-start;
         gap: 10px;
-        padding: 14px 16px;
+        padding: 12px 14px;
     }
 
     .admin-list-item-info,
@@ -1578,62 +1588,32 @@ body {
         overflow: hidden;
     }
 
-    .topbar-link {
-        display: none;
-    }
-}
-
-@media (max-device-width: 8in) {
-    .admin-main {
-        padding: 12px;
-    }
-
-    .form-card {
-        padding: 18px;
-    }
-
-    .field-group input,
-    .field-group select,
-    .field-group textarea {
-        padding: 10px 11px;
-        font-size: 0.82rem;
-    }
-
-    .form-card-title {
-        font-size: 0.95rem;
-    }
-
-    .btn-primary,
-    .btn-secondary {
-        font-size: 0.85rem;
-    }
-
-    .dash-cards {
-        grid-template-columns: 1fr;
-    }
-
     .admin-player-card {
         flex-direction: column;
         align-items: stretch;
         gap: 10px;
-        padding: 14px;
+        padding: 12px;
     }
 
     .admin-player-card .card-actions {
         width: 100%;
         justify-content: space-between;
         flex-wrap: wrap;
+        align-items: stretch;
+        margin-left: 0;
     }
 
     .admin-player-card .card-actions button {
         flex: 1 1 48%;
         padding: 5px 8px;
         font-size: 11px;
+        width: auto;
+        min-width: 0;
     }
 
     .admin-player-card .player-thumb {
-        width: 50px;
-        height: 50px;
+        width: 44px;
+        height: 44px;
     }
 
     .admin-player-card .player-details {
@@ -1647,97 +1627,58 @@ body {
     .admin-player-card span {
         font-size: 10px;
     }
-}
 
-@media (max-device-width: 8in) {
-    .admin-main {
-        padding: 10px;
+    .file-upload-btn {
+        width: 100%;
+        justify-content: center;
     }
 
-    .form-card {
+    .paste-upload-box {
         padding: 16px;
     }
 
-    .field-group label {
-        font-size: 0.7rem;
+    .standings-preview {
+        overflow-x: auto;
     }
+}
 
-    .field-group input,
-    .field-group select,
-    .field-group textarea {
-        padding: 9px 10px;
-        font-size: 0.8rem;
-    }
-
-    .form-card-title {
-        font-size: 0.9rem;
-    }
-
-    .topbar-left,
-    .topbar-right {
-        flex-wrap: wrap;
-        gap: 2px;
+/* Large screens (tablets + desktop) */
+@media (min-width: 600px) {
+    .admin-layout {
+        flex-direction: row;
     }
 
     .admin-sidebar {
-        padding: 8px;
+        width: var(--sidebar-w);
+        position: sticky;
+        top: var(--topbar-h);
+        height: calc(100vh - var(--topbar-h));
+        border-right: 1px solid var(--border);
+        border-bottom: none;
+        padding: 24px 14px;
     }
 
     .sidebar-nav {
-        gap: 8px;
-        width: fit-content;
-        padding: 8px;
-        background: rgba(0,0,0,0.2);
-        border-radius: 16px;
+        flex-direction: column;
+        width: auto;
+        padding: 0;
+        background: transparent;
+        border-radius: 0;
     }
 
     .sidebar-btn {
-        gap: 8px;
-        padding: 10px 20px;
-        border-radius: 12px;
-        font-weight: 600;
-        font-size: 0.85rem;
-        background: transparent;
-        color: var(--muted);
-    }
-
-    .sidebar-btn.active {
-        background: rgba(59,130,246,0.15);
-        color: var(--blue);
-        box-shadow: none;
-        border: none;
-    }
-
-    .sidebar-btn i {
-        font-size: 0.9rem;
-        width: auto;
-    }
-
-    .sidebar-btn span {
-        font-size: 0.85rem;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-
-    .admin-sidebar,
-    .admin-main {
         width: 100%;
+        padding: 8px 10px;
+        border-radius: 12px;
+        justify-content: flex-start;
     }
 
-    .admin-list-item {
-        padding: 12px 14px;
+    .admin-main {
+        padding: 32px 24px;
     }
 
-    .admin-player-card {
-        padding: 12px;
-    }
-
-    .admin-player-card .card-actions button {
-        flex: 1 1 100%;
-        padding: 4px 8px;
-        font-size: 10px;
-        min-height: 28px;
+    .topbar-link {
+        display: flex;
     }
 }
 
