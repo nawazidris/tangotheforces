@@ -869,12 +869,17 @@ tr.row-tango .team-initials {
     .standings-table th.th-team { width: auto; max-width: 72px; padding-left: 6px; text-align: left; }
     .standings-table th.th-pts { width: 36px; padding: 0 4px; }
 
-    .team-cell { display: inline-flex; align-items: center; gap: 6px; padding: 0 4px !important; min-width: 0; }
+    .team-cell { display: inline-flex; align-items: center; gap: 4px; padding: 0 3px !important; min-width: 0; }
     .team-initials { display: none; }
-    .team-name { max-width: 64px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: inline-block; }
+    .team-name { max-width: 56px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: inline-block; font-size: 0.72rem; }
 
-    /* Tighten other columns a bit */
-    .standings-table th, .standings-table td { padding: 6px 4px; }
+    /* Global compacting for mobile table */
+    .standings-table { font-size: 0.72rem; }
+    .standings-table th, .standings-table td { padding: 4px 3px; font-size: 0.72rem; }
+
+    .pts-cell { font-size: 0.9rem; }
+    .form-badges { gap: 4px; }
+    .fb { width: 16px; height: 16px; font-size: 0.5rem; }
 }
 
 @media (max-width: 480px) {
