@@ -1044,7 +1044,7 @@ body {
 .admin-match-card-actions button {
     padding: 8px 12px;
     font-size: 0.78rem;
-}
+
 
 .admin-players-grid {
     display: grid;
@@ -1052,13 +1052,7 @@ body {
     gap: 18px 20px;
 }
 
-@media (max-device-width: 8in) {
-    .admin-players-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-}
-
-@media (max-device-width: 8in) {
+@media (max-width: 600px) {
     .admin-players-grid {
         grid-template-columns: 1fr;
     }
@@ -1398,9 +1392,12 @@ body {
 
 /* =========================================
    RESPONSIVE
+   Phones = Small
+   Tablets + Desktop = Large
 ========================================= */
 
-@media (max-device-width: 8in) {
+/* Small screens (phones) */
+@media (max-width: 599px) {
     .matches-tab-layout,
     .players-tab-layout {
         grid-template-columns: 1fr;
@@ -1409,41 +1406,34 @@ body {
     #matchesList.admin-list {
         grid-template-columns: 1fr;
     }
-}
 
-@media (max-device-width: 8in) {
-    .admin-sidebar {
-        width: 68px;
+    .admin-layout {
+        flex-direction: column;
     }
 
-    .sidebar-btn span {
-        display: none;
-    }
-
-    .topbar-session-info {
-        display: none;
-    }
-
-    .admin-main {
-        padding: 20px;
-    }
-}
-
-@media (max-device-width: 8in) {
     .admin-sidebar {
         width: 100%;
+        position: relative;
+        top: 0;
+        height: auto;
+        border-right: none;
+        border-bottom: 1px solid var(--border);
         padding: 8px;
         overflow-x: auto;
         background: rgba(0,0,0,0.3);
-        border-bottom: 1px solid var(--border);
+    }
+
+    .admin-sidebar,
+    .admin-main {
+        width: 100%;
     }
 
     .sidebar-nav {
         flex-direction: row;
         flex-wrap: nowrap;
-        gap: 8px;
         align-items: center;
         justify-content: flex-start;
+        gap: 8px;
         width: fit-content;
         padding: 8px;
         background: rgba(0,0,0,0.2);
@@ -1458,9 +1448,6 @@ body {
         white-space: nowrap;
         font-weight: 600;
         font-size: 0.85rem;
-        background: transparent;
-        color: var(--muted);
-        border: none;
     }
 
     .sidebar-btn.active {
@@ -1483,40 +1470,24 @@ body {
         text-overflow: ellipsis;
         font-size: 0.85rem;
     }
-}
 
-@media (max-device-width: 8in) {
-    .admin-layout {
-        flex-direction: column;
+    .topbar-session-info,
+    .topbar-link {
+        display: none;
     }
 
-    .admin-sidebar {
-        width: 100%;
-        position: relative;
-        top: 0;
-        height: auto;
-        border-right: none;
-        border-bottom: 1px solid var(--border);
-        padding: 16px 14px;
-    }
-
-    .sidebar-btn {
-        justify-content: flex-start;
-        padding: 10px 12px;
-    }
-
-    .sidebar-btn span {
-        display: inline-block;
-        white-space: normal;
-        max-width: calc(100% - 32px);
+    .topbar-left,
+    .topbar-right {
+        flex-wrap: wrap;
+        gap: 4px;
     }
 
     .admin-main {
-        padding: 16px;
+        padding: 12px;
     }
 
     .form-card {
-        padding: 22px;
+        padding: 18px;
     }
 
     .admin-form {
@@ -1527,12 +1498,8 @@ body {
     .field-group input,
     .field-group select,
     .field-group textarea {
-        padding: 10px 12px;
-        font-size: 0.85rem;
-    }
-
-    .field-group label {
-        font-size: 0.72rem;
+        padding: 10px 11px;
+        font-size: 0.82rem;
     }
 
     .form-actions {
@@ -1541,6 +1508,10 @@ body {
 
     .form-actions .btn-primary {
         width: 100%;
+    }
+
+    .dash-cards {
+        grid-template-columns: 1fr;
     }
 
     .admin-list-item {
@@ -1578,45 +1549,11 @@ body {
         overflow: hidden;
     }
 
-    .topbar-link {
-        display: none;
-    }
-}
-
-@media (max-device-width: 8in) {
-    .admin-main {
-        padding: 12px;
-    }
-
-    .form-card {
-        padding: 18px;
-    }
-
-    .field-group input,
-    .field-group select,
-    .field-group textarea {
-        padding: 10px 11px;
-        font-size: 0.82rem;
-    }
-
-    .form-card-title {
-        font-size: 0.95rem;
-    }
-
-    .btn-primary,
-    .btn-secondary {
-        font-size: 0.85rem;
-    }
-
-    .dash-cards {
-        grid-template-columns: 1fr;
-    }
-
     .admin-player-card {
         flex-direction: column;
         align-items: stretch;
         gap: 10px;
-        padding: 14px;
+        padding: 12px;
     }
 
     .admin-player-card .card-actions {
@@ -1636,10 +1573,6 @@ body {
         height: 50px;
     }
 
-    .admin-player-card .player-details {
-        min-width: 0;
-    }
-
     .admin-player-card strong {
         font-size: 12px;
     }
@@ -1649,95 +1582,46 @@ body {
     }
 }
 
-@media (max-device-width: 8in) {
-    .admin-main {
-        padding: 10px;
-    }
-
-    .form-card {
-        padding: 16px;
-    }
-
-    .field-group label {
-        font-size: 0.7rem;
-    }
-
-    .field-group input,
-    .field-group select,
-    .field-group textarea {
-        padding: 9px 10px;
-        font-size: 0.8rem;
-    }
-
-    .form-card-title {
-        font-size: 0.9rem;
-    }
-
-    .topbar-left,
-    .topbar-right {
-        flex-wrap: wrap;
-        gap: 2px;
+/* Large screens (tablets + desktop) */
+@media (min-width: 600px) {
+    .admin-layout {
+        flex-direction: row;
     }
 
     .admin-sidebar {
-        padding: 8px;
+        width: var(--sidebar-w);
+        position: sticky;
+        top: var(--topbar-h);
+        height: calc(100vh - var(--topbar-h));
+        border-right: 1px solid var(--border);
+        border-bottom: none;
     }
 
     .sidebar-nav {
-        gap: 8px;
-        width: fit-content;
-        padding: 8px;
-        background: rgba(0,0,0,0.2);
-        border-radius: 16px;
-    }
-
-    .sidebar-btn {
-        gap: 8px;
-        padding: 10px 20px;
-        border-radius: 12px;
-        font-weight: 600;
-        font-size: 0.85rem;
-        background: transparent;
-        color: var(--muted);
-    }
-
-    .sidebar-btn.active {
-        background: rgba(59,130,246,0.15);
-        color: var(--blue);
-        box-shadow: none;
-        border: none;
-    }
-
-    .sidebar-btn i {
-        font-size: 0.9rem;
-        width: auto;
-    }
-
-    .sidebar-btn span {
-        font-size: 0.85rem;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-
-    .admin-sidebar,
-    .admin-main {
+        flex-direction: column;
         width: 100%;
     }
 
-    .admin-list-item {
-        padding: 12px 14px;
+    .admin-form {
+        grid-template-columns: 1fr 1fr;
     }
 
-    .admin-player-card {
-        padding: 12px;
+    .players-tab-layout,
+    .matches-tab-layout {
+        grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+        gap: 28px;
     }
 
-    .admin-player-card .card-actions button {
-        flex: 1 1 100%;
-        padding: 4px 8px;
-        font-size: 10px;
-        min-height: 28px;
+    .dash-cards {
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    }
+
+    .admin-players-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    #matchesList.admin-list {
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     }
 }
 
