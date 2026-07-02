@@ -1338,6 +1338,29 @@ body {
     display: none;
 }
 
+/* Results upload small block */
+.results-upload {
+    margin-top: 18px;
+}
+
+.results-upload label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 0.85rem;
+    color: var(--muted);
+}
+
+.results-upload input[type="file"] {
+    display: block;
+    margin-top: 4px;
+}
+
+.results-upload .helper {
+    font-size: 0.8rem;
+    color: var(--muted);
+    margin-top: 8px;
+}
+
 .standings-preview {
     overflow-x: auto;
 }

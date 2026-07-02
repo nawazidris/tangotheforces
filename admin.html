@@ -262,10 +262,10 @@
                                 </button>
                             </div>
                         </form>
-                        <div style="margin-top:18px;">
-                            <label style="display:block;margin-bottom:6px;font-size:0.85rem;color:var(--muted);">Upload results.json (match results)</label>
+                        <div class="field-group results-upload">
+                            <label>Upload results.json (match results)</label>
                             <input type="file" id="resultsFileInput" accept=".json,.txt" />
-                            <p style="font-size:0.8rem;color:var(--muted);margin-top:8px;">Select a results.json file to save match results to Firebase and localStorage.</p>
+                            <p class="helper">Select a results.json file to save match results.</p>
                         </div>
                     </div>
 
@@ -312,7 +312,7 @@
                         </div>
                         <div class="field-group">
                             <label>Time</label>
-                            <input type="time" id="matchTime">
+                            <input type="time" id="matchTime" value="15:00" readonly>
                         </div>
                         <div class="field-group field-full">
                             <label>Venue</label>
