@@ -869,17 +869,23 @@ tr.row-tango .team-initials {
     .standings-table th.th-team { width: auto; max-width: 72px; padding-left: 6px; text-align: left; }
     .standings-table th.th-pts { width: 36px; padding: 0 4px; }
 
-    .team-cell { display: inline-flex; align-items: center; gap: 4px; padding: 0 3px !important; min-width: 0; }
+    .team-cell { display: inline-flex; align-items: center; gap: 3px; padding: 0 2px !important; min-width: 0; }
     .team-initials { display: none; }
-    .team-name { max-width: 56px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: inline-block; font-size: 0.72rem; }
+    .team-name { max-width: 54px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: inline-block; font-size: 0.68rem; }
 
     /* Global compacting for mobile table */
-    .standings-table { font-size: 0.72rem; }
-    .standings-table th, .standings-table td { padding: 4px 3px; font-size: 0.72rem; }
+    .standings-table { font-size: 0.68rem; }
+    .standings-table th, .standings-table td { padding: 3px 2px; font-size: 0.68rem; }
 
-    .pts-cell { font-size: 0.9rem; }
-    .form-badges { gap: 4px; }
-    .fb { width: 16px; height: 16px; font-size: 0.5rem; }
+    .pts-cell { font-size: 0.84rem; }
+    .form-badges { display: none; }
+    .fb { width: 14px; height: 14px; font-size: 0.45rem; }
+
+    /* Hide the form column header and cells under 600px */
+    #standingsTable th:last-child,
+    #standingsTable td:last-child {
+        display: none;
+    }
 }
 
 @media (max-width: 480px) {
