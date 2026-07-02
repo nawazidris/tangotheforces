@@ -1401,7 +1401,8 @@ body {
 ========================================= */
 
 @media (max-width: 1024px) {
-    .matches-tab-layout {
+    .matches-tab-layout,
+    .players-tab-layout {
         grid-template-columns: 1fr;
     }
 
