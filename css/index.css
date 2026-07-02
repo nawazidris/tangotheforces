@@ -599,10 +599,9 @@ body {
 }
 
 .about-grid {
-    display: grid;
-    grid-template-columns: 1fr 300px;
-    gap: 50px;
-    align-items: start;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
 }
 
 .about-text p {
@@ -613,11 +612,18 @@ body {
     text-align: justify;
 }
 
+.about-bottom {
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(260px, 0.8fr);
+    gap: 24px;
+    align-items: start;
+}
+
 .values-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 16px;
-    margin-top: 30px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+    margin-top: 0;
 }
 
 .value-card {
@@ -1066,8 +1072,8 @@ body {
         min-width: 240px;
     }
 
-    .about-grid {
-        grid-template-columns: 1fr;
+    .about-bottom {
+        grid-template-columns: minmax(0, 1fr) minmax(240px, 320px);
     }
 
     .about-badge-panel {
@@ -1229,13 +1235,23 @@ body {
         text-align: center;
     }
 
-    .stats-strip {
-        grid-template-columns: 1fr 1fr;
-        gap: 8px;
+    .about-bottom {
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        gap: 12px;
     }
 
     .values-grid {
         grid-template-columns: 1fr;
+        gap: 10px;
+    }
+
+    .about-badge-panel {
+        padding: 20px 14px;
+    }
+
+    .stats-strip {
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
     }
 }
 /* League Table Zone Highlighting */
