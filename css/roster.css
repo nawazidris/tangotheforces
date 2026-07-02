@@ -466,19 +466,35 @@
     }
 
     .squad-stats {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
+        display: flex;
+        flex-wrap: nowrap;
+        align-items: center;
         border-radius: 12px 12px 0 0;
     }
 
     .sq-divider { display: none; }
 
     .sq-item {
-        padding: 14px 6px;
-        border: 1px solid var(--border);
+        flex: 1;
+        padding: 10px 4px;
+        border-right: 1px solid var(--border);
+        min-width: 0;
     }
 
-    .sq-item strong { font-size: 1.4rem; }
+    .sq-item:last-child {
+        border-right: none;
+    }
+
+    .sq-item strong {
+        font-size: 0.95rem;
+        margin-bottom: 2px;
+    }
+
+    .sq-item span {
+        font-size: 0.55rem;
+        line-height: 1.2;
+        display: block;
+    }
 
     .players-section {
         padding: 24px 4% 50px;

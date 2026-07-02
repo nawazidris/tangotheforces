@@ -407,15 +407,49 @@ body {
     }
 }
 
-@media (max-width: 640px) {
-    .technical-row {
+@media (max-width: 600px) {
+    .technical-team {
+        display: flex;
+        flex-direction: column;
         gap: 12px;
     }
 
-    .technical-row .technical-card {
+    .technical-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        width: 100%;
+    }
+
+    .technical-row.top {
+        display: grid;
+        grid-template-columns: 1fr;
+    }
+
+    .technical-row.top .technical-card {
         width: 100%;
         max-width: 100%;
         padding: 16px;
+    }
+
+    .technical-row.row-2,
+    .technical-row.row-3 {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+    }
+
+    .technical-row.row-2 .technical-card,
+    .technical-row.row-3 .technical-card {
+        width: 100%;
+        max-width: 100%;
+        padding: 16px;
+    }
+
+    .technical-row.row-3 .technical-card:nth-child(4) {
+        grid-column: 2 / 3;
+        justify-self: center;
+        width: 100%;
     }
 
     .technical-card h3 {
