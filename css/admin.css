@@ -194,16 +194,24 @@ body {
     text-align: left;
     transition: 0.2s ease;
     min-width: 0;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
 }
 
 .sidebar-btn span {
     display: inline-block;
     min-width: 0;
-    max-width: calc(100% - 28px);
-    overflow: hidden;
-    text-overflow: ellipsis;
+    max-width: 100%;
+    overflow: visible;
+    text-overflow: clip;
     white-space: nowrap;
+}
+
+@media (min-width: 601px) {
+    .sidebar-btn {
+        gap: 10px;
+        padding: 9px 12px;
+        font-size: 0.84rem;
+    }
 }
 
 .sidebar-btn i {
