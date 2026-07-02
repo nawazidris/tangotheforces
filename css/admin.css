@@ -1694,8 +1694,67 @@ body {
     }
 
     .standings-preview {
-        overflow-x: auto;
+        overflow-x: visible;
     }
+
+    /* Make standings editor/table compact on phones and remove horizontal scroll */
+    .standings-editor-table {
+        table-layout: fixed;
+        width: 100%;
+        font-size: 0.82rem;
+    }
+
+    .standings-editor-table th,
+    .standings-editor-table td {
+        padding: 6px 8px;
+        font-size: 0.78rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    /* Hide less important columns (GF, GA, GD) to reduce width on phones */
+    .standings-editor-table th:nth-child(7),
+    .standings-editor-table th:nth-child(8),
+    .standings-editor-table th:nth-child(9),
+    .standings-editor-table td:nth-child(7),
+    .standings-editor-table td:nth-child(8),
+    .standings-editor-table td:nth-child(9) {
+        display: none;
+    }
+
+    /* Allow team name to wrap instead of forcing horizontal space */
+    .standings-editor-table th:nth-child(2),
+    .standings-editor-table td:nth-child(2) {
+        white-space: normal;
+    }
+
+    .paste-upload-box textarea {
+        font-size: 0.85rem;
+    }
+
+    /* Apply similar compaction to the preview output */
+    .standings-preview table {
+        width: 100%;
+        table-layout: fixed;
+        font-size: 0.82rem;
+    }
+
+    .standings-preview table th,
+    .standings-preview table td {
+        padding: 6px 8px;
+        font-size: 0.78rem;
+    }
+
+    .standings-preview table th:nth-child(7),
+    .standings-preview table th:nth-child(8),
+    .standings-preview table th:nth-child(9),
+    .standings-preview table td:nth-child(7),
+    .standings-preview table td:nth-child(8),
+    .standings-preview table td:nth-child(9) {
+        display: none;
+    }
+
 }
 
 /* Large screens (tablets + desktop) */
@@ -1811,4 +1870,20 @@ body {
 .stats-table-wrapper .table-container {
     border-top-left-radius: 0;
     border-top-right-radius: 0;
+}
+
+@media (max-width: 599px) {
+    .standings-preview td[data-short] {
+        color: transparent;
+        position: relative;
+    }
+
+    .standings-preview td[data-short]::after {
+        content: attr(data-short);
+        color: var(--text);
+        position: absolute;
+        left: 0;
+        top: 0;
+        white-space: nowrap;
+    }
 }

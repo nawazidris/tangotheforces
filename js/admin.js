@@ -1118,9 +1118,15 @@ const app = {
                     else if (pos >= (totalTeams - 3)) tr.classList.add('zone-relegation');
                 }
 
-                row.forEach(cell => {
+                row.forEach((cell, ci) => {
                     const td = document.createElement('td');
                     td.textContent = cell;
+                    // For the team name column (assumed 2nd column), add a short form (first word)
+                    if (ci === 1) {
+                        const first = (cell || '').toString().split(/\s+/)[0] || cell;
+                        td.dataset.short = first;
+                        td.title = cell;
+                    }
                     tr.appendChild(td);
                 });
                 tbody.appendChild(tr);
