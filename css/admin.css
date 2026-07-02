@@ -1487,7 +1487,7 @@ body {
     }
 
     .admin-players-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: 12px;
     }
 
@@ -1596,25 +1596,49 @@ body {
 
     .admin-player-card {
         flex-direction: column;
-        align-items: stretch;
-        gap: 10px;
-        padding: 12px;
+        align-items: flex-start;
+        gap: 8px;
+        padding: 10px 12px;
+        border-radius: 14px;
+    }
+
+    .admin-player-card .player-details {
+        min-width: 0;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
     }
 
     .admin-player-card .card-actions {
         width: 100%;
-        justify-content: space-between;
-        flex-wrap: wrap;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 40px;
+        gap: 8px;
+        justify-content: stretch;
         align-items: stretch;
         margin-left: 0;
     }
 
     .admin-player-card .card-actions button {
-        flex: 1 1 48%;
-        padding: 5px 8px;
+        flex: 0 0 auto;
+        padding: 7px 8px;
         font-size: 11px;
         width: auto;
         min-width: 0;
+        min-height: 34px;
+    }
+
+    .admin-player-card .card-actions .btn-edit {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .admin-player-card .card-actions .btn-delete {
+        width: 40px;
+        min-width: 40px;
+        justify-content: center;
+        padding: 7px;
     }
 
     .admin-player-card .player-thumb {
@@ -1622,16 +1646,16 @@ body {
         height: 44px;
     }
 
-    .admin-player-card .player-details {
-        min-width: 0;
-    }
-
     .admin-player-card strong {
         font-size: 12px;
+        white-space: normal;
+        overflow: visible;
+        text-overflow: clip;
     }
 
     .admin-player-card span {
         font-size: 10px;
+        white-space: normal;
     }
 
     .file-upload-btn {
