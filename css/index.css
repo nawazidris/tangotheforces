@@ -1180,12 +1180,19 @@ body {
         border-bottom: none;
     }
 
-    .achievements-grid {
-        grid-template-columns: 1fr;
-    }
-    
     .stat-pill strong {
         font-size: 1.5rem;
+    }
+}
+
+@media (max-width: 600px) {
+    .achievements-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+    }
+
+    .achievement-card {
+        padding: 18px 14px;
     }
 }
 
