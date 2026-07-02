@@ -559,6 +559,38 @@ body {
     border-bottom: none;
 }
 
+/* Highlight zones: top 4 (promotion/champions), 5-7 (notable spots), bottom 4 (relegation) */
+.zone-top-four td,
+.zone-top-four th {
+    background: rgba(189, 255, 186, 0.08); /* very transparent green */
+    border-bottom: none;
+}
+.zone-top-four .team-name { font-weight: 600; }
+
+.zone-mid-table td,
+.zone-mid-table th {
+    background: rgba(196, 224, 255, 0.07); /* very transparent blue */
+    border-bottom: none;
+}
+.zone-mid-table .team-name { font-weight: 600; }
+
+.zone-relegation td,
+.zone-relegation th {
+    background: rgba(255, 186, 186, 0.07); /* very transparent red */
+    border-bottom: none;
+}
+.zone-relegation .team-name { font-weight: 600; }
+
+/* Remove default row separators to keep the banded look clean */
+#standingsTable td {
+    border-bottom: none;
+}
+
+/* Keep subtle hover without overriding zone color */
+#standingsTable tbody tr:hover td {
+    background-color: rgba(255,255,255,0.02);
+}
+
 /* Position number */
 .pos-cell {
     font-weight: 700;
@@ -608,23 +640,23 @@ body {
 .gd-zero { color: var(--muted); }
 
 /* Row zone highlights */
-/* Top 4: Blue */
-tr.zone-top-four td { border-left: 3px solid var(--blue); }
+/* Top 4: remove vertical separator (keeps spacing) */
+tr.zone-top-four td { border-left: none; }
 tr.zone-top-four td:first-child { padding-left: 11px; }
 
-/* Mid-table (5-7): Yellow/Gold */
-tr.zone-mid-table td { border-left: 3px solid var(--gold); }
+/* Mid-table (5-7): remove vertical separator (keeps spacing) */
+tr.zone-mid-table td { border-left: none; }
 tr.zone-mid-table td:first-child { padding-left: 11px; }
 
 /* Legacy class support */
-tr.zone-champion td { border-left: 3px solid var(--blue); }
+tr.zone-champion td { border-left: none; }
 tr.zone-champion td:first-child { padding-left: 11px; }
 
-tr.zone-europa td { border-left: 3px solid var(--gold); }
+tr.zone-europa td { border-left: none; }
 tr.zone-europa td:first-child { padding-left: 11px; }
 
-/* Relegation (last 3-4): Red */
-tr.zone-relegation td { border-left: 3px solid var(--red); }
+/* Relegation (last 3-4): remove vertical separator (keeps spacing) */
+tr.zone-relegation td { border-left: none; }
 tr.zone-relegation td:first-child { padding-left: 11px; }
 
 /* Tango FC highlight row */
@@ -633,7 +665,7 @@ tr.row-tango {
     box-shadow: inset 0 0 20px rgba(16,185,129,0.15);
 }
 
-tr.row-tango td { border-left: 3px solid var(--green); }
+tr.row-tango td { border-left: none; }
 tr.row-tango td:first-child { padding-left: 11px; }
 
 tr.row-tango .team-name {

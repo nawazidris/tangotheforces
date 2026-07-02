@@ -27,7 +27,7 @@
     --red-glow: rgba(239, 68, 68, 0.4);
     --gold: #f59e0b;
     --gold-glow: rgba(245, 158, 11, 0.4);
-    --sidebar-w: 220px;
+    --sidebar-w: 110px;
     --topbar-h: 64px;
 }
 
@@ -180,25 +180,37 @@ body {
 .sidebar-btn {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 8px;
     width: 100%;
-    padding: 12px 16px;
+    padding: 8px 10px;
     background: none;
     border: none;
     border-radius: 12px;
     color: var(--muted);
-    font-size: 0.9rem;
+    font-size: 0.82rem;
     font-family: 'Inter', sans-serif;
     font-weight: 500;
     cursor: pointer;
     text-align: left;
     transition: 0.2s ease;
+    min-width: 0;
+    flex-wrap: wrap;
+}
+
+.sidebar-btn span {
+    display: inline-block;
+    min-width: 0;
+    max-width: calc(100% - 28px);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .sidebar-btn i {
     width: 18px;
     text-align: center;
     font-size: 0.9rem;
+    flex-shrink: 0;
 }
 
 .sidebar-btn:hover {
@@ -864,6 +876,10 @@ body {
     color: #e8eaf0;
 }
 
+.match-card__score--upcoming {
+    color: #ff4f4f;
+}
+
 .match-card__badge {
     font-size: 10px;
     font-weight: 500;
@@ -1032,8 +1048,20 @@ body {
 
 .admin-players-grid {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 18px 20px;
+}
+
+@media (max-width: 1100px) {
+    .admin-players-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 760px) {
+    .admin-players-grid {
+        grid-template-columns: 1fr;
+    }
 }
 
 .admin-player-card {
@@ -1056,8 +1084,8 @@ body {
 
 .admin-player-card strong {
     display: block;
-    font-size: 14px;
-    font-weight: 500;
+    font-size: 13px;
+    font-weight: 700;
     line-height: 1.2;
     margin: 0;
     color: #f2f2f2;
@@ -1069,7 +1097,7 @@ body {
 .admin-player-card span {
     display: block;
     color: #9a9ba8;
-    font-size: 12px;
+    font-size: 10px;
     margin-top: 2px;
     white-space: nowrap;
     overflow: hidden;
@@ -1109,14 +1137,16 @@ body {
 
 .admin-player-card .card-actions {
     display: flex;
-    align-items: center;
-    gap: 8px;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 6px;
     flex-shrink: 0;
 }
 
 .admin-player-card .card-actions button {
-    display: flex;
+    display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 4px;
     font-size: 12px;
     font-weight: 500;
@@ -1124,6 +1154,7 @@ body {
     padding: 6px 10px;
     cursor: pointer;
     white-space: nowrap;
+    min-width: 32px;
 }
 
 .admin-player-card .card-actions .btn-edit {
@@ -1137,14 +1168,13 @@ body {
 }
 
 .admin-player-card .card-actions .btn-delete {
-    width: 32px;
-    height: 32px;
-    padding: 0;
+    width: 100%;
     background: #3a1f24;
     color: #f26a6a;
     border: none;
     border-radius: 8px;
     justify-content: center;
+    padding: 6px 10px;
 }
 
 .admin-player-card .card-actions .btn-delete:hover {
@@ -1345,6 +1375,26 @@ body {
     background: rgba(255,255,255,0.03);
 }
 
+/* Coloring for the admin standings preview to match the public table */
+.standings-preview tr.zone-top-four td,
+.standings-preview tr.zone-top-four th {
+    background: rgba(189, 255, 186, 0.08);
+    border-bottom: none;
+}
+.standings-preview tr.zone-mid-table td,
+.standings-preview tr.zone-mid-table th {
+    background: rgba(196, 224, 255, 0.07);
+    border-bottom: none;
+}
+.standings-preview tr.zone-relegation td,
+.standings-preview tr.zone-relegation th {
+    background: rgba(255, 186, 186, 0.07);
+    border-bottom: none;
+}
+
+/* Remove separators in preview for cleaner look */
+.standings-preview td { border-bottom: none; }
+
 
 /* =========================================
    RESPONSIVE
@@ -1378,6 +1428,26 @@ body {
     }
 }
 
+@media (max-width: 680px) {
+    .admin-sidebar {
+        width: 100%;
+        padding: 14px 12px;
+    }
+
+    .sidebar-btn span {
+        display: inline-block;
+    }
+
+    .sidebar-btn {
+        gap: 8px;
+        padding: 10px 12px;
+    }
+
+    .sidebar-nav {
+        gap: 6px;
+    }
+}
+
 @media (max-width: 768px) {
     .admin-layout {
         flex-direction: column;
@@ -1391,6 +1461,17 @@ body {
         border-right: none;
         border-bottom: 1px solid var(--border);
         padding: 16px 14px;
+    }
+
+    .sidebar-btn {
+        justify-content: flex-start;
+        padding: 10px 12px;
+    }
+
+    .sidebar-btn span {
+        display: inline-block;
+        white-space: normal;
+        max-width: calc(100% - 32px);
     }
 
     .admin-main {
@@ -1496,14 +1577,14 @@ body {
 
     .admin-player-card {
         flex-direction: column;
-        align-items: flex-start;
+        align-items: stretch;
         gap: 10px;
         padding: 14px;
     }
 
     .admin-player-card .card-actions {
         width: 100%;
-        justify-content: flex-start;
+        justify-content: space-between;
         flex-wrap: wrap;
     }
 
@@ -1514,6 +1595,18 @@ body {
     .admin-player-card .player-thumb {
         width: 50px;
         height: 50px;
+    }
+
+    .admin-player-card .player-details {
+        min-width: 0;
+    }
+
+    .admin-player-card strong {
+        font-size: 12px;
+    }
+
+    .admin-player-card span {
+        font-size: 10px;
     }
 }
 
@@ -1551,12 +1644,31 @@ body {
         padding: 12px 10px;
     }
 
+    .admin-sidebar,
+    .admin-main {
+        width: 100%;
+    }
+
     .admin-list-item {
         padding: 12px 14px;
     }
 
+    .admin-player-card {
+        padding: 12px;
+    }
+
     .admin-player-card .card-actions button {
         flex: 1 1 100%;
+    }
+
+    .sidebar-btn {
+        gap: 8px;
+    }
+
+    .sidebar-btn span {
+        font-size: 0.82rem;
+        white-space: normal;
+        overflow-wrap: anywhere;
     }
 }
 

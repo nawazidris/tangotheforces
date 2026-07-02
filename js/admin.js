@@ -239,6 +239,7 @@ const app = {
             document.getElementById("matchForm")?.addEventListener("submit", this.handleMatchFormSubmit);
             document.getElementById("teamMetricsForm")?.addEventListener("submit", this.handleTeamMetricsSubmit);
             document.getElementById("standingsFileInput")?.addEventListener("change", this.handleStandingsUpload);
+            document.getElementById("resultsFileInput")?.addEventListener("change", this.handleResultsUpload);
             document.getElementById("newsForm")?.addEventListener("submit", this.handleNewsFormSubmit);
             document.getElementById("mediaForm")?.addEventListener("submit", this.handleMediaFormSubmit);
             document.querySelector('.btn-logout')?.addEventListener('click', () => app.auth.logout());
@@ -481,6 +482,45 @@ const app = {
             reader.readAsText(file);
         },
 
+        handleResultsUpload: function(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = async function(e) {
+                const text = e.target.result;
+                let parsed = null;
+
+                if (file.type.includes('json') || file.name.toLowerCase().endsWith('.json')) {
+                    try {
+                        const rawParsed = JSON.parse(text);
+                        // Accept both { matches: [...] } and plain array
+                        if (rawParsed && Array.isArray(rawParsed.matches)) parsed = rawParsed;
+                        else if (Array.isArray(rawParsed)) parsed = { matches: rawParsed };
+                        else parsed = null;
+                    } catch (err) { parsed = null; }
+                }
+
+                if (parsed && Array.isArray(parsed.matches)) {
+                    localStorage.setItem('resultsJson', JSON.stringify(parsed));
+                    if (window.db) {
+                        try {
+                            await window.db.collection('settings').doc('results').set({ data: JSON.stringify(parsed) });
+                            alert('results.json saved to Firebase and localStorage.');
+                        } catch (e) {
+                            console.error('Firebase save results failed:', e);
+                            alert('results.json saved to localStorage, but saving to Firebase failed.');
+                        }
+                    } else {
+                        alert('results.json saved to localStorage.');
+                    }
+                } else {
+                    alert('Unable to parse results file. Ensure it is a JSON object with a "matches" array or a raw array of match objects.');
+                }
+            };
+            reader.readAsText(file);
+        },
+
         addMatchEvent: function() {
             const player = document.getElementById("eventPlayer").value;
             const type = document.getElementById("eventType").value;
@@ -576,10 +616,11 @@ const app = {
             }
 
             const buildCard = (p) => {
+                const displayName = p.nickname || p.name;
                 const img = p.playerImage || p.image || '';
                 const thumb = img
                     ? `<img src="${img}" alt="${p.name}">`
-                    : `<div class="player-initials">${p.name.substring(0,3)}</div>`;
+                    : `<div class="player-initials">${displayName.substring(0,3)}</div>`;
 
                 const editBtn = canEdit
                     ? `<button class="btn-edit" onclick="window.app.ui.editPlayer(${p.id})"><i class="fa-solid fa-pen"></i> EDIT</button>`
@@ -592,7 +633,7 @@ const app = {
                     <div class="admin-player-card">
                         <div class="player-thumb">${thumb}</div>
                         <div class="player-details">
-                            <strong>${p.name}</strong>
+                            <strong title="${p.name}">${displayName}</strong>
                             <span>#${p.number || '—'} · ${p.position || 'Forward'}</span>
                         </div>
                         <div class="card-actions">${editBtn} ${deleteBtn}</div>
@@ -612,9 +653,20 @@ const app = {
                 container.innerHTML = `<p style="color:var(--muted);font-size:0.9rem;padding:16px 0;">No matches registered.</p>`;
                 return;
             }
-            container.innerHTML = app.state.matches.map(m => {
+
+            const sortedMatches = [...app.state.matches].sort((a, b) => {
+                const aDate = Date.parse(a.date);
+                const bDate = Date.parse(b.date);
+                const aTime = Number.isNaN(aDate) ? Infinity : aDate;
+                const bTime = Number.isNaN(bDate) ? Infinity : bDate;
+                if (aTime === bTime) return 0;
+                return aTime - bTime;
+            });
+
+            container.innerHTML = sortedMatches.map(m => {
                 const completed = m.status === 'completed';
-                const score = completed ? `${m.homeScore} – ${m.awayScore}` : 'TBD';
+                const score = completed ? `${m.homeScore} – ${m.awayScore}` : 'Upcoming';
+                const scoreClass = completed ? '' : 'match-card__score--upcoming';
                 return `
                     <div class="match-card">
                         <div class="match-card__info">
@@ -631,7 +683,7 @@ const app = {
                                 </span>
                             </div>
                             <div class="match-card__result">
-                                <span class="match-card__score">${score}</span>
+                                <span class="match-card__score ${scoreClass}">${score}</span>
                             </div>
                         </div>
                         <div class="match-card__actions">
@@ -1056,6 +1108,16 @@ const app = {
             const tbody = document.createElement('tbody');
             parsed.rows.forEach(row => {
                 const tr = document.createElement('tr');
+
+                // Determine zone classes based on position
+                const pos = parseInt(row[0]);
+                const totalTeams = parsed.rows.length;
+                if (!isNaN(pos)) {
+                    if (pos >= 1 && pos <= 4) tr.classList.add('zone-top-four');
+                    else if (pos >= 5 && pos <= 7) tr.classList.add('zone-mid-table');
+                    else if (pos >= (totalTeams - 3)) tr.classList.add('zone-relegation');
+                }
+
                 row.forEach(cell => {
                     const td = document.createElement('td');
                     td.textContent = cell;

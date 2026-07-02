@@ -70,6 +70,23 @@ const standingsApp = {
         },
 
         loadMatches: async function() {
+            // Prefer Firebase 'settings' doc 'results', then localStorage, then static file
+            if (window.db) {
+                try {
+                    const doc = await window.db.collection('settings').doc('results').get();
+                    if (doc.exists && doc.data().data) {
+                        const parsed = JSON.parse(doc.data().data);
+                        if (parsed && Array.isArray(parsed.matches)) return parsed;
+                    }
+                } catch (e) { console.warn('Firebase fetch results failed, falling back to local files.', e); }
+            }
+
+            const localRaw = localStorage.getItem('resultsJson');
+            if (localRaw) {
+                try { const parsed = JSON.parse(localRaw); if (parsed && Array.isArray(parsed.matches)) return parsed; }
+                catch (e) { /* ignore */ }
+            }
+
             try {
                 let res = await fetch('data/results.json');
                 if (!res.ok) res = await fetch('results.json');
