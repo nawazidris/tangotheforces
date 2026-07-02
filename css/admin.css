@@ -1595,16 +1595,17 @@ body {
     }
 
     .admin-player-card {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 8px;
+        flex-direction: row;
+        align-items: center;
+        gap: 10px;
         padding: 10px 12px;
         border-radius: 14px;
+        flex-wrap: wrap;
     }
 
     .admin-player-card .player-details {
         min-width: 0;
-        width: 100%;
+        flex: 1 1 auto;
         display: flex;
         flex-direction: column;
         gap: 2px;
@@ -1618,6 +1619,8 @@ body {
         justify-content: stretch;
         align-items: stretch;
         margin-left: 0;
+        margin-top: 4px;
+        grid-column: 1 / -1;
     }
 
     .admin-player-card .card-actions button {
