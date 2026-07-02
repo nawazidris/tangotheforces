@@ -1238,6 +1238,7 @@ body {
     .about-bottom {
         grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
         gap: 12px;
+        align-items: stretch;
     }
 
     .values-grid {
@@ -1245,8 +1246,20 @@ body {
         gap: 10px;
     }
 
+    .value-card {
+        padding: 16px 12px;
+        min-height: 132px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
     .about-badge-panel {
         padding: 20px 14px;
+        min-height: 132px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
     }
 
     .stats-strip {
