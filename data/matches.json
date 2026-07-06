@@ -1,290 +1,409 @@
 [
-  
   {
-    "id": 8,
-    "homeTeam": "Tango FC",
-    "awayTeam": "Safeguard",
-    "homeScore": 3,
-    "awayScore": 2,
-    "date": "2026-03-21",
-    "time": "15:00",
     "venue": "Shakashe Stadium",
+    "awayScore": "2",
+    "awayTeam": "Safeguard",
+    "homeScore": "3",
+    "id": "8",
+    "time": "15:00",
+    "homeTeam": "Tango FC",
     "status": "completed",
-    "competition": "League",
+    "date": "2026-03-21",
     "events": [
-      { "type": "goal", "team": "home", "player": "Tan Tan", "minute": 15 },
-      { "type": "goal", "team": "home", "player": "DOS", "minute": 38 },
-      { "type": "goal", "team": "home", "player": "Edrice", "minute": 80 }
+      {
+        "minute": 15,
+        "type": "goal",
+        "player": "Tan Tan",
+        "team": "home"
+      },
+      {
+        "player": "DOS",
+        "team": "home",
+        "minute": 38,
+        "type": "goal"
+      },
+      {
+        "minute": 80,
+        "type": "goal",
+        "player": "Edrice",
+        "team": "home"
+      }
     ]
   },
   {
-    "id": 9,
     "homeTeam": "Tango FC",
-    "awayTeam": "Exor Stars",
-     "homeScore": 0,
-    "awayScore": 1,
-    "date": "2026-03-28",
-    "time": "15:00",
-    "venue": "Shakashe Stadium",
     "status": "completed",
+    "date": "2026-03-28",
+    "events": [],
+    "venue": "Shakashe Stadium",
+    "awayTeam": "Exor Stars",
+    "awayScore": 1,
     "competition": "League",
-    "events": []
+    "homeScore": 0,
+    "id": 9,
+    "time": "15:00"
   },
   {
+    "venue": "Mucheke Stadium",
+    "awayTeam": "Tango FC",
+    "awayScore": 1,
+    "time": "15:00",
+    "competition": "League",
+    "homeScore": 0,
     "id": 10,
     "homeTeam": "Motor Sales",
-    "awayTeam": "Tango FC",
-    "homeScore": 0,
-    "awayScore": 1,
-    "date": "2026-04-04",
-    "time": "15:00",
-    "venue": "Mucheke Stadium",
     "status": "completed",
-    "competition": "League",
     "events": [
-      { "type": "goal", "team": "away", "player": "Tsano", "minute": 30 }
-    ]
+      {
+        "team": "away",
+        "player": "Tsano",
+        "type": "goal",
+        "minute": 30
+      }
+    ],
+    "date": "2026-04-04"
   },
   {
+    "venue": "Border Stadium",
+    "awayTeam": "Tango FC",
+    "awayScore": 0,
+    "time": "15:00",
+    "competition": "League",
+    "homeScore": 0,
     "id": 11,
     "homeTeam": "FC Duchima",
-    "awayTeam": "Tango FC",
-    "homeScore": 0,
-    "awayScore": 0,
-    "date": "2026-04-11",
-    "time": "15:00",
-    "venue": "Border Stadium",
     "status": "completed",
-    "competition": "League",
-    "events": []
+    "events": [],
+    "date": "2026-04-11"
   },
   {
-    "id": 12,
-    "homeTeam": "Tango FC",
+    "venue": "Shakashe Stadium",
+    "awayScore": 2,
     "awayTeam": "Sparklions FC",
+    "id": 12,
     "homeScore": 1,
-    "awayScore": 2,
-    "date": "2026-04-18",
-    "time": "15:00",
-    "venue": "Shakashe Stadium",
-    "status": "completed",
     "competition": "League",
-    "events": [
-      { "type": "goal", "team": "home", "player": "Kimmich", "minute": 67}
-    ]
-  },
-  {
-    "id": 13,
+    "time": "15:00",
     "homeTeam": "Tango FC",
-    "awayTeam": "Prison FC",
-    "homeScore": 3,
-    "awayScore": 2,
+    "status": "completed",
+    "date": "2026-04-18",
+    "events": [
+      {
+        "type": "goal",
+        "minute": 67,
+        "team": "home",
+        "player": "Kimmich"
+      }
+    ]
+  },
+  {
+    "events": [
+      {
+        "minute": 22,
+        "type": "goal",
+        "player": "Edrice",
+        "team": "home"
+      },
+      {
+        "minute": 30,
+        "type": "goal",
+        "player": "Edrice",
+        "team": "home"
+      },
+      {
+        "team": "home",
+        "player": "Tan Tan",
+        "type": "goal",
+        "minute": 41
+      }
+    ],
     "date": "2026-04-25",
+    "homeTeam": "Tango FC",
+    "status": "completed",
     "time": "15:00",
+    "competition": "League",
+    "homeScore": 3,
+    "id": 13,
     "venue": "Shakashe Stadium",
-    "status": "completed",
-    "competition": "League",
-    "events": [
-      { "type": "goal", "team": "home", "player": "Edrice", "minute": 22},
-      { "type": "goal", "team": "home", "player": "Edrice", "minute": 30 },
-      { "type": "goal", "team": "home", "player": "Tan Tan", "minute": 41 }
-    ]
+    "awayTeam": "Prison FC",
+    "awayScore": 2
   },
   {
-    "id": 14,
     "homeTeam": "Morefire FC",
-    "awayTeam": "Tango FC",
-    "homeScore": 1,
-    "awayScore": 3,
+    "status": "completed",
+    "events": [
+      {
+        "team": "away",
+        "player": "Gerrygold",
+        "type": "goal",
+        "minute": 26
+      },
+      {
+        "player": "Svari",
+        "team": "away",
+        "assist": "Edrice",
+        "type": "goal",
+        "minute": 60
+      },
+      {
+        "player": "Vincho",
+        "type": "goal",
+        "minute": 70,
+        "team": "away",
+        "assist": "Edrice"
+      }
+    ],
     "date": "2026-05-02",
-    "time": "15:00",
     "venue": "Pecos Arena Stadium",
-    "status": "completed",
-    "competition": "League",
-    "events": [
-      { "type": "goal", "team": "away", "player": "Gerrygold", "minute": 26},
-      { "type": "goal", "team": "away", "player": "Svari", "assist": "Edrice", "minute": 60 },
-      { "type": "goal", "team": "away", "player": "Vincho", "assist": "Edrice", "minute": 70}
-    ]
-  },
-  {
-    "id": 15,
-    "homeTeam": "LOG FC",
     "awayTeam": "Tango FC",
-    "homeScore": 1,
-    "awayScore": 1,
-    "date": "2026-05-09",
+    "awayScore": 3,
     "time": "15:00",
-    "venue": "Mamutse Stadium",
-    "status": "completed",
     "competition": "League",
+    "homeScore": 1,
+    "id": 14
+  },
+  {
+    "venue": "Mamutse Stadium",
+    "awayScore": 1,
+    "awayTeam": "Tango FC",
+    "id": 15,
+    "homeScore": 1,
+    "competition": "League",
+    "time": "15:00",
+    "homeTeam": "LOG FC",
+    "status": "completed",
+    "date": "2026-05-09",
     "events": [
-      { "type": "goal", "team": "away", "player": "Mahrez", "assist": "Edrice", "minute": 80}
+      {
+        "player": "Mahrez",
+        "assist": "Edrice",
+        "team": "away",
+        "minute": 80,
+        "type": "goal"
+      }
     ]
   },
   {
+    "venue": "Shakashe Stadium",
+    "awayTeam": "Thorglott FC",
+    "awayScore": 1,
+    "time": "15:00",
+    "competition": "League",
+    "homeScore": 2,
     "id": 16,
     "homeTeam": "Tango FC",
-    "awayTeam": "Thorglott FC",
-    "homeScore": 2,
-    "awayScore": 1,
-    "date": "2026-05-16",
-    "time": "15:00",
-    "venue": "Shakashe Stadium",
     "status": "completed",
-    "competition": "League",
     "events": [
-      { "type": "goal", "team": "away", "player": "Edrice", "assist": "Mahrez ", "minute": 20},
-      { "type": "goal", "team": "away", "player": "Edrice", "minute": 80}
-    ]
+      {
+        "minute": 20,
+        "type": "goal",
+        "assist": "Mahrez ",
+        "team": "away",
+        "player": "Edrice"
+      },
+      {
+        "minute": 80,
+        "type": "goal",
+        "player": "Edrice",
+        "team": "away"
+      }
+    ],
+    "date": "2026-05-16"
   },
   {
-    "id": 17,
-    "homeTeam": "Tango FC",
+    "venue": "Shakashe Stadium",
     "awayTeam": "CDA",
-    "homeScore": 1,
     "awayScore": 2,
-    "date": "2026-05-23",
-    "time": "15:00",
-    "venue": "Shakashe Stadium",
-    "status": "completed",
     "competition": "League",
+    "homeScore": 1,
+    "id": 17,
+    "time": "15:00",
+    "homeTeam": "Tango FC",
+    "status": "completed",
+    "date": "2026-05-23",
     "events": [
-      { "type": "goal", "team": "home", "player": "Vincho", "assist": "Edrice", "minute": 75}
+      {
+        "minute": 75,
+        "type": "goal",
+        "assist": "Edrice",
+        "team": "home",
+        "player": "Vincho"
+      }
     ]
   },
   {
-    "id": 18,
-    "homeTeam": "Mutimurefu FC",
-    "awayTeam": "Tango FC",
-    "homeScore": 0,
-    "awayScore": 1,
-    "date": "2026-05-30",
     "time": "15:00",
-    "venue": "Ndarama High Stadium",
-    "status": "completed",
     "competition": "League",
+    "homeScore": 0,
+    "id": 18,
+    "venue": "Ndarama High Stadium",
+    "awayTeam": "Tango FC",
+    "awayScore": 1,
     "events": [
-      { "type": "goal", "team": "away", "player": "Edrice", "minute": 70}
-    ]
+      {
+        "team": "away",
+        "player": "Edrice",
+        "type": "goal",
+        "minute": 70
+      }
+    ],
+    "date": "2026-05-30",
+    "homeTeam": "Mutimurefu FC",
+    "status": "completed"
   },
-{
+  {
+    "venue": "Shakashe Stadium",
+    "awayScore": 0,
+    "awayTeam": "GZU FC",
+    "time": "15:00",
+    "competition": "League",
+    "homeScore": 3,
     "id": 19,
     "homeTeam": "Tango FC",
-    "awayTeam": "GZU FC",
-    "homeScore": 3,
-    "awayScore": 0,
-    "date": "2026-06-06",
-    "time": "15:00",
-    "venue": "Shakashe Stadium",
     "status": "completed",
-    "competition": "League",
     "events": [
-      { "type": "goal", "team": "home", "player": "Vincho", "minute": 13},
-      { "type": "goal", "team": "home", "player": "Edrice", "minute": 34},
-      { "type": "goal", "team": "home", "player": "Edrice", "minute": 60}
-    ]
+      {
+        "player": "Vincho",
+        "team": "home",
+        "minute": 13,
+        "type": "goal"
+      },
+      {
+        "team": "home",
+        "player": "Edrice",
+        "type": "goal",
+        "minute": 34
+      },
+      {
+        "team": "home",
+        "player": "Edrice",
+        "type": "goal",
+        "minute": 60
+      }
+    ],
+    "date": "2026-06-06"
   },
   {
-"id": 20,
-"homeTeam": "Tango FC",
-"awayTeam": "ZRP FC",
-"homeScore": 2,
-"awayScore": 2,
-"date": "2026-06-13",
-"time": "15:00",
-"venue": "Shakashe Stadium",
-"status": "completed",
-"competition": "League",
-"events": [
-  { "type": "goal", "team": "home", "player": "Tife", "minute": 18},
-  { "type": "goal", "team": "home", "player": "Shule", "minute": 40}
-]
-},
-{
-  "id": 21,
-  "homeTeam": "Zinwa Runde",
-  "awayTeam": "Tango FC",
-  "homeScore": null,
-  "awayScore": null,
-  "date": "2026-06-20",
-  "time": "15:00",
-  "venue": "Mucheke B Arena 2",
-  "status": "upcoming",
-  "competition": "League",
-  "events": [
-    
-  ]
-},
-{
-  "id": 22,
-  "homeTeam": "Steers FC",
-  "awayTeam": "Tango FC",
-  "homeScore": null,
-  "awayScore": null,
-  "date": "2026-06-27",
-  "time": "15:00",
-  "venue": "Pangolin Ground",
-  "status": "upcoming",
-  "competition": "League",
-  "events": [
-    
-  ]
-},
-{
-  "id": 23,
-  "homeTeam": "Flesk United FC",
-  "awayTeam": "Tango FC",
-  "homeScore": null,
-  "awayScore": null,
-  "date": "2026-07-04",
-  "time": "15:00",
-  "venue": "Teachers Ground",
-  "status": "upcoming",
-  "competition": "League",
-  "events": [
-    
-  ]
-},
-{
-  "id": 24,
-  "homeTeam": "Tango FC",
-  "awayTeam": "Mugodhi FC",
-  "homeScore": null,
-  "awayScore": null,
-  "date": "2026-07-11",
-  "time": "15:00",
-  "venue": "Shakashe Stadium",
-  "status": "upcoming",
-  "competition": "League",
-  "events": [
-    
-  ]
-},
-{
-  "id": 25,
-  "homeTeam": "Tango FC",
-  "awayTeam": "Chibuku FC",
-  "homeScore": null,
-  "awayScore": null,
-  "date": "2026-07-18",
-  "time": "15:00",
-  "venue": "Shakashe Stadium",
-  "status": "upcoming",
-  "competition": "League",
-  "events": []
-},
-{
-  "id": 26,
-  "homeTeam": "Tango FC",
-  "awayTeam": "Cotrad FC",
-  "homeScore": null,
-  "awayScore": null,
-  "date": "2026-07-25",
-  "time": "15:00",
-  "venue": "Shakashe Stadium",
-  "status": "upcoming",
-  "competition": "League",
-  "events": []
-}
+    "events": [
+      {
+        "player": "Tife",
+        "team": "home",
+        "minute": 18,
+        "type": "goal"
+      },
+      {
+        "team": "home",
+        "player": "Shule",
+        "type": "goal",
+        "minute": 40
+      }
+    ],
+    "date": "2026-06-13",
+    "status": "completed",
+    "homeTeam": "Tango FC",
+    "time": "15:00",
+    "id": 20,
+    "competition": "League",
+    "homeScore": 2,
+    "awayScore": 2,
+    "awayTeam": "ZRP FC",
+    "venue": "Shakashe Stadium"
+  },
+  {
+    "awayScore": "1",
+    "awayTeam": "Tango FC",
+    "venue": "Mucheke B Arena 2",
+    "time": "15:00",
+    "id": "21",
+    "homeScore": "3",
+    "status": "completed",
+    "homeTeam": "Zinwa Runde",
+    "events": [
+      {
+        "player": "Panashe Vaiya",
+        "team": "away",
+        "minute": "32",
+        "type": "goal"
+      }
+    ],
+    "date": "2026-06-20"
+  },
+  {
+    "status": "completed",
+    "homeTeam": "Steers FC",
+    "events": [],
+    "date": "2026-06-27",
+    "awayScore": "0",
+    "awayTeam": "Tango FC",
+    "venue": "Pangolin Ground",
+    "time": "15:00",
+    "id": "22",
+    "homeScore": "2"
+  },
+  {
+    "homeTeam": "Tango FC",
+    "status": "completed",
+    "date": "2026-07-04",
+    "events": [
+      {
+        "assist": "Edward Mapuranga",
+        "team": "home",
+        "minute": "34",
+        "type": "goal",
+        "player": "Abel Makuvise"
+      },
+      {
+        "player": "Edward Mapuranga",
+        "assist": "Edrice Mujeyi",
+        "team": "home",
+        "minute": "67",
+        "type": "goal"
+      }
+    ],
+    "venue": "Shakashe Stadium",
+    "awayScore": "1",
+    "awayTeam": "Flesk United FC",
+    "id": "23",
+    "homeScore": "2",
+    "time": "15:00"
+  },
+  {
+    "homeTeam": "Tango FC",
+    "status": "upcoming",
+    "date": "2026-07-11",
+    "events": [],
+    "venue": "Shakashe Stadium",
+    "awayTeam": "Mugodhi FC",
+    "awayScore": null,
+    "competition": "League",
+    "homeScore": null,
+    "id": 24,
+    "time": "15:00"
+  },
+  {
+    "homeTeam": "Tango FC",
+    "status": "upcoming",
+    "events": [],
+    "date": "2026-07-18",
+    "venue": "Shakashe Stadium",
+    "awayTeam": "Chibuku FC",
+    "awayScore": null,
+    "time": "15:00",
+    "competition": "League",
+    "homeScore": null,
+    "id": 25
+  },
+  {
+    "status": "upcoming",
+    "homeTeam": "Tango FC",
+    "date": "2026-07-25",
+    "events": [],
+    "awayScore": null,
+    "awayTeam": "Cotrad FC",
+    "venue": "Shakashe Stadium",
+    "id": 26,
+    "homeScore": null,
+    "competition": "League",
+    "time": "15:00"
+  }
 ]

@@ -8,6 +8,7 @@ const app = {
         media: [],
         teamMetrics: {},
         currentUser: null,
+        pendingMediaFile: null,
     },
 
     init: async function() {
@@ -242,6 +243,7 @@ const app = {
             document.getElementById("resultsFileInput")?.addEventListener("change", this.handleResultsUpload);
             document.getElementById("newsForm")?.addEventListener("submit", this.handleNewsFormSubmit);
             document.getElementById("mediaForm")?.addEventListener("submit", this.handleMediaFormSubmit);
+            document.getElementById("mediaFileInput")?.addEventListener("change", this.handleMediaFileSelection);
             document.querySelector('.btn-logout')?.addEventListener('click', () => app.auth.logout());
             document.getElementById("eventType")?.addEventListener('change', app.ui.toggleAssistField);
         },
@@ -395,23 +397,57 @@ const app = {
             app.ui.renderNews();
         },
 
+        handleMediaFileSelection: function(event) {
+            const file = event.target.files?.[0] || null;
+            app.state.pendingMediaFile = file;
+            const urlField = document.getElementById("mediaUrl");
+            if (!file && urlField) {
+                urlField.placeholder = "images/gallery/photo.jpg or YouTube Video ID";
+                return;
+            }
+            if (urlField) {
+                urlField.placeholder = `Selected file: ${file.name}`;
+            }
+        },
+
         handleMediaFormSubmit: async function(e) {
             e.preventDefault();
             const rawType = document.getElementById("mediaType").value;
             const rawCategory = document.getElementById("mediaCategory").value;
             const mediaType = app.utils.normalizeMediaType(rawType);
             const mediaCategory = app.utils.normalizeMediaCategory(rawCategory);
+            const pendingFile = app.state.pendingMediaFile;
+            const urlField = document.getElementById("mediaUrl");
+            let resolvedUrl = (urlField?.value || '').trim();
 
             if (!mediaCategory) {
                 alert("Please provide a valid media category. Suggested options: newseason, matchday, champions.");
                 return;
             }
 
+            if (pendingFile) {
+                const mimeType = pendingFile.type || '';
+                const fileType = mimeType.startsWith('video/') ? 'video' : mimeType.startsWith('image/') ? 'image' : mediaType;
+                const dataUrl = await new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onload = () => resolve(reader.result);
+                    reader.onerror = () => reject(new Error('Unable to read the selected file.'));
+                    reader.readAsDataURL(pendingFile);
+                });
+                resolvedUrl = dataUrl;
+                document.getElementById("mediaType").value = fileType;
+            }
+
+            if (!resolvedUrl) {
+                alert("Please provide a URL or upload a media file.");
+                return;
+            }
+
             const mediaItem = {
                 id: document.getElementById("mediaId").value || Date.now().toString(),
-                type: mediaType,
+                type: app.utils.normalizeMediaType(document.getElementById("mediaType").value),
                 category: mediaCategory,
-                url: document.getElementById("mediaUrl").value,
+                url: resolvedUrl,
                 title: document.getElementById("mediaTitle").value,
             };
 
@@ -434,7 +470,7 @@ const app = {
             
             // Save media to localStorage
             localStorage.setItem('adminMedia', JSON.stringify(app.state.media));
-            
+            app.state.pendingMediaFile = null;
             e.target.reset();
             app.ui.renderMedia();
         },
@@ -1326,18 +1362,20 @@ const app = {
         },
 
         downloadPlayerData: async function() {
-            if (!window.db) {
-                alert("Cannot download data. Firebase is not connected.");
-                return;
-            }
             try {
-                const snapshot = await window.db.collection('players').get();
-                const players = snapshot.docs.map(doc => doc.data());
+                let players = [...(app.state.players || [])];
+                if (window.db) {
+                    try {
+                        const snapshot = await window.db.collection('players').get();
+                        players = snapshot.docs.map(doc => doc.data());
+                    } catch (error) {
+                        console.warn('Falling back to local player data for download.', error);
+                    }
+                }
 
-                // Sort players by ID for consistency
-                players.sort((a, b) => a.id - b.id);
+                players.sort((a, b) => (a.id || 0) - (b.id || 0));
 
-                const dataStr = JSON.stringify(players, null, 2); // Pretty-print JSON
+                const dataStr = JSON.stringify(players, null, 2);
                 const dataBlob = new Blob([dataStr], { type: "application/json" });
                 const url = URL.createObjectURL(dataBlob);
                 const a = document.createElement('a');
@@ -1352,15 +1390,18 @@ const app = {
         },
 
         downloadMatchData: async function() {
-            if (!window.db) {
-                alert("Cannot download data. Firebase is not connected.");
-                return;
-            }
             try {
-                const snapshot = await window.db.collection('matches').get();
-                const matches = snapshot.docs.map(doc => doc.data());
+                let matches = [...(app.state.matches || [])];
+                if (window.db) {
+                    try {
+                        const snapshot = await window.db.collection('matches').get();
+                        matches = snapshot.docs.map(doc => doc.data());
+                    } catch (error) {
+                        console.warn('Falling back to local match data for download.', error);
+                    }
+                }
 
-                matches.sort((a, b) => a.id - b.id);
+                matches.sort((a, b) => (a.id || 0) - (b.id || 0));
 
                 const dataStr = JSON.stringify(matches, null, 2);
                 const dataBlob = new Blob([dataStr], { type: "application/json" });
@@ -1377,15 +1418,24 @@ const app = {
         },
 
         exportResultsAsJson: function() {
-            // Build results from matches data
-            const resultsData = {
-                matches: app.state.matches || []
-            };
+            const sourceMatches = Array.isArray(app.state.matches) ? app.state.matches : [];
 
-            if (resultsData.matches.length === 0) {
+            if (sourceMatches.length === 0) {
                 alert('No matches data to export. Please load or add matches first.');
                 return;
             }
+
+            const resultsData = {
+                matches: sourceMatches.map((match, index) => ({
+                    week: Number(match.week) || Number(match.round) || index + 1,
+                    home: match.homeTeam || match.home || '',
+                    away: match.awayTeam || match.away || '',
+                    homeScore: match.homeScore ?? null,
+                    awayScore: match.awayScore ?? null,
+                    ...(match.date ? { date: match.date } : {}),
+                    ...(match.venue ? { venue: match.venue } : {})
+                }))
+            };
 
             const jsonString = JSON.stringify(resultsData, null, 2);
             const blob = new Blob([jsonString], { type: 'application/json' });
@@ -1398,7 +1448,7 @@ const app = {
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
 
-            alert('Results exported as results.json. Please replace the file in data/results.json and commit the changes.');
+            alert('Results exported as results.json using the standard results file format.');
         },
 
         exportNewsAsJson: function() {

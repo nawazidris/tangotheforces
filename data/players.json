@@ -1,135 +1,394 @@
 [
-    {
-        "id": 1,
-        "name": "Edrice",
-        "position": "Forward",
-        "image": "images/idris.jpg",
-        "stats": {
-            "gamesPlayed": 7,
-            "goals": 8,
-            "assists": 3
-        }
-    },
-    {
-        "id": 2,
-        "name": "Tan Tan",
-        "position": "Midfielder",
-        "image": "images/tantan.jpg",
-        "stats": {
-            "gamesPlayed": 6,
-            "goals": 2,
-            "assists": 1
-        }
-    },
-    {
-        "id": 3,
-        "name": "Tsano",
-        "position": "Defender",
-        "image": "https://placehold.co/95x95?text=KC",
-        "stats": {
-            "gamesPlayed": 6,
-            "goals": 1,
-            "cleanSheets": 1,
-            "assists": 0
-        }
-    },
-    {
-        "id": 4,
-        "name": "Kimmich",
-        "position": "Midfielder",
-        "image": "images/kimmich.jpg",
-        "stats": {
-            "gamesPlayed": 6,
-            "goals": 1,
-            "assists": 0
-        }
-    },
-    {
-        "id": 5,
-        "name": "Vincho",
-        "position": "Forward",
-        "image": "images/vincho.jpg",
-        "stats": {
-            "gamesPlayed": 8,
-            "goals": 3,
-            "assists": 3
-        }
-    },
-    {
-        "id": 6,
-        "name": "Gerrygold",
-        "position": "Defender",
-        "image": "images/gerrygold.jpg",
-        "stats": {
-            "gamesPlayed": 7,
-            "goals": 1,
-            "assists": 0
-        }
-    },
-    {
-        "id": 7,
-        "name": "Mahrez",
-        "position": "Forward",
-        "image": "https://placehold.co/95x95?text=KC",  
-        "stats": {
-            "gamesPlayed": 6,
-            "goals": 1,
-            "assists": 1
-        }
-        },
-    {
-        "id": 8,
-        "name": "Dos",
-        "position": "Midfielder",
-        "image": "images/dos.jpg",
-        "stats": {
-            "gamesPlayed": 8,
-            "goals": 1,
-            "assists": 3
-        }
-    },
-    {
-        "id": 10,
-        "name": "Shule",
-        "position": "Midfielder",
-        "image": "images/shule.jpg",
-        "stats": {
-            "gamesPlayed": 8,
-            "goals": 1,
-            "assists": 1
-        }
-    },
-    {
-        "id": 11,
-        "name": "Tafadzwa Magande",
-        "position": "Forward",
-        "image": "https://placehold.co/95x95?text=KC",
-        "stats": {
-            "gamesPlayed": 2,
-            "goals": 1,
-            "assists": 1
-        }
-    },
-    {
-        "id": 12,
-        "name": "Maluwa",
-        "position": "Defender",
-        "image": "images/maluwa.jpg",
-        "stats": {
-            "gamesPlayed": 8,
-            "goals": 1,
-            "assists": 0
-        }
-    },
-    {
-        "id": 9,
-        "name": "Svari",
-        "position": "Forward",
-        "image": "images/svari.jpg",
-        "stats": {
-            "gamesPlayed": 2,
-            "goals": 1,
-            "assists": 0
-        }
-    }
+  {
+    "chancesCreated": 6,
+    "number": 15,
+    "goals": 8,
+    "tackles": 0,
+    "interceptions": 2,
+    "nickname": "Nawaz",
+    "shotsOnTarget": 10,
+    "id": 1,
+    "recoveries": 0,
+    "shots": 18,
+    "name": "Edrice Mujeyi",
+    "playerImage": "images/idris.jpg",
+    "cleansheets": 0,
+    "position": "Forward",
+    "assists": 5
+  },
+  {
+    "name": "Blessing Zvinoitavamwe",
+    "playerImage": "images/bleja.jpg",
+    "position": "Forward",
+    "assists": 0,
+    "id": 2,
+    "number": 9,
+    "nickname": "Bleja",
+    "goals": 0
+  },
+  {
+    "tackles": 0,
+    "interceptions": 0,
+    "nickname": "Svari",
+    "chancesCreated": 3,
+    "number": 11,
+    "goals": 2,
+    "name": "Abel Makuvise",
+    "playerImage": "images/svari1.jpg",
+    "cleansheets": 0,
+    "position": "Forward",
+    "assists": 0,
+    "shotsOnTarget": 0,
+    "id": 3,
+    "recoveries": 0,
+    "shots": 0
+  },
+  {
+    "nickname": "Vincho",
+    "goals": 3,
+    "assists": 3,
+    "number": 7,
+    "id": 4,
+    "position": "Forward",
+    "name": "Vincent Mukumba",
+    "playerImage": "images/vincho.jpg"
+  },
+  {
+    "position": "Forward",
+    "name": "Shephard Mukarati",
+    "playerImage": "images/psg.jpg",
+    "nickname": "PSG",
+    "goals": 0,
+    "id": 5,
+    "number": 16,
+    "assists": 1
+  },
+  {
+    "assists": 0,
+    "cleansheets": 0,
+    "position": "Forward",
+    "name": "Simbarashe Borerwa",
+    "playerImage": "https://placehold.co/95x95?text=SB",
+    "shots": 0,
+    "recoveries": 0,
+    "id": 6,
+    "shotsOnTarget": 0,
+    "nickname": "Jah Bhora",
+    "interceptions": 0,
+    "tackles": 0,
+    "goals": 0,
+    "number": 17,
+    "chancesCreated": 0
+  },
+  {
+    "nickname": "Goda",
+    "goals": 0,
+    "id": 7,
+    "number": 19,
+    "assists": 0,
+    "position": "Forward",
+    "name": "Godfrey Rwodzi",
+    "playerImage": "images/goda.jpg"
+  },
+  {
+    "nickname": "Bambo",
+    "goals": 0,
+    "id": 8,
+    "number": 8,
+    "assists": 0,
+    "position": "Midfielder",
+    "playerImage": "images/jamela.jpg",
+    "name": "Alious Jamela"
+  },
+  {
+    "playerImage": "images/dhila.jpg",
+    "name": "Delight Mwadira",
+    "position": "Midfielder",
+    "assists": 0,
+    "id": 9,
+    "number": 13,
+    "nickname": "Mashefu",
+    "goals": 0
+  },
+  {
+    "nickname": "Milito",
+    "goals": 0,
+    "id": 10,
+    "number": 4,
+    "assists": 0,
+    "position": "Midfielder",
+    "name": "Milton Bosha",
+    "playerImage": "images/milito1.jpg"
+  },
+  {
+    "position": "Midfielder",
+    "playerImage": "images/shule.jpg",
+    "name": "Providence Mashuro",
+    "nickname": "Shule",
+    "goals": 1,
+    "id": 11,
+    "number": 17,
+    "assists": 1
+  },
+  {
+    "assists": 0,
+    "number": 14,
+    "id": 12,
+    "nickname": "Tsoko",
+    "goals": 0,
+    "name": "Blessed Shoko",
+    "playerImage": "images/shoko.jpg",
+    "position": "Midfielder"
+  },
+  {
+    "assists": 4,
+    "cleansheets": 0,
+    "position": "Midfielder",
+    "playerImage": "images/dos.jpg",
+    "name": "Edward Mapuranga",
+    "shots": 4,
+    "id": 13,
+    "recoveries": 0,
+    "shotsOnTarget": 0,
+    "nickname": "Dos",
+    "interceptions": 3,
+    "tackles": 3,
+    "goals": 2,
+    "number": 14,
+    "chancesCreated": 5
+  },
+  {
+    "playerImage": "https://placehold.co/95x95?text=AG",
+    "name": "Abisha Gideon",
+    "position": "Midfielder",
+    "assists": 0,
+    "id": 14,
+    "number": 14,
+    "nickname": "Yaya",
+    "goals": 0
+  },
+  {
+    "assists": 0,
+    "id": 15,
+    "number": 14,
+    "nickname": "Levels",
+    "goals": 0,
+    "name": "Author Masocha",
+    "playerImage": "images/levels.jpg",
+    "position": "Midfielder"
+  },
+  {
+    "assists": 0,
+    "number": 16,
+    "id": 16,
+    "nickname": "Jimere",
+    "goals": 0,
+    "name": "Tafadzwa Jimere",
+    "playerImage": "images/jimere.jpg",
+    "position": "Midfielder"
+  },
+  {
+    "position": "Defender",
+    "cleansheets": 16,
+    "name": "Lordship Sithole",
+    "playerImage": "images/lord.jpg",
+    "nickname": "Lord",
+    "assists": 0,
+    "goals": 0,
+    "id": 17,
+    "number": 5
+  },
+  {
+    "name": "Nokutenda Makumbe",
+    "playerImage": "images/noku.jpg",
+    "position": "Defender",
+    "assists": 0,
+    "id": 18,
+    "number": 4,
+    "nickname": "Noku",
+    "goals": 0
+  },
+  {
+    "name": "Panashe Vaiya",
+    "playerImage": "images/maluwa.jpg",
+    "position": "Defender",
+    "assists": 0,
+    "number": 3,
+    "id": 19,
+    "nickname": "Maluwa",
+    "goals": 0
+  },
+  {
+    "nickname": "Bhani",
+    "goals": 0,
+    "assists": 0,
+    "id": 20,
+    "number": 16,
+    "position": "Defender",
+    "name": "Alban Makwarimba",
+    "playerImage": "images/ban.jpg"
+  },
+  {
+    "name": "Musa Chasepa",
+    "playerImage": "images/inter.jpg",
+    "position": "Defender",
+    "assists": 0,
+    "id": 21,
+    "number": 2,
+    "nickname": "Inter",
+    "goals": 0
+  },
+  {
+    "position": "Defender",
+    "name": "Washington Murambidza",
+    "playerImage": "images/washco.jpg",
+    "nickname": "Washco",
+    "goals": 0,
+    "id": 22,
+    "number": 22,
+    "assists": 0
+  },
+  {
+    "playerImage": "images/ian.jpg",
+    "name": "Ian Pisirai",
+    "position": "Defender",
+    "assists": 0,
+    "id": 23,
+    "number": 20,
+    "nickname": "Ian",
+    "goals": 0
+  },
+  {
+    "name": "Leeroy Mamombe",
+    "playerImage": "images/maleedza.jpg",
+    "position": "Defender",
+    "id": 24,
+    "number": 24,
+    "assists": 0,
+    "nickname": "Maleedza",
+    "goals": 0
+  },
+  {
+    "id": 25,
+    "number": 21,
+    "assists": 0,
+    "nickname": "Tanaka",
+    "goals": 0,
+    "name": "Bruce Tanaka Venganai",
+    "playerImage": "images/bruce.jpg",
+    "position": "Defender"
+  },
+  {
+    "tackles": 0,
+    "interceptions": 3,
+    "nickname": "Ba Rashy",
+    "chancesCreated": 0,
+    "number": 1,
+    "goals": 0,
+    "name": "Knowledge Sheche",
+    "playerImage": "images/rashy1.jpg",
+    "position": "Goalkeeper",
+    "cleansheets": 13,
+    "assists": 0,
+    "shotsOnTarget": 0,
+    "SavePercentage": 60,
+    "recoveries": 0,
+    "id": 26,
+    "shots": 0
+  },
+  {
+    "tackles": 0,
+    "nickname": "Fofo",
+    "interceptions": 4,
+    "chancesCreated": 0,
+    "goals": 0,
+    "number": 23,
+    "position": "Goalkeeper",
+    "cleansheets": 3,
+    "name": "Forster Chikusvura",
+    "playerImage": "images/fofo.jpg",
+    "assists": 0,
+    "SavePercentage": 60,
+    "shotsOnTarget": 0,
+    "shots": 0,
+    "id": 27,
+    "recoveries": 0
+  },
+  {
+    "id": 28,
+    "number": 18,
+    "assists": 1,
+    "nickname": "Tife",
+    "goals": 1,
+    "playerImage": "https://placehold.co/95x95?text=TM",
+    "name": "Tafadzwa Magande",
+    "position": "Forward"
+  },
+  {
+    "name": "Gerald Wafawanaka",
+    "playerImage": "images/gerrygold.jpg",
+    "position": "Defender",
+    "assists": 0,
+    "number": 4,
+    "id": 1782478435501,
+    "nickname": "Gold",
+    "goals": 1
+  },
+  {
+    "position": "Defender",
+    "name": "Patrick Chikwashiwa",
+    "playerImage": "https://placehold.co/95x95?text=PC",
+    "nickname": "Tsano",
+    "goals": 1,
+    "id": 1782478459003,
+    "number": 5,
+    "assists": 0
+  },
+  {
+    "nickname": "Mahrez",
+    "goals": 1,
+    "assists": 1,
+    "id": 1782478511115,
+    "number": 33,
+    "position": "Forward",
+    "name": "Kudzai Muganhu",
+    "playerImage": "https://placehold.co/95x95?text=KM"
+  },
+  {
+    "position": "Midfielder",
+    "playerImage": "images/tan tan.jpg",
+    "name": "Tanaka Muganhu",
+    "nickname": "Tan tan",
+    "goals": 2,
+    "number": 25,
+    "id": 1782478606092,
+    "assists": 1
+  },
+  {
+    "id": 1782479064585,
+    "number": 6,
+    "assists": 0,
+    "nickname": "Kimmich",
+    "goals": 1,
+    "playerImage": "images/kimmich.jpg",
+    "name": "Munyaradzi Munyeketi",
+    "position": "Midfielder"
+  },
+  {
+    "assists": 0,
+    "name": "Percy Tinago",
+    "playerImage": "https://placehold.co/95x95?text=PT",
+    "cleansheets": 0,
+    "position": "Goalkeeper",
+    "recoveries": 0,
+    "id": 1783319746265,
+    "shots": 0,
+    "shotsOnTarget": 0,
+    "interceptions": 0,
+    "nickname": "Percy",
+    "tackles": 0,
+    "number": 99,
+    "goals": 0,
+    "chancesCreated": 0
+  }
 ]
