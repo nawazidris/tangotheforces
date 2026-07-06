@@ -138,39 +138,56 @@
                     </ul>
                 </div>
 
-                <div class="glass-card form-card" style="margin-top: 24px;">
-                    <h3 class="form-card-title">
-                        <i class="fa-solid fa-file-export"></i> JSON Data Tools
-                    </h3>
-                    <p class="form-card-desc">
-                        Upload and download the site’s JSON files directly from the dashboard.
-                    </p>
-                    <div class="field-group field-full">
-                        <label>Upload results.json</label>
-                        <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
-                            <input type="file" id="resultsFileInput" accept=".json" style="flex: 1; min-width: 240px;" />
-                            <button type="button" class="btn-secondary" onclick="window.app.ui.exportResultsAsJson()" style="white-space: nowrap;">
-                                <i class="fa-solid fa-download"></i> Export results.json
+                <div class="glass-card form-card json-tools-card" style="margin-top: 24px;">
+                    <div class="json-tools-header">
+                        <div>
+                            <h3 class="form-card-title">
+                                <i class="fa-solid fa-file-export"></i> JSON Data Tools
+                            </h3>
+                            <p class="form-card-desc">
+                                Upload and download the site’s JSON files directly from the dashboard.
+                            </p>
+                        </div>
+                        <div class="json-tools-badge">
+                            <i class="fa-solid fa-shield-halved"></i>
+                            <span>Secure sync</span>
+                        </div>
+                    </div>
+
+                    <div class="json-tools-grid">
+                        <div class="json-upload-panel">
+                            <label class="json-upload-label" for="resultsFileInput">Upload results.json</label>
+                            <div class="json-upload-control">
+                                <input class="json-file-input" type="file" id="resultsFileInput" accept=".json" />
+                                <button type="button" class="btn-secondary json-action-btn" onclick="window.app.ui.exportResultsAsJson()">
+                                    <i class="fa-solid fa-download"></i> Export results.json
+                                </button>
+                            </div>
+                            <p class="helper">Select a results.json file to save match results locally and in Firebase.</p>
+                        </div>
+
+                        <div class="json-actions-grid">
+                            <button type="button" class="json-action-card" onclick="window.app.ui.downloadMatchData()">
+                                <i class="fa-solid fa-table-list"></i>
+                                <span>Download matches.json</span>
+                            </button>
+                            <button type="button" class="json-action-card" onclick="window.app.events.exportStandingsAsJson()">
+                                <i class="fa-solid fa-file-code"></i>
+                                <span>Export log.json</span>
+                            </button>
+                            <button type="button" class="json-action-card" onclick="window.app.ui.exportNewsAsJson()">
+                                <i class="fa-solid fa-newspaper"></i>
+                                <span>Export news.json</span>
+                            </button>
+                            <button type="button" class="json-action-card" onclick="window.app.ui.exportMediaAsJson()">
+                                <i class="fa-solid fa-photo-film"></i>
+                                <span>Export media.json</span>
+                            </button>
+                            <button type="button" class="json-action-card" onclick="window.app.ui.downloadPlayerData()">
+                                <i class="fa-solid fa-users"></i>
+                                <span>Download players.json</span>
                             </button>
                         </div>
-                        <p class="helper">Select a results.json file to save match results locally and in Firebase.</p>
-                    </div>
-                    <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 12px;">
-                        <button type="button" class="btn-secondary" onclick="window.app.ui.downloadMatchData()">
-                            <i class="fa-solid fa-download"></i> Download matches.json
-                        </button>
-                        <button type="button" class="btn-secondary" onclick="window.app.events.exportStandingsAsJson()">
-                            <i class="fa-solid fa-download"></i> Export log.json
-                        </button>
-                        <button type="button" class="btn-secondary" onclick="window.app.ui.exportNewsAsJson()">
-                            <i class="fa-solid fa-download"></i> Export news.json
-                        </button>
-                        <button type="button" class="btn-secondary" onclick="window.app.ui.exportMediaAsJson()">
-                            <i class="fa-solid fa-download"></i> Export media.json
-                        </button>
-                        <button type="button" class="btn-secondary" onclick="window.app.ui.downloadPlayerData()">
-                            <i class="fa-solid fa-download"></i> Download players.json
-                        </button>
                     </div>
                 </div>
 

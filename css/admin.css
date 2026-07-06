@@ -352,6 +352,121 @@ body {
    DASHBOARD
 ========================================= */
 
+.json-tools-card {
+    padding: 24px;
+}
+
+.json-tools-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.json-tools-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    border-radius: 999px;
+    background: rgba(16, 185, 129, 0.14);
+    color: var(--green);
+    border: 1px solid rgba(16, 185, 129, 0.22);
+    font-size: 0.8rem;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.json-tools-grid {
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    gap: 18px;
+}
+
+.json-upload-panel {
+    padding: 18px;
+    border-radius: 16px;
+    border: 1px solid var(--border);
+    background: rgba(255, 255, 255, 0.04);
+}
+
+.json-upload-label {
+    display: block;
+    margin-bottom: 10px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--text);
+}
+
+.json-upload-control {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.json-file-input {
+    flex: 1;
+    min-width: 240px;
+    padding: 10px 12px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: rgba(0, 0, 0, 0.25);
+    color: var(--text);
+    font-size: 0.9rem;
+}
+
+.json-file-input::-webkit-file-upload-button {
+    margin-right: 10px;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 8px;
+    background: rgba(59, 130, 246, 0.18);
+    color: var(--blue);
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.json-action-btn {
+    white-space: nowrap;
+}
+
+.json-actions-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.json-action-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 94px;
+    padding: 14px 12px;
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    background: linear-gradient(135deg, rgba(255,255,255,0.07), rgba(59,130,246,0.08));
+    color: var(--text);
+    font-weight: 700;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+}
+
+.json-action-card:hover {
+    transform: translateY(-2px);
+    border-color: rgba(59, 130, 246, 0.28);
+    background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(59,130,246,0.12));
+}
+
+.json-action-card i {
+    font-size: 1.1rem;
+    color: var(--blue);
+}
+
 .dash-cards {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -1557,6 +1672,28 @@ body {
     .form-card {
         padding: 16px;
         margin-bottom: 16px;
+    }
+
+    .json-tools-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .json-tools-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .json-actions-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .json-upload-control {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .json-file-input {
+        min-width: 0;
     }
 
     .admin-form {
