@@ -1376,6 +1376,77 @@ const app = {
             }
         },
 
+        exportResultsAsJson: function() {
+            // Build results from matches data
+            const resultsData = {
+                matches: app.state.matches || []
+            };
+
+            if (resultsData.matches.length === 0) {
+                alert('No matches data to export. Please load or add matches first.');
+                return;
+            }
+
+            const jsonString = JSON.stringify(resultsData, null, 2);
+            const blob = new Blob([jsonString], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'results.json';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+
+            alert('Results exported as results.json. Please replace the file in data/results.json and commit the changes.');
+        },
+
+        exportNewsAsJson: function() {
+            // Export all news articles
+            const newsData = app.state.news || [];
+
+            if (newsData.length === 0) {
+                alert('No news articles to export.');
+                return;
+            }
+
+            const jsonString = JSON.stringify(newsData, null, 2);
+            const blob = new Blob([jsonString], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'news.json';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+
+            alert('News articles exported as news.json. Please replace the file in data/news.json and commit the changes.');
+        },
+
+        exportMediaAsJson: function() {
+            // Export all media items
+            const mediaData = app.state.media || [];
+
+            if (mediaData.length === 0) {
+                alert('No media items to export.');
+                return;
+            }
+
+            const jsonString = JSON.stringify(mediaData, null, 2);
+            const blob = new Blob([jsonString], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'media.json';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+
+            alert('Media exported as media.json. Please add this file to data/media.json and commit the changes.');
+        },
+
         deleteMedia: async function(id) {
             if (!this.userHasPermission(['Admin'])) {
                 alert("You do not have permission to delete media.");

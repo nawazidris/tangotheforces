@@ -264,7 +264,12 @@
                         </form>
                         <div class="field-group results-upload">
                             <label>Upload results.json (match results)</label>
-                            <input type="file" id="resultsFileInput" accept=".json,.txt" />
+                            <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                                <input type="file" id="resultsFileInput" accept=".json,.txt" style="flex: 1;" />
+                                <button type="button" class="btn-secondary" onclick="app.ui.exportResultsAsJson()" data-permission="Admin,Coach" style="white-space: nowrap;">
+                                    <i class="fa-solid fa-download"></i> Export results.json
+                                </button>
+                            </div>
                             <p class="helper">Select a results.json file to save match results.</p>
                         </div>
                     </div>
@@ -537,7 +542,12 @@
                 </div>
 
                 <div class="list-section">
-                    <h3 class="list-title">Published Articles</h3>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                        <h3 class="list-title">Published Articles</h3>
+                        <button class="btn-secondary" onclick="app.ui.exportNewsAsJson()" data-permission="Admin,Logistics">
+                            <i class="fa-solid fa-download"></i> Export news.json
+                        </button>
+                    </div>
                     <div id="newsList" class="admin-list"></div>
                 </div>
             </section>
@@ -594,7 +604,12 @@
                 </div>
 
                 <div class="list-section">
-                    <h3 class="list-title">Media Library</h3>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                        <h3 class="list-title">Media Library</h3>
+                        <button class="btn-secondary" onclick="app.ui.exportMediaAsJson()" data-permission="Admin,Logistics">
+                            <i class="fa-solid fa-download"></i> Export media.json
+                        </button>
+                    </div>
                     <div id="mediaList" class="admin-list"></div>
                 </div>
             </section>
