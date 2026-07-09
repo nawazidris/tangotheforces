@@ -370,29 +370,30 @@
   {
     "homeTeam": "Tango FC",
     "status": "upcoming",
+    "events": [],
     "date": "2026-07-11",
-    "events": [],
-    "venue": "Shakashe Stadium",
-    "awayTeam": "Mugodhi FC",
-    "awayScore": null,
-    "competition": "League",
-    "homeScore": null,
-    "id": 24,
-    "time": "15:00"
-  },
-  {
-    "homeTeam": "Tango FC",
-    "status": "upcoming",
-    "events": [],
-    "date": "2026-07-18",
     "venue": "Shakashe Stadium",
     "awayTeam": "Chibuku FC",
     "awayScore": null,
     "time": "15:00",
     "competition": "League",
     "homeScore": null,
-    "id": 25
+    "id": 24
   },
+  {
+    "homeTeam": "Tango FC",
+    "status": "upcoming",
+    "date": "2026-07-18",
+    "events": [],
+    "venue": "Shakashe Stadium",
+    "awayTeam": "Mugodhi FC",
+    "awayScore": null,
+    "competition": "League",
+    "homeScore": null,
+    "id": 25,
+    "time": "15:00"
+  },
+  
   {
     "status": "upcoming",
     "homeTeam": "Tango FC",
