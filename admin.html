@@ -367,6 +367,14 @@
                             <input type="text" id="matchVenue" placeholder="e.g. Mucheke Stadium">
                         </div>
                         <div class="field-group">
+                            <label>Competition</label>
+                            <select id="matchCompetition">
+                                <option value="League">League</option>
+                                <option value="Cup">Cup</option>
+                                <option value="Friendly">Friendly</option>
+                            </select>
+                        </div>
+                        <div class="field-group">
                             <label>Status</label>
                             <select id="matchStatus">
                                 <option value="upcoming">Upcoming</option>
@@ -375,11 +383,11 @@
                         </div>
                         <div class="field-group">
                             <label>Home Score</label>
-                            <input type="number" id="homeScore" min="0" placeholder="0">
+                            <input type="number" id="homeScore" min="0" placeholder="e.g. 2">
                         </div>
                         <div class="field-group">
                             <label>Away Score</label>
-                            <input type="number" id="awayScore" min="0" placeholder="0">
+                            <input type="number" id="awayScore" min="0" placeholder="e.g. 1">
                         </div>
 
                         <!-- Match Events -->

@@ -321,6 +321,7 @@ const app = {
             const matchId = document.getElementById("matchId").value || Date.now().toString();
             const match = {
                 id:        document.getElementById("matchId").value || Date.now(),
+                competition: document.getElementById("matchCompetition").value || 'Friendly',
                 homeTeam:  document.getElementById("homeTeam").value,
                 awayTeam:  document.getElementById("awayTeam").value,
                 date:      document.getElementById("matchDate").value,
@@ -1321,6 +1322,7 @@ const app = {
             const match = app.state.matches.find(m => m.id == id);
             if (!match) return;
             document.getElementById("matchId").value = match.id;
+            document.getElementById("matchCompetition").value = match.competition || 'Friendly';
             document.getElementById("homeTeam").value = match.homeTeam;
             document.getElementById("awayTeam").value = match.awayTeam;
             document.getElementById("matchDate").value = match.date;
