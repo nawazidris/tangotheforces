@@ -761,7 +761,7 @@ const app = {
                     <div class="match-card">
                         <div class="match-card__info">
                             <div class="match-card__competition">
-                                <i class="ti ti-trophy" aria-hidden="true"></i> LEAGUE
+                                <i class="ti ti-trophy" aria-hidden="true"></i> ${m.competition || 'Friendly'}
                             </div>
                             <p class="match-card__title">${m.homeTeam} vs ${m.awayTeam}</p>
                             <div class="match-card__meta">
