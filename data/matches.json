@@ -368,42 +368,56 @@
     "time": "15:00"
   },
   {
-    "homeTeam": "Tango FC",
-    "status": "upcoming",
-    "events": [],
+    "homeTeam": "Chibuku FC",
+    "status": "completed",
+    "events": [
+
+],
     "date": "2026-07-11",
-    "venue": "Shakashe Stadium",
-    "awayTeam": "Chibuku FC",
-    "awayScore": null,
+    "venue": "Mucheke B Arena 1",
+    "awayTeam": "Tango FC",
+    "awayScore": 3,
     "time": "15:00",
     "competition": "League",
-    "homeScore": null,
+    "homeScore": 3,
     "id": 24
   },
   {
     "homeTeam": "Tango FC",
-    "status": "upcoming",
+    "status": "completed",
     "date": "2026-07-18",
-    "events": [],
+    "events": [
+"assist": "Nawaz",
+        "team": "home",
+        "minute": "44",
+        "type": "goal",
+        "player": "Shirma"
+],
     "venue": "Shakashe Stadium",
     "awayTeam": "Mugodhi FC",
-    "awayScore": null,
+    "awayScore": 1,
     "competition": "League",
-    "homeScore": null,
+    "homeScore": 1,
     "id": 25,
     "time": "15:00"
   },
   
   {
-    "status": "upcoming",
-    "homeTeam": "Tango FC",
+    "status": "completed",
+    "homeTeam": "Cotrad FC",
     "date": "2026-07-25",
-    "events": [],
-    "awayScore": null,
-    "awayTeam": "Cotrad FC",
-    "venue": "Shakashe Stadium",
+    "events": [
+"assist": "Ba Rashy",
+        "team": "away",
+        "minute": "90",
+        "type": "goal",
+        "player": "Camavinga"
+],
+    "awayScore": 1,
+    "awayTeam": "Tango FC",
+    "venue": "Poly Stadium",
     "id": 26,
-    "homeScore": null,
+    "homeScore": 0,
     "competition": "League",
     "time": "15:00"
   }
