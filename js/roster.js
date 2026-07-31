@@ -3,6 +3,7 @@ let allPlayers = [];
 document.addEventListener('DOMContentLoaded', () => {
     loadPlayers();
     setupFilters();
+    PlayerService.getPlayers(); // Pre-fetch player data for nickname lookups
 });
 
 const getPositionPriority = (position = '') => {
@@ -29,28 +30,9 @@ async function loadPlayers() {
     if (!container) return;
 
     try {
-        if (window.db) {
-            try {
-                const snapshot = await window.db.collection('players').get();
-                if (!snapshot.empty) {
-                    allPlayers = sortRosterPlayers(snapshot.docs
-                        .map(doc => doc.data())
-                        .filter(player => player && player.id != null));
-                }
-            } catch (firebaseError) {
-                console.error('Failed to fetch roster players from Firebase:', firebaseError);
-            }
-        }
-
-        if (!Array.isArray(allPlayers) || allPlayers.length === 0) {
-            if (typeof getMergedPlayers === 'function') {
-                allPlayers = getMergedPlayers();
-            } else {
-                const localAdmin = localStorage.getItem('adminPlayers');
-                const localAll = localStorage.getItem('allPlayers');
-                allPlayers = localAdmin ? JSON.parse(localAdmin) : (localAll ? JSON.parse(localAll) : basePlayers || []);
-            }
-        }
+        // Use PlayerService to load players, which handles Firebase and fallback logic
+        const playersFromService = await PlayerService.getPlayers();
+        allPlayers = sortRosterPlayers(playersFromService.filter(player => player && player.id != null));
     } catch (e) {
         console.error('Error loading player data profiles:', e);
         allPlayers = basePlayers || [];

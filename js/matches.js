@@ -2,6 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initializeMatches();
     setupFilters();
     setupBackToTop();
+    PlayerService.getPlayers(); // Pre-fetch player data for nickname lookups
 });
 
 let allMatches = [];
@@ -192,9 +193,11 @@ function createMatchCard(match) {
     let eventsHtml = '';
     if (match.events && match.events.length > 0) {
         const renderEvent = e => {
+            const playerName = PlayerService.getNickname(e.player);
+            const assistName = e.assist ? PlayerService.getNickname(e.assist) : '';
             const min = e.minute ? `${e.minute}'` : '';
-            const player = e.player || '';
-            const assist = e.assist ? ` (assist: ${e.assist})` : '';
+            const player = playerName || '';
+            const assist = assistName ? ` <span class="assist">🅰️ ${assistName}</span>` : '';
             let markHtml = '';
 
             if (e.type === 'goal') {

@@ -19,7 +19,7 @@ const CARD_POS_CLASS = {
     Goalkeeper: 'pos-goalkeeper',
 };
 
-function findPlayerById(id) {
+async function findPlayerById(id) {
     if (!id) {
         return null;
     }
@@ -33,9 +33,10 @@ function findPlayerById(id) {
             return selectedPlayer;
         }
     }
-    // As a reliable fallback, use the same function as the roster page to get the full, merged player list.
-    const allPlayers = getMergedPlayers();
-    const player = allPlayers.find(p => String(p.id) === String(id));
+
+    // Use PlayerService to get the full list of players
+    const allPlayers = await PlayerService.getPlayers();
+    const player = allPlayers.find(p => String(p.id) === String(id)); // Ensure ID comparison is consistent
     if (player) return player;
     return null;
 }
@@ -116,9 +117,10 @@ function renderNotFound() {
     `;
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+    await PlayerService.getPlayers(); // Ensure player data is loaded before attempting to find a player
     const id = new URLSearchParams(window.location.search).get('id');
-    const player = findPlayerById(id);
+    const player = await findPlayerById(id);
 
     if (player) {
         renderPlayer(player);
