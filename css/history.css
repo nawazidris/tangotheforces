@@ -1,3 +1,5 @@
+@import url("variables.css");
+
 /* =========================================
    TANGO FC DARK THEME DESIGN SYSTEM
 ========================================= */
@@ -9,19 +11,18 @@
 }
 
 :root {
-    --bg: #07111f;
-    --card: rgba(255,255,255,0.06);
-    --border: rgba(255,255,255,0.08);
-    --text: #ffffff;
-    --muted: #9ca3af;
-    --blue: #3b82f6;
-    --green: #10b981;
-    --red: #ef4444;
-    --gold: #f59e0b;
+    --card: var(--card-bg);
+    --border: var(--border-color);
+    --text: var(--text-color);
+    --muted: var(--text-secondary);
+    --blue: var(--accent-color);
+    --green: var(--success);
+    --red: var(--danger-color);
+    --gold: var(--gold);
 }
 
 body {
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-family-base);
     background: var(--bg);
     color: var(--text);
     line-height: 1.6;
@@ -275,7 +276,7 @@ section h3::before {
     background: rgba(255,255,255,0.02);
     border-radius: 8px;
     margin-bottom: 10px;
-    border: 1px solid rgba(255,255,255,0.03);
+    border: 1px solid var(--card-bg);
 }
 
 .scorer-item span:first-child {

@@ -1,0 +1,187 @@
+/* Shared base UI patterns for the Tango FC site */
+
+:root {
+    --shadow-soft: 0 10px 30px rgba(0, 0, 0, 0.22);
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: var(--font-family-base);
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-family: var(--font-family-heading);
+    letter-spacing: 0.02em;
+}
+
+a {
+    color: inherit;
+}
+
+button,
+input,
+textarea,
+select {
+    font: inherit;
+}
+
+img {
+    display: block;
+    max-width: 100%;
+}
+
+main {
+    min-height: 60vh;
+}
+
+.component-loading main-header,
+.component-loading mobile-nav,
+.component-loading main-footer {
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.loading-state,
+.error-state,
+.empty-state {
+    display: grid;
+    place-items: center;
+    gap: 0.75rem;
+    padding: 2rem;
+    border: 1px dashed var(--border-color);
+    border-radius: 1rem;
+    background: rgba(255, 255, 255, 0.02);
+    text-align: center;
+    color: var(--muted);
+}
+
+.loading-state {
+    min-height: 220px;
+}
+
+.loading-spinner {
+    width: 2.75rem;
+    height: 2.75rem;
+    border: 3px solid rgba(255, 255, 255, 0.16);
+    border-top-color: var(--accent-color);
+    border-radius: 50%;
+    animation: spin 0.9s linear infinite;
+}
+
+.skeleton-line,
+.skeleton-block {
+    background: linear-gradient(90deg, rgba(255,255,255,0.08) 25%, rgba(255,255,255,0.16) 50%, rgba(255,255,255,0.08) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.2s linear infinite;
+    border-radius: 999px;
+}
+
+.skeleton-line {
+    height: 0.85rem;
+    width: 100%;
+}
+
+.skeleton-block {
+    height: 6rem;
+    border-radius: 1rem;
+}
+
+.glass-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border-radius: 24px;
+    box-shadow: var(--shadow-soft);
+    transition: background 0.3s ease, border-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.glass-card:hover {
+    background: var(--card-hover);
+    border-color: var(--border-hover);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+}
+
+.btn-primary,
+.btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.85rem 1.2rem;
+    border-radius: 999px;
+    text-decoration: none;
+    font-weight: 600;
+    border: 1px solid transparent;
+    cursor: pointer;
+}
+
+.btn-primary {
+    background: var(--accent-color);
+    color: white;
+}
+
+.btn-secondary {
+    background: transparent;
+    color: var(--text);
+    border-color: var(--border-color);
+}
+
+.back-to-top {
+    position: fixed;
+    right: 1.25rem;
+    bottom: 1.25rem;
+    z-index: 1200;
+    width: 3rem;
+    height: 3rem;
+    border: 1px solid var(--border-color);
+    border-radius: 999px;
+    background: rgba(5, 11, 20, 0.9);
+    color: var(--text);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: var(--shadow-soft);
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(0.5rem);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.back-to-top.show {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+@keyframes shimmer {
+    from { background-position: 200% 0; }
+    to { background-position: -200% 0; }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

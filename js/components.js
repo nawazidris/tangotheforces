@@ -1,4 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
+    document.documentElement.classList.add('component-loading');
     loadComponent("main-header", "header.html");
     loadComponent("mobile-nav", "mobile-nav.html", true);
     loadComponent("main-footer", "footer.html");
@@ -28,14 +29,26 @@ async function loadComponent(tag, url, isNav = false) {
             const menuBtn = document.getElementById('menuBtn');
             const mobileNav = document.getElementById('mobileNav');
             if (menuBtn && mobileNav) {
-                menuBtn.addEventListener('click', () => {
-                    mobileNav.classList.toggle('open');
+                const toggleMenu = () => {
+                    const isOpen = mobileNav.classList.toggle('open');
+                    menuBtn.setAttribute('aria-expanded', String(isOpen));
+                    mobileNav.setAttribute('aria-hidden', String(!isOpen));
+                };
+
+                menuBtn.addEventListener('click', toggleMenu);
+                mobileNav.querySelectorAll('a').forEach(link => {
+                    link.addEventListener('click', () => {
+                        mobileNav.classList.remove('open');
+                        menuBtn.setAttribute('aria-expanded', 'false');
+                        mobileNav.setAttribute('aria-hidden', 'true');
+                    });
                 });
             }
         }
         
         // Set active link
         setActiveLink();
+        document.documentElement.classList.remove('component-loading');
 
     } catch (error) {
         console.error(`Error loading component from ${url}:`, error);

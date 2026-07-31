@@ -1,10 +1,12 @@
+@import url("variables.css");
+
 /* =========================================
    STATS PAGE — Design system provided by index.css
    ========================================= */
 
 /* Ensure body padding top is 0 — header is sticky via index.css */
 body {
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-family-base);
     background: var(--bg);
     color: var(--text);
 }
@@ -147,7 +149,7 @@ body {
 }
 
 .btn-secondary:hover {
-    background: rgba(255,255,255,0.06);
+    background: var(--card-bg-hover);
     transform: translateY(-2px);
     border-color: rgba(255,255,255,0.2);
     box-shadow: 0 8px 20px rgba(255, 255, 255, 0.05);

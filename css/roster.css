@@ -1,6 +1,7 @@
 /* =========================================
    IMPORT SHARED DESIGN SYSTEM
    ========================================= */
+@import url("variables.css");
 @import url("index.css");
 
 /* =========================================
@@ -193,14 +194,14 @@
     color: var(--muted);
     font-size: 0.88rem;
     font-weight: 600;
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-family-base);
     cursor: pointer;
     transition: 0.25s ease;
 }
 
 .filter-tab:hover {
     color: white;
-    background: rgba(255,255,255,0.06);
+    background: var(--card-bg-hover);
 }
 
 .filter-tab.active {
@@ -314,7 +315,7 @@
     width: 100%;
     aspect-ratio: 1 / 1;
     overflow: hidden;
-    background: rgba(255,255,255,0.03);
+    background: var(--card-bg);
 }
 
 .player-photo-wrap img {
@@ -338,7 +339,7 @@
     align-items: center;
     justify-content: center;
     font-size: 4rem;
-    background: rgba(255,255,255,0.03);
+    background: var(--card-bg);
     color: var(--muted);
 }
 

@@ -1,3 +1,4 @@
+@import url("variables.css");
 @import url("index.css");
 
 .detail-hero {
@@ -56,7 +57,7 @@
 .detail-photo-wrap {
     position: relative;
     aspect-ratio: 1 / 1;
-    background: rgba(255,255,255,0.03);
+    background: var(--card-bg);
     margin: 32px 0 32px 32px;
     border-radius: 20px;
     overflow: hidden;

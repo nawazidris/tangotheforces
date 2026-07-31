@@ -8,18 +8,28 @@
     <title>Matches & Fixtures — Tango Football Club</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Montserrat:wght@600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="css/index.css">
+    <link rel="stylesheet" href="css/base.css">
     <link rel="stylesheet" href="css/matches.css">
     <script src="js/components.js" defer></script>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SportsEvent",
+      "name": "Tango Football Club Matches",
+      "sport": "Football",
+      "url": "https://example.com/matches.html"
+    }
+    </script>
 </head>
 <body>
 
     <main-header></main-header>
     <mobile-nav></mobile-nav>
 
-    <main>
+    <main id="main-content">
 
         <!-- ============================
              PAGE HERO
@@ -84,9 +94,15 @@
                         <i class="fa-solid fa-flag-checkered"></i> Results
                     </button>
                 </div>
-                <button class="refresh-btn" id="refreshMatches" title="Refresh matches">
-                    <i class="fa-solid fa-arrows-rotate"></i>
-                </button>
+                <div class="toolbar-actions">
+                    <label class="search-field" for="matchSearch">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input id="matchSearch" type="search" placeholder="Search teams or venue" aria-label="Search matches">
+                    </label>
+                    <button class="refresh-btn" id="refreshMatches" title="Refresh matches">
+                        <i class="fa-solid fa-arrows-rotate"></i>
+                    </button>
+                </div>
             </div>
         </section>
 
@@ -100,6 +116,7 @@
                     <p>Loading matches…</p>
                 </div>
             </div>
+            <div class="pagination" id="matchesPagination" aria-label="Matches pagination"></div>
         </section>
 
     </main>
@@ -110,6 +127,8 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
     <script src="js/firebase-init.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/lazy-images.js"></script>
     <script src="js/matches.js"></script>
 </body>
 </html>

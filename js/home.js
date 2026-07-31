@@ -158,9 +158,24 @@ async function getLatestNews() {
     return Array.from(combined.values()).sort((a, b) => new Date(b.date) - new Date(a.date));
 }
 
+function buildResponsivePicture(src, alt) {
+    const fallbackSrc = src || 'images/new2.jpg';
+    const fileName = fallbackSrc.split('/').pop();
+    const optimizedSrc = fallbackSrc.startsWith('http')
+        ? fallbackSrc
+        : `images/optimized/${fileName.replace(/\.(jpe?g|png|gif)$/i, '.webp')}`;
+
+    return `
+        <picture>
+            <source type="image/webp" srcset="${optimizedSrc}">
+            <img src="${fallbackSrc}" data-src="${fallbackSrc}" loading="lazy" decoding="async" alt="${alt}" onerror="this.style.display='none'">
+        </picture>
+    `;
+}
+
 function buildNewsCard(article, isFeatured) {
     const date = new Date(article.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
-    const imageClass = isFeatured ? '' : 'news-img-sm';
+    const imageClass = '';
     let contentHtml = '';
 
     if (isFeatured && article.content && window.showdown) {
@@ -171,7 +186,7 @@ function buildNewsCard(article, isFeatured) {
     return `
         <article class="news-card ${isFeatured ? 'news-featured' : ''} glass-card">
             <div class="news-img-wrap ${imageClass}">
-                <img src="${article.image || 'images/new2.jpg'}" alt="${article.title}" onerror="this.style.display='none'">
+                ${buildResponsivePicture(article.image || 'images/new2.jpg', article.title)}
                 <div class="news-overlay"></div>
                 ${article.tag ? `<span class="news-tag ${article.tagColor || 'blue-tag'}">${article.tag}</span>` : ''}
             </div>

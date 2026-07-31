@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex,nofollow">
+    <meta name="description" content="Administrative dashboard for managing Tango Football Club content and operations.">
     <title>Admin Dashboard — Tango FC</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -22,7 +24,7 @@
     <header class="admin-topbar">
         <div class="topbar-left">
             <div class="topbar-brand">
-                <img src="images/tangoforces.jpg" alt="Tango FC">
+                <img src="images/tangoforces.jpg" data-src="images/tangoforces.jpg" loading="lazy" decoding="async" alt="Tango FC">
                 <div>
                     <strong>Tango FC</strong>
                     <span>Admin Dashboard</span>
@@ -80,7 +82,7 @@
         <!-- ============================
              MAIN CONTENT
         ============================= -->
-        <main class="admin-main">
+        <main class="admin-main" id="main-content">
 
             <!-- ── DASHBOARD ── -->
             <section id="tab-dashboard" class="admin-tab active">
