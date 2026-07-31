@@ -1,0 +1,103 @@
+/* Common styles for hamburger button and mobile navigation */
+
+.hamburger-btn {
+    position: fixed;
+    top: 15px;
+    left: 15px;
+    z-index: 1000;
+    background: var(--blue);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    cursor: pointer;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    transition: transform 0.2s ease;
+    /* Hide by default on larger screens, show on small screens */
+    display: none;
+}
+
+.hamburger-btn:hover {
+    transform: scale(1.05);
+}
+
+/* Mobile nav styling (assuming it slides from left) */
+.mobile-nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 280px; /* Width of the mobile nav */
+    max-width: 80vw; /* Max width for very small screens */
+    height: 100%;
+    background: var(--bg2); /* Darker background for the menu */
+    z-index: 1001;
+    transform: translateX(-100%); /* Hidden by default */
+    transition: transform 0.3s ease-out;
+    box-shadow: 2px 0 10px rgba(0,0,0,0.3);
+    padding-top: 60px; /* Space for close button */
+    overflow-y: auto;
+}
+
+.mobile-nav.open {
+    transform: translateX(0); /* Visible */
+}
+
+.mobile-menu-close-btn {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: none;
+    border: none;
+    color: var(--muted);
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
+.mobile-menu-close-btn:hover {
+    color: var(--text);
+}
+
+.mobile-nav-links {
+    list-style: none;
+    padding: 20px;
+}
+
+.mobile-nav-links li a {
+    display: block;
+    padding: 12px 0;
+    color: var(--text);
+    text-decoration: none;
+    font-size: 1.1rem;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    transition: color 0.2s ease;
+}
+
+.mobile-nav-links li:last-child a {
+    border-bottom: none;
+}
+
+.mobile-nav-links li a:hover,
+.mobile-nav-links li a.active {
+    color: var(--blue);
+}
+
+/* Media query to show hamburger button on smaller screens */
+@media (max-width: 768px) { /* Adjust breakpoint as needed */
+    .hamburger-btn {
+        display: flex; /* Show hamburger button */
+    }
+
+    /* Adjust main content padding to avoid overlap with fixed hamburger button */
+    body > main { /* Target main content directly if it's a direct child of body */
+        padding-left: 60px; /* Adjust based on button size and margin */
+    }
+
+    .main-header .nav-links { /* Hide main header nav links on small screens */
+        display: none;
+    }
+}

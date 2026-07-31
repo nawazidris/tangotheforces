@@ -1,11 +1,18 @@
 document.addEventListener("DOMContentLoaded", () => {
     document.documentElement.classList.add('component-loading');
-    loadComponent("main-header", "header.html");
-    loadComponent("mobile-nav", "mobile-nav.html", true);
-    loadComponent("main-footer", "footer.html");
+    Promise.all([
+        loadComponent("main-header", "components/header.html"),
+        loadComponent("mobile-nav", "components/mobile-nav.html"),
+        loadComponent("hamburger-button", "components/hamburger-button.html"), // New component
+        loadComponent("main-footer", "components/footer.html")
+    ]).then(() => {
+        setupNavigationToggle(); // New function to handle binding
+        setActiveLink();
+        document.documentElement.classList.remove('component-loading');
+    });
 });
 
-async function loadComponent(tag, url, isNav = false) {
+async function loadComponent(tag, url) {
     const elements = document.getElementsByTagName(tag);
     if (elements.length === 0) return;
 
@@ -24,34 +31,32 @@ async function loadComponent(tag, url, isNav = false) {
             element.replaceWith(content);
         }
 
-        // Post-load processing
-        if (isNav) {
-            const menuBtn = document.getElementById('menuBtn');
-            const mobileNav = document.getElementById('mobileNav');
-            if (menuBtn && mobileNav) {
-                const toggleMenu = () => {
-                    const isOpen = mobileNav.classList.toggle('open');
-                    menuBtn.setAttribute('aria-expanded', String(isOpen));
-                    mobileNav.setAttribute('aria-hidden', String(!isOpen));
-                };
-
-                menuBtn.addEventListener('click', toggleMenu);
-                mobileNav.querySelectorAll('a').forEach(link => {
-                    link.addEventListener('click', () => {
-                        mobileNav.classList.remove('open');
-                        menuBtn.setAttribute('aria-expanded', 'false');
-                        mobileNav.setAttribute('aria-hidden', 'true');
-                    });
-                });
-            }
-        }
-        
-        // Set active link
-        setActiveLink();
-        document.documentElement.classList.remove('component-loading');
-
     } catch (error) {
         console.error(`Error loading component from ${url}:`, error);
+    }
+}
+
+function setupNavigationToggle() {
+    const openMenuBtn = document.getElementById('menuBtn'); // The new hamburger button
+    const mobileNav = document.getElementById('mobileNav');
+    const closeMenuBtn = mobileNav ? mobileNav.querySelector('.mobile-menu-close-btn') : null; // Assuming a class for close button
+
+    if (openMenuBtn && mobileNav) {
+        const toggleMenu = (isOpen) => {
+            mobileNav.classList.toggle('open', isOpen);
+            openMenuBtn.setAttribute('aria-expanded', String(isOpen));
+            mobileNav.setAttribute('aria-hidden', String(!isOpen));
+        };
+
+        openMenuBtn.addEventListener('click', () => toggleMenu(true)); // Open menu
+
+        if (closeMenuBtn) {
+            closeMenuBtn.addEventListener('click', () => toggleMenu(false)); // Close menu
+        }
+
+        mobileNav.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => toggleMenu(false)); // Close menu on link click
+        });
     }
 }
 

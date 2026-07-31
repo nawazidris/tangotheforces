@@ -2005,8 +2005,23 @@ body {
     .topbar-link {
         display: flex;
     }
+
+    /* Hide hamburger button on admin page for larger screens where sidebar is visible */
+    .admin-body .hamburger-btn {
+        display: none !important;
+    }
 }
 
+/* On small screens, where admin sidebar becomes horizontal, show hamburger */
+@media (max-width: 599px) {
+    .admin-body .hamburger-btn {
+        display: flex !important; /* Override default hidden from components.css */
+    }
+    /* Adjust admin-main padding for hamburger button */
+    .admin-main {
+        padding-left: 60px; /* Same as public pages */
+    }
+}
 
 /* =============================================
    PAGINATION CONTROLS
