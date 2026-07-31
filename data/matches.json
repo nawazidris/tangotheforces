@@ -364,58 +364,43 @@
     "date": "2026-07-04",
     "venue": "Shakashe Stadium",
     "homeScore": "2",
-    "id": "23",
-    "awayScore": "1",
-    "competition": "League",
-    "status": "completed",
-    "time": "15:00",
-    "awayTeam": "Flesk United FC"
+    "time": "15:00"
   },
   {
-    "awayTeam": "Mugodhi FC",
-    "time": "15:00",
+    "homeTeam": "Chibuku FC",
     "status": "completed",
+    "events": [
+
+],
+    "date": "2026-07-11",
+    "venue": "Mucheke B Arena 1",
+    "awayTeam": "Tango FC",
+    "awayScore": 3,
+    "time": "15:00",
     "competition": "League",
-    "awayScore": "1",
-    "id": "24",
-    "homeScore": "1",
-    "venue": "Shakashe Stadium",
+    "homeScore": 3,
+    "id": 24
+  },
+  {
+    "homeTeam": "Tango FC",
+    "status": "completed",
     "date": "2026-07-18",
-    "events": [],
-    "homeTeam": "Tango FC"
-  },
-  {
     "events": [
       {
-        "assist": "Edward Mapuranga",
-        "team": "away",
+        "assist": "Nawaz",
+        "team": "home",
+        "minute": "44",
         "type": "goal",
-        "minute": "7",
-        "player": "Alious Jamela"
-      },
-      {
-        "player": "Edward Mapuranga",
-        "type": "goal",
-        "team": "away",
-        "minute": "67"
-      },
-      {
-        "type": "goal",
-        "team": "away",
-        "player": "Godfrey Rwodzi",
-        "minute": "75"
+        "player": "Shirma"
       }
     ],
-    "homeTeam": "Chibuku FC",
-    "date": "2026-07-11",
-    "id": "25",
-    "venue": "Mucheke B Arena 1",
-    "homeScore": "3",
+    "venue": "Shakashe Stadium",
+    "awayTeam": "Mugodhi FC",
+    "awayScore": 1,
     "competition": "League",
-    "awayScore": "3",
-    "awayTeam": "Tango FC",
-    "time": "15:00",
-    "status": "completed"
+    "homeScore": 1,
+    "id": 25,
+    "time": "15:00"
   },
   {
     "awayTeam": "Tango  FC",
