@@ -20,12 +20,14 @@ const sortRosterPlayers = (players) => {
         const priorityB = getPositionPriority(b.position);
         if (priorityA !== priorityB) return priorityA - priorityB;
 
-        // Within the same category, sort by stats (goals + assists) descending
-        const totalStatsA = (a.goals || 0) + (a.assists || 0);
-        const totalStatsB = (b.goals || 0) + (b.assists || 0);
-        if (totalStatsB !== totalStatsA) return totalStatsB - totalStatsA;
+        const goalsA = Number(a.goals ?? a.stats?.goals ?? 0);
+        const goalsB = Number(b.goals ?? b.stats?.goals ?? 0);
+        const assistsA = Number(a.assists ?? a.stats?.assists ?? 0);
+        const assistsB = Number(b.assists ?? b.stats?.assists ?? 0);
 
-        // Fallback to jersey number
+        if (goalsB !== goalsA) return goalsB - goalsA;
+        if (assistsB !== assistsA) return assistsB - assistsA;
+
         if ((a.number || 0) !== (b.number || 0)) return (a.number || 0) - (b.number || 0);
 
         return String(a.name || '').localeCompare(String(b.name || ''), undefined, { sensitivity: 'base' });

@@ -66,52 +66,68 @@ const updateAdvancedMetrics = () => {
     }
 };
 
+const normalizePlayerMatchKey = (value = '') => String(value).trim().toLowerCase().replace(/[^a-z0-9]/g, '');
+
+const playerMatchesReference = (player, candidate) => {
+    if (!player || !candidate) return false;
+
+    const playerName = normalizePlayerMatchKey(player.name);
+    const playerNickname = normalizePlayerMatchKey(player.nickname);
+    const candidateKey = normalizePlayerMatchKey(candidate);
+
+    if (!candidateKey) return false;
+    if (playerName === candidateKey || playerNickname === candidateKey) return true;
+    if (playerName.includes(candidateKey) || candidateKey.includes(playerName)) return true;
+    if (playerNickname && (playerNickname.includes(candidateKey) || candidateKey.includes(playerNickname))) return true;
+
+    const playerTokens = [playerName, playerNickname].filter(Boolean).flatMap(value => value.split(/(?=[a-z])/).filter(Boolean));
+    const candidateTokens = candidateKey.split(/(?=[a-z])/).filter(Boolean);
+
+    return playerTokens.some(token => candidateTokens.includes(token)) ||
+        candidateTokens.some(token => playerTokens.includes(token));
+};
+
 const aggregateStatsFromMatches = (players, matches) => {
-    // Rely strictly on match events for goals and assists to ensure tallying
     const statsMap = {};
 
     matches.forEach(match => {
         if (match.status !== 'completed' || !match.events) return;
 
         match.events.forEach(event => {
-            if (event.type === 'goal') {
-                const scorerName = (event.player || '').trim();
-                const assistName = (event.assist || '').trim();
+            if (!event || typeof event !== 'object') return;
 
-                if (scorerName) {
-                    if (!statsMap[scorerName]) statsMap[scorerName] = { goals: 0, assists: 0 };
-                    statsMap[scorerName].goals++;
+            if (event.type === 'goal') {
+                const scorerMatch = players.find(player => playerMatchesReference(player, event.player));
+                if (scorerMatch) {
+                    const key = String(scorerMatch.id || scorerMatch.name || scorerMatch.nickname || event.player);
+                    if (!statsMap[key]) statsMap[key] = { goals: 0, assists: 0 };
+                    statsMap[key].goals += 1;
                 }
 
-                if (assistName) {
-                    if (!statsMap[assistName]) statsMap[assistName] = { goals: 0, assists: 0 };
-                    statsMap[assistName].assists++;
+                if (event.assist) {
+                    const assistMatch = players.find(player => playerMatchesReference(player, event.assist));
+                    if (assistMatch) {
+                        const key = String(assistMatch.id || assistMatch.name || assistMatch.nickname || event.assist);
+                        if (!statsMap[key]) statsMap[key] = { goals: 0, assists: 0 };
+                        statsMap[key].assists += 1;
+                    }
                 }
             } else if (event.type === 'assist') {
-                const assistantName = (event.player || '').trim();
-                if (assistantName) {
-                    if (!statsMap[assistantName]) statsMap[assistantName] = { goals: 0, assists: 0 };
-                    statsMap[assistantName].assists++;
+                const assistMatch = players.find(player => playerMatchesReference(player, event.player));
+                if (assistMatch) {
+                    const key = String(assistMatch.id || assistMatch.name || assistMatch.nickname || event.player);
+                    if (!statsMap[key]) statsMap[key] = { goals: 0, assists: 0 };
+                    statsMap[key].assists += 1;
                 }
             }
         });
     });
 
     return players.map(player => {
-        const playerName = (player.name || '').toLowerCase().trim();
-        const playerNickname = (player.nickname || '').toLowerCase().trim();
-
-        let matchGoals = 0;
-        let matchAssists = 0;
-
-        // Match by full name or nickname
-        Object.keys(statsMap).forEach(key => {
-            const lowerKey = key.toLowerCase().trim();
-            if (lowerKey === playerName || lowerKey === playerNickname) {
-                matchGoals += statsMap[key].goals;
-                matchAssists += statsMap[key].assists;
-            }
-        });
+        const key = String(player.id || player.name || player.nickname);
+        const matchStats = statsMap[key] || { goals: 0, assists: 0 };
+        const matchGoals = Number(matchStats.goals || 0);
+        const matchAssists = Number(matchStats.assists || 0);
 
         return {
             ...player,

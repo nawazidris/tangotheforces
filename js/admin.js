@@ -1961,43 +1961,117 @@ const app = {
     // STATS MODULE
     // =================================================================
     stats: {
-        updateAndSync: async function(events) {
-            if (!events) return;
+        normalizePlayerKey: function(value) {
+            return String(value || '').trim().toLowerCase().replace(/[^a-z0-9]/g, '');
+        },
 
-            const playersToUpdate = new Set();
+        matchesPlayerReference: function(player, candidate) {
+            if (!player || !candidate) return false;
 
-            events.forEach(e => {
-                const scorer = app.state.players.find(x => x.name === e.player);
-                if (e.type === "goal" && scorer) {
-                    scorer.goals++;
-                    playersToUpdate.add(scorer);
-                    if (e.assist) {
-                        const assister = app.state.players.find(x => x.name === e.assist);
-                        if (assister) {
-                            assister.assists++;
-                            playersToUpdate.add(assister);
+            const playerName = this.normalizePlayerKey(player.name);
+            const playerNickname = this.normalizePlayerKey(player.nickname);
+            const candidateKey = this.normalizePlayerKey(candidate);
+
+            if (!playerName && !playerNickname && !candidateKey) return false;
+            if (!candidateKey) return false;
+            if (playerName === candidateKey || playerNickname === candidateKey) return true;
+            if (playerName.includes(candidateKey) || candidateKey.includes(playerName)) return true;
+            if (playerNickname && (playerNickname.includes(candidateKey) || candidateKey.includes(playerNickname))) return true;
+
+            const playerTokens = [playerName, playerNickname].filter(Boolean).flatMap(value => value.split(/(?=[a-z])/).filter(Boolean));
+            const candidateTokens = candidateKey.split(/(?=[a-z])/).filter(Boolean);
+
+            return playerTokens.some(token => candidateTokens.includes(token)) ||
+                candidateTokens.some(token => playerTokens.includes(token));
+        },
+
+        buildPlayerStatsFromMatches: function(players, matches) {
+            const statsMap = {};
+
+            matches.forEach(match => {
+                if (match?.status !== 'completed' || !Array.isArray(match.events)) return;
+
+                match.events.forEach(event => {
+                    if (!event || typeof event !== 'object') return;
+
+                    if (event.type === 'goal') {
+                        const scorerName = event.player;
+                        const assistName = event.assist;
+
+                        const scorerMatch = players.find(player => this.matchesPlayerReference(player, scorerName));
+                        if (scorerMatch) {
+                            const key = String(scorerMatch.id || scorerMatch.name || scorerMatch.nickname || scorerName);
+                            if (!statsMap[key]) statsMap[key] = { goals: 0, assists: 0 };
+                            statsMap[key].goals += 1;
+                        }
+
+                        if (assistName) {
+                            const assistMatch = players.find(player => this.matchesPlayerReference(player, assistName));
+                            if (assistMatch) {
+                                const key = String(assistMatch.id || assistMatch.name || assistMatch.nickname || assistName);
+                                if (!statsMap[key]) statsMap[key] = { goals: 0, assists: 0 };
+                                statsMap[key].assists += 1;
+                            }
                         }
                     }
-                }
-                if (e.type === "assist") {
-                    const assistant = app.state.players.find(x => x.name === e.player);
-                    if (assistant) {
-                        assistant.assists++;
-                        playersToUpdate.add(assistant);
+
+                    if (event.type === 'assist') {
+                        const keyName = event.player;
+                        const matchPlayer = players.find(player => this.matchesPlayerReference(player, keyName));
+                        if (matchPlayer) {
+                            const key = String(matchPlayer.id || matchPlayer.name || matchPlayer.nickname || keyName);
+                            if (!statsMap[key]) statsMap[key] = { goals: 0, assists: 0 };
+                            statsMap[key].assists += 1;
+                        }
                     }
-                }
+                });
             });
 
-            // Batch sync to Firestore
+            return players.map(player => {
+                const key = String(player.id || player.name || player.nickname);
+                const matchStats = statsMap[key] || { goals: 0, assists: 0 };
+                const goals = Number(matchStats.goals || 0);
+                const assists = Number(matchStats.assists || 0);
+
+                return {
+                    ...player,
+                    goals,
+                    assists,
+                    stats: {
+                        ...(player.stats || {}),
+                        goals,
+                        assists
+                    }
+                };
+            });
+        },
+
+        updateAndSync: async function() {
+            const players = [...(app.state.players || [])];
+            const matches = [...(app.state.matches || [])];
+            const syncedPlayers = this.buildPlayerStatsFromMatches(players, matches);
+
+            app.state.players = syncedPlayers;
+
             if (window.db) {
                 const batch = window.db.batch();
-                playersToUpdate.forEach(p => {
-                    const ref = window.db.collection('players').doc(p.id.toString());
-                    batch.set(ref, p, { merge: true });
+                syncedPlayers.forEach(player => {
+                    const ref = window.db.collection('players').doc(String(player.id));
+                    batch.set(ref, {
+                        ...player,
+                        goals: Number(player.goals || 0),
+                        assists: Number(player.assists || 0),
+                        stats: {
+                            ...(player.stats || {}),
+                            goals: Number(player.goals || 0),
+                            assists: Number(player.assists || 0)
+                        }
+                    }, { merge: true });
                 });
+
                 try {
                     await batch.commit();
-                    console.log(`[Stats] Auto-synced ${playersToUpdate.size} players.`);
+                    console.log(`[Stats] Auto-synced ${syncedPlayers.length} players to Firebase.`);
                 } catch (err) {
                     console.error("[Stats] Batch sync failed:", err);
                 }
@@ -2005,42 +2079,11 @@ const app = {
         },
 
         revert: async function(match) {
-            if (!match || !match.events) return;
+            if (!match) return;
 
-            const playersToRevert = new Set();
-
-            match.events.forEach(e => {
-                const p = app.state.players.find(x => x.name === e.player);
-                if (e.type === "goal" && p) {
-                    p.goals = Math.max(0, p.goals - 1);
-                    playersToRevert.add(p);
-                    if (e.assist) {
-                        const assister = app.state.players.find(x => x.name === e.assist);
-                        if (assister) {
-                            assister.assists = Math.max(0, assister.assists - 1);
-                            playersToRevert.add(assister);
-                        }
-                    }
-                }
-                if (e.type === "assist" && p) {
-                    p.assists = Math.max(0, p.assists - 1);
-                    playersToRevert.add(p);
-                }
-            });
-
-            // Batch sync to Firestore
-            if (window.db) {
-                const batch = window.db.batch();
-                playersToRevert.forEach(p => {
-                    const ref = window.db.collection('players').doc(p.id.toString());
-                    batch.set(ref, p, { merge: true });
-                });
-                try {
-                    await batch.commit();
-                } catch (err) {
-                    console.error("[Stats] Batch revert failed:", err);
-                }
-            }
+            const remainingMatches = (app.state.matches || []).filter(item => item.id !== match.id);
+            app.state.matches = remainingMatches;
+            await this.updateAndSync();
         }
     }
 };
