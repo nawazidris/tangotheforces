@@ -10,6 +10,32 @@ let newsListener = null;
 let matchesListener = null;
 let standingsListener = null;
 
+function showGlobalModal(title, message, iconClass = 'fa-circle-info', theme = 'blue') {
+    const modal = document.getElementById('globalModal');
+    const titleEl = document.getElementById('modalTitle');
+    const msgEl = document.getElementById('modalMessage');
+    const iconContainer = document.getElementById('modalIcon');
+
+    if (modal && titleEl && msgEl) {
+        titleEl.textContent = title;
+        msgEl.textContent = message;
+
+        if (iconContainer) {
+            iconContainer.className = `modal-icon ${theme}`;
+            iconContainer.innerHTML = `<i class="fa-solid ${iconClass}"></i>`;
+        }
+
+        modal.classList.add('active');
+    }
+}
+
+function closeGlobalModal() {
+    const modal = document.getElementById('globalModal');
+    if (modal) {
+        modal.classList.remove('active');
+    }
+}
+
 async function initializeStats() {
     const TANGO_FC_NAME = 'tango fc';
 
@@ -72,42 +98,69 @@ async function initializeCountdown() {
     const countdownSection = document.getElementById('nextMatchCountdown');
     if (!countdownSection) return;
 
-    // 1. Load local data first
-    const localMatches = await getAssetData('data/matches.json') || [];
-    renderNextMatch(localMatches);
-
-    // 2. Real-time sync from Firebase
+    // Prefer Firebase as the source of truth for live match data.
     if (window.db) {
         if (matchesListener) matchesListener();
         matchesListener = window.db.collection('matches').onSnapshot((snapshot) => {
-            if (!snapshot.empty) {
-                const liveMatches = snapshot.docs.map(doc => doc.data());
-                renderNextMatch(liveMatches);
-            }
+            const liveMatches = snapshot.empty ? [] : snapshot.docs.map(doc => doc.data());
+            renderNextMatch(liveMatches);
         });
+        return;
     }
+
+    renderNextMatch([]);
 }
 
 function renderNextMatch(allMatches) {
     const upcoming = allMatches
-        .filter(m => m.status === 'upcoming' && new Date(`${m.date}T${m.time || '00:00'}`) > new Date())
+        .filter(m => {
+            const matchDate = new Date(`${m.date}T${m.time || '00:00'}`);
+            const isFutureFixture = !Number.isNaN(matchDate.getTime()) && matchDate > new Date();
+            const status = String(m.status || '').toLowerCase();
+            const isUpcomingStatus = status === 'upcoming' || status === 'scheduled' || status === 'fixture';
+            const isUnfinishedMatch = status && status !== 'completed' && status !== 'result';
+            return isFutureFixture && (isUpcomingStatus || isUnfinishedMatch || !status);
+        })
         .sort((a, b) => new Date(`${a.date}T${a.time || '00:00'}`) - new Date(`${b.date}T${b.time || '00:00'}`));
 
     const nextMatch = upcoming.length > 0 ? upcoming[0] : null;
     const countdownSection = document.getElementById('nextMatchCountdown');
 
     if (!nextMatch) {
+        const quickOpponent = document.getElementById('quickNextOpponent');
+        const quickDetails = document.getElementById('quickNextDetails');
+        const quickCountdown = document.querySelectorAll('.quick-countdown-unit');
+
         if (countdownSection) countdownSection.style.display = 'none';
+        if (quickOpponent) quickOpponent.textContent = 'No upcoming match';
+        if (quickDetails) quickDetails.textContent = 'Check fixtures';
+        quickCountdown.forEach(unit => {
+            if (unit) unit.style.display = 'none';
+        });
+
+        updateTimer(0, 0, 0, 0);
         return;
     }
 
     // Populate match details
     const opponent = nextMatch.homeTeam.toLowerCase().includes('tango') ? nextMatch.awayTeam : nextMatch.homeTeam;
+    const matchDate = new Date(`${nextMatch.date}T${nextMatch.time || '00:00:00'}`);
+    const formattedDate = matchDate.toLocaleDateString(undefined, {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+    });
+
+    const quickOpponent = document.getElementById('quickNextOpponent');
+    const quickDetails = document.getElementById('quickNextDetails');
+
     document.getElementById('countdownOpponent').textContent = `vs. ${opponent}`;
     document.getElementById('countdownVenue').innerHTML = `<i class="fa-solid fa-location-dot"></i> ${nextMatch.venue || 'TBA'}`;
-    
-    const matchDate = new Date(`${nextMatch.date}T${nextMatch.time || '00:00:00'}`);
-    document.getElementById('countdownDate').innerHTML = `<i class="fa-solid fa-calendar-day"></i> ${matchDate.toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}`;
+    document.getElementById('countdownDate').innerHTML = `<i class="fa-solid fa-calendar-day"></i> ${formattedDate}`;
+
+    if (quickOpponent) quickOpponent.textContent = `vs. ${opponent}`;
+    if (quickDetails) quickDetails.textContent = `${formattedDate} • ${nextMatch.time || 'TBA'} — ${nextMatch.venue || 'TBA'}`;
 
     const targetTimestamp = matchDate.getTime();
     if (countdownInterval) clearInterval(countdownInterval);
@@ -135,15 +188,21 @@ function renderNextMatch(allMatches) {
 }
 
 function syncQuickNextMatchPreview() {
-    const opponentText = document.getElementById('countdownOpponent')?.textContent || 'vs. TBA';
-    const dateText = document.getElementById('countdownDate')?.textContent || 'TBA';
-    const venueText = document.getElementById('countdownVenue')?.textContent || 'TBA';
+    const countdownOpponent = document.getElementById('countdownOpponent')?.textContent || 'vs. TBA';
+    const countdownDate = document.getElementById('countdownDate')?.textContent || 'TBA';
+    const countdownVenue = document.getElementById('countdownVenue')?.textContent || 'TBA';
 
     const quickOpponent = document.getElementById('quickNextOpponent');
     const quickDetails = document.getElementById('quickNextDetails');
 
-    if (quickOpponent) quickOpponent.textContent = opponentText;
-    if (quickDetails) quickDetails.textContent = `${dateText.replace('calendar-day', '')} | ${venueText}`;
+    if (countdownOpponent.includes('TBA') || countdownDate.includes('TBA') || countdownVenue.includes('TBA')) {
+        if (quickOpponent) quickOpponent.textContent = 'No upcoming match';
+        if (quickDetails) quickDetails.textContent = 'Check fixtures';
+        return;
+    }
+
+    if (quickOpponent) quickOpponent.textContent = countdownOpponent;
+    if (quickDetails) quickDetails.textContent = `${countdownDate.replace('calendar-day', '').trim()} • ${countdownVenue.replace(/.*location-dot/gi, '').trim() || 'TBA'}`;
 }
 
 function syncQuickNextMatchPreviewListener() {
@@ -159,10 +218,28 @@ function syncQuickNextMatchPreviewListener() {
 
 function updateTimer(days, hours, minutes, seconds) {
     const pad = (num) => num.toString().padStart(2, '0');
-    document.getElementById('countdownDays').textContent = pad(days);
-    document.getElementById('countdownHours').textContent = pad(hours);
-    document.getElementById('countdownMinutes').textContent = pad(minutes);
-    document.getElementById('countdownSeconds').textContent = pad(seconds);
+    const primaryTargets = [
+        document.getElementById('countdownDays'),
+        document.getElementById('countdownHours'),
+        document.getElementById('countdownMinutes'),
+        document.getElementById('countdownSeconds')
+    ];
+    const quickTargets = [
+        document.getElementById('quickCountdownDays'),
+        document.getElementById('quickCountdownHours'),
+        document.getElementById('quickCountdownMinutes'),
+        document.getElementById('quickCountdownSeconds')
+    ];
+
+    const values = [pad(days), pad(hours), pad(minutes), pad(seconds)];
+
+    primaryTargets.forEach((el, index) => {
+        if (el) el.textContent = values[index];
+    });
+
+    quickTargets.forEach((el, index) => {
+        if (el) el.textContent = values[index];
+    });
 }
 
 /**
@@ -249,7 +326,17 @@ async function initializeNews() {
     const newsGrid = document.getElementById('newsGrid');
     if (!newsGrid) return;
 
-    newsGrid.innerHTML = '<div class="loading-state"><div class="loading-spinner"></div><p>Loading latest news...</p></div>';
+    newsGrid.innerHTML = `
+        <div class="news-card skeleton-placeholder">
+            <div class="news-img-wrap skeleton-pulse" style="height: 200px; background: rgba(255,255,255,0.05);"></div>
+            <div class="news-body" style="gap: 10px;">
+                <div class="skeleton-pulse" style="width: 40%; height: 12px; background: rgba(255,255,255,0.05); border-radius: 4px;"></div>
+                <div class="skeleton-pulse" style="width: 85%; height: 20px; background: rgba(255,255,255,0.05); border-radius: 4px;"></div>
+                <div class="skeleton-pulse" style="width: 100%; height: 40px; background: rgba(255,255,255,0.05); border-radius: 4px;"></div>
+            </div>
+        </div>
+        <div class="news-card skeleton-placeholder" style="display: none;"></div>
+    `;
 
     // 1. Initial Load from Local File
     const staticNews = await getAssetData('data/news.json') || [];

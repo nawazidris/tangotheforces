@@ -361,6 +361,36 @@ main-header { display: block; min-height: 70px; }
     text-overflow: ellipsis;
 }
 
+.quick-countdown-timer {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding-left: 8px;
+    margin-left: auto;
+}
+
+.quick-countdown-unit {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 28px;
+}
+
+.quick-countdown-unit strong {
+    font-size: 0.9rem;
+    font-weight: 800;
+    color: #ffffff;
+    line-height: 1;
+}
+
+.quick-countdown-unit span {
+    font-size: 0.55rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-top: 3px;
+}
+
 /* =========================================
    RESPONSIVE DESIGN FOR LAYOUT 3
 ========================================= */
@@ -686,6 +716,50 @@ main-header { display: block; min-height: 70px; }
     gap: 24px;
 }
 
+.skeleton-placeholder {
+    min-height: 300px;
+    border-radius: 20px;
+    overflow: hidden;
+    background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(255,255,255,0.04);
+}
+
+.skeleton-pulse {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(
+        90deg,
+        rgba(255, 255, 255, 0.03) 25%,
+        rgba(255, 255, 255, 0.08) 50%,
+        rgba(255, 255, 255, 0.03) 75%
+    );
+    background-size: 200% 100%;
+    animation: pulse-shimmer 1.5s infinite;
+}
+
+.skeleton-pulse::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    transform: translateX(-100%);
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.12), transparent);
+    animation: skeletonShimmer 1.4s ease-in-out infinite;
+}
+
+@keyframes pulse-shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+@keyframes skeletonPulse {
+    0%, 100% { opacity: 0.55; }
+    50% { opacity: 1; }
+}
+
+@keyframes skeletonShimmer {
+    100% { transform: translateX(100%); }
+}
+
 .news-card {
     overflow: hidden;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -760,6 +834,19 @@ main-header { display: block; min-height: 70px; }
 .value-card { padding: 20px; text-align: center; }
 .value-icon { width: 40px; height: 40px; margin: 0 auto 12px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
 
+.value-card.glass-card {
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+                background-color 0.3s ease,
+                border-color 0.3s ease;
+}
+
+.value-card.glass-card:hover {
+    transform: translateY(-4px);
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.15);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
 .about-featured-card {
     padding: 32px;
     text-align: center;
@@ -770,6 +857,12 @@ main-header { display: block; min-height: 70px; }
     box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
 }
 
+.about-featured-card:hover .floating-crest {
+    transform: scale(1.03);
+    border-color: var(--blue);
+    box-shadow: 0 0 20px var(--blue-glow);
+}
+
 .floating-crest {
     width: 100px;
     height: 100px;
@@ -777,6 +870,7 @@ main-header { display: block; min-height: 70px; }
     margin-bottom: 18px;
     border: 3px solid rgba(59, 130, 246, 0.3);
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+    transition: transform 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
 }
 
 .est-tag {
@@ -896,11 +990,36 @@ main-header { display: block; min-height: 70px; }
 
 .cta-actions a {
     padding: 12px 20px; border-radius: 12px; font-weight: 700; font-size: 0.9rem;
-    transition: 0.2s; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 8px;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+    text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 8px;
 }
-.cta-actions a.blue { background: #25d366; color: white; }
-.cta-actions a.red { background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); color: white; }
-.cta-actions a:not(.blue):not(.red) { background: #1877f2; color: white; }
+
+.cta-actions a:hover {
+    transform: translateY(-2px);
+}
+
+.cta-actions a.blue-btn {
+    background-color: #25d366 !important;
+    color: #ffffff !important;
+}
+
+.cta-actions a.blue-btn:hover {
+    background-color: #20ba5a !important;
+}
+
+.cta-actions a.facebook-btn {
+    background-color: #1877f2 !important;
+    color: #ffffff !important;
+}
+
+.cta-actions a.facebook-btn:hover {
+    background-color: #166fe5 !important;
+}
+
+.cta-actions a.instagram-btn {
+    background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888) !important;
+    color: #ffffff !important;
+}
 
 /* =========================================
    FOOTER
