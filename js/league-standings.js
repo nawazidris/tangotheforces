@@ -11,93 +11,92 @@ const standingsApp = {
         matches: []
     },
 
-    init: function() {
-        this.data.loadAllData();
+    listeners: {
+        standings: null,
+        results: null
+    },
+
+    init: async function() {
+        // 1. Instant local load
+        const [localStandings, localResults] = await Promise.all([
+            this.data.loadLocalStandings(),
+            this.data.loadLocalMatches()
+        ]);
+
+        if (localStandings) {
+            this.state.standings = localStandings;
+            this.state.matches = localResults?.matches || [];
+            this.ui.showNoData(false);
+            this.ui.renderAll();
+        }
+
+        // 2. Real-time Firebase Sync
+        this.data.subscribeToLiveUpdates();
+        this.events.wireSearch();
     },
 
     data: {
-        loadAllData: async function() {
-            const [standings, matchesData] = await Promise.all([
-                this.loadStandings(),
-                this.loadMatches()
-            ]);
+        loadLocalStandings: async function() {
+            const raw = localStorage.getItem('leagueStandingsJson');
+            if (raw) return standingsApp.data.safeParseJson(raw);
 
-            if (!standings || !standings.headers || !standings.rows || !standings.rows.length) {
-                standingsApp.ui.showNoData(true);
-                return;
-            }
+            const fetchFn = (window.AppConfig && window.AppConfig.fetchAsset) ? window.AppConfig.fetchAsset : fetch;
+            try {
+                const res = await fetchFn('data/log.json');
+                return res.ok ? await res.json() : null;
+            } catch (e) { return null; }
+        },
 
-            standingsApp.state.standings = standings;
-            standingsApp.state.matches = matchesData && matchesData.matches ? matchesData.matches : [];
+        loadLocalMatches: async function() {
+            const raw = localStorage.getItem('resultsJson');
+            if (raw) return standingsApp.data.safeParseJson(raw);
 
-            standingsApp.ui.showNoData(false);
-            standingsApp.ui.renderAll();
-            standingsApp.events.wireSearch();
+            const fetchFn = (window.AppConfig && window.AppConfig.fetchAsset) ? window.AppConfig.fetchAsset : fetch;
+            try {
+                const res = await fetchFn('data/results.json');
+                return res.ok ? await res.json() : null;
+            } catch (e) { return null; }
+        },
+
+        subscribeToLiveUpdates: function() {
+            if (!window.db) return;
+
+            // Unsubscribe existing
+            if (standingsApp.listeners.standings) standingsApp.listeners.standings();
+            if (standingsApp.listeners.results) standingsApp.listeners.results();
+
+            console.log("[Standings] Subscribing to real-time updates...");
+
+            // Standings sync
+            standingsApp.listeners.standings = window.db.collection('settings').doc('standings').onSnapshot(doc => {
+                if (doc.exists && doc.data().data) {
+                    const parsed = this.safeParseJson(doc.data().data);
+                    if (parsed) {
+                        standingsApp.state.standings = parsed;
+                        standingsApp.ui.showNoData(false);
+                        standingsApp.ui.renderAll();
+                    }
+                }
+            });
+
+            // Results sync (for form badges)
+            standingsApp.listeners.results = window.db.collection('settings').doc('results').onSnapshot(doc => {
+                if (doc.exists && doc.data().data) {
+                    const parsed = this.safeParseJson(doc.data().data);
+                    if (parsed && Array.isArray(parsed.matches)) {
+                        standingsApp.state.matches = parsed.matches;
+                        standingsApp.ui.renderAll();
+                    }
+                }
+            });
         },
 
         safeParseJson: function(raw) {
             try { return JSON.parse(raw); }
             catch (e) { console.error('Parse error:', e); return null; }
-        },
-
-        loadStandings: async function() {
-            // Firebase-first approach
-            if (window.db) {
-                try {
-                    const doc = await window.db.collection('settings').doc('standings').get();
-                    if (doc.exists && doc.data().data) {
-                        const parsed = this.safeParseJson(doc.data().data);
-                        if (parsed) return parsed;
-                    }
-                } catch (e) {
-                    console.error("Firebase fetch standings failed, falling back to local files.", e);
-                }
-            }
-
-            // Fallback to localStorage
-            const localRaw = localStorage.getItem('leagueStandingsJson');
-            if (localRaw) return this.safeParseJson(localRaw);
-
-            // Final fallback to static JSON file
-            try {
-                const res = await fetch('data/log.json');
-                if (!res.ok) { console.warn('Could not fetch data/log.json:', res.statusText); return null; }
-                return await res.json();
-            } catch (e) {
-                console.warn('Failed to load data/log.json:', e);
-                return null;
-            }
-        },
-
-        loadMatches: async function() {
-            // Prefer Firebase 'settings' doc 'results', then localStorage, then static file
-            if (window.db) {
-                try {
-                    const doc = await window.db.collection('settings').doc('results').get();
-                    if (doc.exists && doc.data().data) {
-                        const parsed = JSON.parse(doc.data().data);
-                        if (parsed && Array.isArray(parsed.matches)) return parsed;
-                    }
-                } catch (e) { console.warn('Firebase fetch results failed, falling back to local files.', e); }
-            }
-
-            const localRaw = localStorage.getItem('resultsJson');
-            if (localRaw) {
-                try { const parsed = JSON.parse(localRaw); if (parsed && Array.isArray(parsed.matches)) return parsed; }
-                catch (e) { /* ignore */ }
-            }
-
-            try {
-                let res = await fetch('data/results.json');
-                if (!res.ok) res = await fetch('results.json');
-                if (!res.ok) { console.warn('Could not fetch results.json'); return null; }
-                return await res.json();
-            } catch (e) {
-                console.warn('Failed to load results.json:', e);
-                return null;
-            }
         }
     },
+
 
     ui: {
         renderAll: function() {
@@ -172,25 +171,25 @@ const standingsApp = {
             const position = parseInt(pos);
             const isTopFour = position >= 1 && position <= 4;
             const isMidTable = position >= 5 && position <= 7;
-            const isRelegation = position >= (totalTeams - 3);
+            const isRelegation = position >= 17 && position <= 20;
 
             let rowClass = '';
-            if (isTango) rowClass = 'row-tango';
-            else if (isTopFour) rowClass = 'zone-top-four';
+            if (isTopFour) rowClass = 'zone-top-four';
             else if (isMidTable) rowClass = 'zone-mid-table';
             else if (isRelegation) rowClass = 'zone-relegation';
+
+            if (isTango) rowClass += ' row-tango';
 
             const gdNum = parseInt(gd) || 0;
             const gdClass = gdNum > 0 ? 'gd-pos' : gdNum < 0 ? 'gd-neg' : 'gd-zero';
             const gdText = gdNum > 0 ? `+${gdNum}` : `${gdNum}`;
 
-            const initials = standingsApp.helpers.nameToInitials(name);
             const form = standingsApp.helpers.generateForm(name, matches);
 
             return `
                 <tr class="${rowClass}">
                     <td class="pos-cell" role="cell">${pos}</td>
-                    <th scope="row" role="rowheader"><div class="team-cell"><div class="team-initials">${initials}</div><span class="team-name">${name}</span></div></th>
+                    <th scope="row" role="rowheader"><div class="team-cell"><span class="team-name">${name}</span></div></th>
                     <td>${played}</td><td>${w}</td><td>${d}</td><td>${l}</td><td>${gf}</td><td>${ga}</td>
                     <td class="${gdClass}">${gdText}</td><td class="pts-cell">${pts}</td><td>${form}</td>
                 </tr>

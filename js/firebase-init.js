@@ -17,6 +17,11 @@ try {
     // This makes the Firestore database available globally as `window.db`
     // which the existing admin.js and stats.js files are already looking for.
     window.db = firebase.firestore();
+
+    // Enable Offline Persistence for a true "fallback" experience
+    window.db.enablePersistence({ synchronizeTabs: true }).catch((err) => {
+        console.warn("[Firebase] Persistence failed:", err.code);
+    });
 } catch (e) {
     console.error("Firebase initialization failed:", e);
 }

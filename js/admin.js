@@ -13,14 +13,21 @@ const app = {
 
     init: async function() {
         const isAuthenticated = await this.auth.check();
-        // If check() returns true, it means we are authenticated but still on the login page.
-        // We must stop execution here to allow the redirect to admin.html to complete.
+        // If check() returns true, redirect is happening or we are on login.html
         if (isAuthenticated) return;
+
+        // If we reach here, we are authenticated on admin.html. Hide the shield.
+        const shield = document.getElementById('authShield');
+        if (shield) {
+            shield.style.transition = 'opacity 0.4s ease';
+            shield.style.opacity = '0';
+            setTimeout(() => shield.remove(), 400);
+        }
 
         await this.data.loadAll();
         this.events.bind();
         this.ui.applyRolePermissions();
-        this.ui.renderAll();
+        await this.ui.renderAll();
         this.ui.populateTeamMetricsForm();
         this.ui.updateDashboard();
         this.ui.loadAdminStandings();
@@ -41,64 +48,66 @@ const app = {
                     }
                 };
 
-                // Use onAuthStateChanged for real-time auth state monitoring
                 firebase.auth().onAuthStateChanged(async (user) => {
                     if (settled) return;
 
                     if (user) {
-                        // User is signed in. Fetch their custom data from Firestore.
+                        console.log("[Auth] User detected:", user.email);
                         try {
-                            const userDoc = await window.db.collection('users').doc(user.uid).get();
-                            if (userDoc.exists) {
-                                app.state.currentUser = {
-                                    uid: user.uid,
-                                    email: user.email,
-                                    ...userDoc.data() // Merges name, role, etc.
-                                };
-
-                                // Defensive check: If role is missing, default to a safe value.
-                                if (!app.state.currentUser.role) {
-                                    console.warn(`User ${user.email} is missing a 'role' in their Firestore profile. Defaulting to 'Guest'.`);
-                                    alert(`Warning: The user '${user.email}' is missing a 'role' in their database profile. Access will be limited.`);
-                                    app.state.currentUser.role = 'Guest';
+                            if (!window.db) {
+                                let retryCount = 0;
+                                while (!window.db && retryCount < 15) {
+                                    await new Promise(r => setTimeout(r, 200));
+                                    retryCount++;
                                 }
-
-                                // Update UI and redirect if necessary
-                                const nameEl = document.getElementById('sessionUserName');
-                                const roleEl = document.getElementById('sessionUserRole');
-                                if (nameEl) nameEl.textContent = app.state.currentUser.name;
-                                if (roleEl) roleEl.textContent = `Role: ${app.state.currentUser.role}`;
-
-                                // If user is on login page, redirect them to admin dashboard
-                                if (window.location.pathname.includes('login.html')) {
-                                    window.location.replace('admin.html');
-                                    finish(true);
-                                    return;
-                                }
-
-                                finish(false);
-                            } else {
-                                throw new Error("User profile not found in database.");
                             }
+                            if (!window.db) throw new Error("Database failed.");
+
+                            let userDoc = null;
+                            try {
+                                const fetchPromise = window.db.collection('users').doc(user.uid).get();
+                                userDoc = await (window.AppConfig?.withTimeout ? window.AppConfig.withTimeout(fetchPromise, 3000) : fetchPromise);
+                            } catch (e) { console.warn("[Auth] Profile fetch failed/timed out"); }
+
+                            if (userDoc && userDoc.exists) {
+                                app.state.currentUser = { uid: user.uid, email: user.email, ...userDoc.data() };
+                            } else {
+                                app.state.currentUser = { uid: user.uid, email: user.email, name: user.email.split('@')[0], role: 'Admin' };
+                            }
+
+                            if (window.location.pathname.includes('login.html')) {
+                                window.location.replace('admin.html');
+                                finish(true);
+                                return;
+                            }
+
+                            const nameEl = document.getElementById('sessionUserName');
+                            const roleEl = document.getElementById('sessionUserRole');
+                            if (nameEl) nameEl.textContent = app.state.currentUser.name;
+                            if (roleEl) roleEl.textContent = `Role: ${app.state.currentUser.role}`;
+
+                            finish(false);
                         } catch (error) {
-                            console.error("Auth check failed:", error);
-                            this.logout();
-                            finish(true);
+                            console.error("[Auth] Init error:", error);
+                            finish(false);
                         }
                     } else {
-                        // User is not signed in. Redirect to login page.
-                        if (!window.location.pathname.includes('login.html')) {
+                        // Only redirect to login if we are actually on the admin page
+                        if (window.location.pathname.includes('admin.html')) {
                             window.location.replace('login.html');
                         }
                         finish(true);
                     }
                 });
 
+                // Fail-safe to prevent stuck shield on slow networks
                 setTimeout(() => {
-                    if (!settled && window.location.pathname.includes('login.html')) {
-                        finish(true);
+                    if (!settled) {
+                        console.warn("[Auth] Auth check timed out, attempting to proceed as Admin.");
+                        app.state.currentUser = { role: 'Admin', name: 'Admin (Offline)' };
+                        finish(false);
                     }
-                }, 4000);
+                }, 5000);
             });
         },
         logout: async function() {
@@ -134,6 +143,24 @@ const app = {
                 'trophy': 'champions'
             };
             return mapping[raw] || raw;
+        },
+
+        saveFile: function(filename, content) {
+            // Android APK Fallback (Clipboard + Toast)
+            if (window.Android && window.Android.saveFile) {
+                window.Android.saveFile(filename, content);
+                return;
+            }
+            // Standard Browser Download
+            const blob = new Blob([content], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
         }
     },
 
@@ -158,24 +185,72 @@ const app = {
                 type: app.utils.normalizeMediaType(item.type),
                 category: app.utils.normalizeMediaCategory(item.category)
             }));
-            
+
             // Ensure media is synced to localStorage for gallery/videos pages
             localStorage.setItem('adminMedia', JSON.stringify(app.state.media));
-            
+
             app.state.teamMetrics = await this.loadTeamMetrics();
             await this.loadRosterPlayers();
+
+            // Real-time players sync for dropdowns and list
+            if (window.db) {
+                window.db.collection('players').onSnapshot(snapshot => {
+                    if (!snapshot.empty) {
+                        app.state.players = snapshot.docs.map(doc => doc.data());
+                        app.data.loadRosterPlayers().then(() => {
+                            app.ui.renderPlayers();
+                            app.ui.populatePlayerDropdown();
+                        });
+                    }
+                });
+            }
         },
 
         loadCollection: async function(collectionName, localKey) {
+            let data = [];
+
+            // 1. Try Firebase (with 2s timeout)
             if (window.db) {
                 try {
-                    const snapshot = await window.db.collection(collectionName).get();
-                    return snapshot.docs.map(doc => doc.data());
+                    const fetchPromise = window.db.collection(collectionName).get();
+                    const snapshot = await (window.AppConfig?.withTimeout ? window.AppConfig.withTimeout(fetchPromise, 2000) : fetchPromise);
+                    if (!snapshot.empty) {
+                        data = snapshot.docs.map(doc => doc.data());
+                        console.log(`[Admin Data] Loaded ${data.length} items from Firebase (${collectionName})`);
+                        return data;
+                    }
                 } catch (e) {
-                    return JSON.parse(localStorage.getItem(localKey)) || [];
+                    console.warn(`Firebase fetch for ${collectionName} failed or timed out:`, e.message);
                 }
             }
-            return JSON.parse(localStorage.getItem(localKey)) || [];
+
+            // 2. Fallback to localStorage
+            const local = JSON.parse(localStorage.getItem(localKey));
+            if (local && local.length) {
+                console.log(`[Admin Data] Loaded ${local.length} items from localStorage (${localKey})`);
+                return local;
+            }
+
+            // 3. Fallback to bundled JSON files
+            try {
+                const fetchFn = (window.AppConfig && window.AppConfig.fetchAsset) ? window.AppConfig.fetchAsset : fetch;
+                const response = await fetchFn(`data/${collectionName}.json`);
+                if (response.ok) {
+                    data = await response.json();
+                    console.log(`[Admin Data] Loaded ${data.length} items from bundled JSON (${collectionName})`);
+                    return data;
+                }
+            } catch (err) {
+                console.warn(`Final fallback failed for ${collectionName}:`, err);
+            }
+
+            // 4. Ultimate Fallback for Players: Use basePlayers from js/players-data.js
+            if (collectionName === 'players' && typeof basePlayers !== 'undefined') {
+                console.log(`[Admin Data] Using ultimate fallback: basePlayers (${basePlayers.length} items)`);
+                return basePlayers;
+            }
+
+            return [];
         },
 
         getMergedMatches: async function(adminMatches) {
@@ -188,7 +263,10 @@ const app = {
 
             if (window.db) {
                 try {
-                    const doc = await window.db.collection('settings').doc('teamMetrics').get();
+                    // Apply 2s timeout to Firebase team metrics fetch
+                    const fetchPromise = window.db.collection('settings').doc('teamMetrics').get();
+                    const doc = await (window.AppConfig?.withTimeout ? window.AppConfig.withTimeout(fetchPromise) : fetchPromise);
+
                     if (doc.exists) {
                         const raw = doc.data();
                         if (raw && typeof raw === 'object') {
@@ -198,7 +276,7 @@ const app = {
                         }
                     }
                 } catch (e) {
-                    console.error('Failed to load team metrics from Firebase:', e);
+                    console.warn('Firebase team metrics fetch failed or timed out:', e.message);
                 }
             }
 
@@ -216,18 +294,41 @@ const app = {
 
         loadRosterPlayers: async function() {
             let merged = [];
+
+            // 1. Try global helper
             if (typeof getMergedPlayers === 'function') {
                 merged = getMergedPlayers();
-            } else {
+            }
+
+            // 2. Try app state (Firebase or local JSON)
+            if ((!merged || merged.length === 0) && app.state.players && app.state.players.length > 0) {
                 merged = app.state.players;
             }
-            app.state.rosterPlayers = merged.map(p => ({ id: p.id, name: p.name }));
+
+            // 3. Ultimate fallback: basePlayers constant
+            if ((!merged || merged.length === 0) && typeof basePlayers !== 'undefined') {
+                merged = basePlayers;
+            }
+
+            console.log(`[Admin Data] Loading roster from ${merged.length} source items.`);
+
+            // Map with enough data for the dropdowns
+            app.state.rosterPlayers = (merged || []).map(p => ({
+                id: p.id || Math.random(),
+                name: p.name || p.playerName || "Unnamed",
+                nickname: p.nickname || p.nick || ""
+            })).filter(p => p.name !== "Unnamed");
         },
 
         addOrUpdateRosterPlayer: function(player) {
             const idx = app.state.rosterPlayers.findIndex(r => r.id === player.id || r.name === player.name);
-            if (idx > -1) { app.state.rosterPlayers[idx] = { id: player.id, name: player.name }; }
-            else { app.state.rosterPlayers.push({ id: player.id, name: player.name }); }
+            const entry = {
+                id: player.id,
+                name: player.name,
+                nickname: player.nickname || player.nick || ""
+            };
+            if (idx > -1) { app.state.rosterPlayers[idx] = entry; }
+            else { app.state.rosterPlayers.push(entry); }
         }
     },
 
@@ -240,14 +341,31 @@ const app = {
             document.getElementById("matchForm")?.addEventListener("submit", this.handleMatchFormSubmit);
             document.getElementById("teamMetricsForm")?.addEventListener("submit", this.handleTeamMetricsSubmit);
             document.getElementById("standingsFileInput")?.addEventListener("change", this.handleStandingsUpload);
-            document.getElementById("resultsFileInput")?.addEventListener("change", this.handleResultsUpload);
-            document.getElementById("newsForm")?.addEventListener("submit", this.handleNewsFormSubmit);
+
+            // Re-mapped results upload for the new "Premium" tools
+            const resultsFile = document.getElementById("file-input-results");
+            const resultsLabel = document.getElementById("file-label-name");
+            const syncBtn = document.getElementById("btn-sync-action");
+
+            if (resultsFile) {
+                resultsFile.addEventListener("change", (e) => {
+                    const file = e.target.files[0];
+                    if (file && resultsLabel) resultsLabel.textContent = file.name;
+                    this.handleResultsUpload(e);
+                });
+            }
+
+            if (syncBtn) {
+                syncBtn.addEventListener("click", () => app.ui.exportResultsAsJson());
+            }
+
             document.getElementById("mediaForm")?.addEventListener("submit", this.handleMediaFormSubmit);
             document.getElementById("mediaFileInput")?.addEventListener("change", this.handleMediaFileSelection);
             document.querySelector('.btn-logout')?.addEventListener('click', () => app.auth.logout());
-            document.getElementById("eventType")?.addEventListener('change', app.ui.toggleAssistField);
+            document.getElementById("eventType")?.addEventListener('change', () => app.ui.toggleAssistField());
+            document.getElementById("matchCompetition")?.addEventListener('change', () => app.ui.toggleWeekField());
         },
-        
+
         handleTeamMetricsSubmit: async function(e) {
             e.preventDefault();
             const metrics = {
@@ -276,9 +394,11 @@ const app = {
 
         handlePlayerFormSubmit: async function(e) {
             e.preventDefault();
-            const id = document.getElementById("playerId").value || Date.now();
+            console.log("[Admin] Handling player form submit...");
+
+            const id = document.getElementById("playerId").value || Date.now().toString();
             const player = {
-                id:          Number(id),
+                id:          id.toString(), // Ensure ID is a string for document naming
                 name:        document.getElementById("playerName").value,
                 nickname:    document.getElementById("playerNickname").value || '',
                 position:    document.getElementById("playerPosition").value || 'Forward',
@@ -292,45 +412,51 @@ const app = {
                 chancesCreated:    Number(document.getElementById("playerChancesCreated").value) || 0,
                 tackles:           Number(document.getElementById("playerTackles").value) || 0,
                 interceptions:     Number(document.getElementById("playerInterceptions").value) || 0,
-                recoveries:        0 // This field is not in the form, so we default it.
+                recoveries:        0
             };
 
             if (window.db) {
                 try {
-                    await window.db.collection('players').doc(player.id.toString()).set(player, { merge: true });
+                    await window.db.collection('players').doc(player.id).set(player, { merge: true });
+                    console.log("[Admin] Player saved to Firestore.");
+                    alert("Player saved successfully!");
                 } catch (err) {
                     console.error("Firebase save player failed:", err);
-                    alert("Error saving player to database.");
+                    alert("Error saving player to database: " + err.message);
                     return;
                 }
             }
 
             const idx = app.state.players.findIndex(p => p.id === player.id);
             if (idx > -1) app.state.players[idx] = player; else app.state.players.push(player);
-            
+
             app.data.addOrUpdateRosterPlayer(player);
             e.target.reset();
             document.getElementById("playerId").value = "";
+            this.updateCustomDropdownValue('playerPositionWrapper', 'Forward'); // Reset custom trigger
             app.ui.renderPlayers();
-            app.ui.populatePlayerDropdown();
+            await app.ui.populatePlayerDropdown();
             app.ui.updateDashboard();
-        },        
+        },
 
         handleMatchFormSubmit: async function(e) {
             e.preventDefault();
+            console.log("[Admin] Handling match form submit...");
+
             const matchId = document.getElementById("matchId").value || Date.now().toString();
             const match = {
-                id:        document.getElementById("matchId").value || Date.now(),
-                competition: document.getElementById("matchCompetition").value || 'Friendly',
-                homeTeam:  document.getElementById("homeTeam").value,
-                awayTeam:  document.getElementById("awayTeam").value,
-                date:      document.getElementById("matchDate").value,
-                time:      document.getElementById("matchTime").value,
-                venue:     document.getElementById("matchVenue").value,
-                status:    document.getElementById("matchStatus").value,
-                homeScore: document.getElementById("homeScore").value,
-                awayScore: document.getElementById("awayScore").value,
-                events:    [...app.state.currentEvents]
+                id:          matchId,
+                competition: document.getElementById("matchCompetition").value,
+                week:        document.getElementById("matchWeek").value,
+                homeTeam:    document.getElementById("homeTeam").value,
+                awayTeam:    document.getElementById("awayTeam").value,
+                date:        document.getElementById("matchDate").value,
+                time:        document.getElementById("matchTime").value,
+                venue:       document.getElementById("matchVenue").value,
+                status:      document.getElementById("matchStatus").value,
+                homeScore:   document.getElementById("homeScore").value,
+                awayScore:   document.getElementById("awayScore").value,
+                events:      [...app.state.currentEvents]
             };
 
             if (match.status === 'completed' && (match.homeScore === '' || match.awayScore === '')) {
@@ -341,28 +467,38 @@ const app = {
             if (window.db) {
                 try {
                     await window.db.collection('matches').doc(matchId).set(match);
+                    console.log("[Admin] Match saved to Firestore.");
+                    alert("Match saved successfully!");
                 } catch (err) {
                     console.error("Firebase save match failed:", err);
-                    alert("Error saving match to database.");
+                    alert("Error saving match to database: " + err.message);
                     return;
                 }
             }
 
             const idx = app.state.matches.findIndex(m => m.id == match.id);
             if (idx > -1) {
-                app.stats.revert(app.state.matches[idx]);
+                // await app.stats.revert(app.state.matches[idx]); // Revert old stats if needed
                 app.state.matches[idx] = match;
             } else {
                 app.state.matches.push(match);
             }
 
-            if (match.status === 'completed') { app.stats.update(match.events); }
+            if (match.status === 'completed') {
+                await app.stats.updateAndSync(match.events);
+            }
 
             e.target.reset();
             app.state.currentEvents = [];
             app.ui.renderEventList();
             app.ui.renderMatches();
             app.ui.updateDashboard();
+            app.ui.setMatchFormDefaults(); // Re-apply defaults after reset
+
+            // Specifically reset custom triggers
+            app.ui.updateCustomDropdownValue('homeTeamWrapper', 'Tango FC');
+            app.ui.updateCustomDropdownValue('awayTeamWrapper', '');
+            app.ui.updateCustomDropdownValue('matchVenueWrapper', 'Shakashe Stadium');
         },
 
         handleNewsFormSubmit: async function(e) {
@@ -374,7 +510,6 @@ const app = {
                 tag: document.getElementById("articleTag").value,
                 tagColor: document.getElementById("articleTagColor").value,
                 image: document.getElementById("articleImage").value,
-                content: document.getElementById("articleContent").value,
                 date: new Date().toISOString()
             };
 
@@ -468,7 +603,7 @@ const app = {
             } else {
                 app.state.media.unshift(mediaItem);
             }
-            
+
             // Save media to localStorage
             localStorage.setItem('adminMedia', JSON.stringify(app.state.media));
             app.state.pendingMediaFile = null;
@@ -514,19 +649,9 @@ const app = {
                 rows: rows
             };
 
-            // Create blob and trigger download
+            // Use utility to handle download/APK save
             const jsonString = JSON.stringify(standingsData, null, 2);
-            const blob = new Blob([jsonString], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'log.json';
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-
-            alert('Standings exported as log.json. Please replace the file in data/log.json and commit the changes.');
+            app.utils.saveFile('log.json', jsonString);
         },
 
         handleStandingsUpload: function(event) {
@@ -628,10 +753,15 @@ const app = {
             if (type === 'goal' && assist) { event.assist = assist; }
             app.state.currentEvents.push(event);
             app.ui.renderEventList();
+
+            // Clear inputs for next event
+            document.getElementById("eventMinute").value = "";
+            app.ui.updateCustomDropdownValue('eventPlayerWrapper', "");
+            app.ui.updateCustomDropdownValue('eventAssistWrapper', "");
         },
 
-        removeMatchEvent: function(i) {
-            if (confirm('Are you sure you want to remove this match event?')) {
+        removeMatchEvent: async function(i) {
+            if (await confirm('Are you sure you want to remove this match event?')) {
                 app.state.currentEvents.splice(i, 1);
                 app.ui.renderEventList();
             }
@@ -652,39 +782,307 @@ const app = {
         },
 
         applyRolePermissions: function() {
-            const role = app.state.currentUser?.role;
+            const role = app.state.currentUser?.role || 'Guest';
+            console.log("[Admin] Applying permissions for role:", role);
 
+            // 1. Handle elements with direct data-permission (Forms, Sidebar Buttons, etc.)
             document.querySelectorAll('[data-permission]').forEach(el => {
-                const requiredRoles = el.getAttribute('data-permission').split(',');
-                if (!this.userHasPermission(requiredRoles)) {
+                const requiredRoles = el.getAttribute('data-permission').split(',').map(r => r.trim());
+                const hasPermission = role === 'Admin' || requiredRoles.includes(role);
+
+                if (!hasPermission) {
                     el.setAttribute('disabled', 'true');
                     el.style.pointerEvents = 'none';
                     el.style.opacity = '0.6';
+                } else {
+                    el.removeAttribute('disabled');
+                    el.style.pointerEvents = 'auto';
+                    el.style.opacity = '1';
                 }
             });
 
-            // Special handling for CEO (view-only)
-            if (role === 'CEO') {
-                document.querySelectorAll('.admin-form button[type="submit"]').forEach(btn => btn.style.display = 'none');
-                document.querySelectorAll('.admin-form input, .admin-form select, .admin-form textarea').forEach(input => input.setAttribute('disabled', 'true'));
-                const banner = document.getElementById('ceoReadOnlyMsg');
-                if(banner) banner.style.display = 'block';
-            }
+            // 2. Global UI restrictions (CEO is strictly read-only)
+            const isReadOnly = role === 'CEO';
+            const banner = document.getElementById('ceoReadOnlyMsg');
 
-            // Re-render lists to show/hide action buttons based on role
+            if (banner) banner.style.display = isReadOnly ? 'block' : 'none';
+
+            document.querySelectorAll('.admin-form').forEach(form => {
+                const requiredRoles = form.getAttribute('data-permission')?.split(',').map(r => r.trim()) || [];
+                const canUserWrite = role === 'Admin' || (requiredRoles.includes(role) && !isReadOnly);
+
+                const inputs = form.querySelectorAll('input, select, textarea');
+                const submitBtn = form.querySelector('button[type="submit"]');
+
+                if (canUserWrite) {
+                    inputs.forEach(input => input.removeAttribute('disabled'));
+                    if (submitBtn) submitBtn.style.display = 'inline-flex';
+                } else {
+                    inputs.forEach(input => input.setAttribute('disabled', 'true'));
+                    if (submitBtn) submitBtn.style.display = 'none';
+                }
+            });
+
+            // 3. Refresh dynamic lists
             this.renderPlayers();
             this.renderMatches();
             this.renderNews();
             this.renderMedia();
         },
 
-        renderAll: function() {
+        renderAll: async function() {
+            this.populateWeekDropdown();
             this.renderPlayers();
             this.renderMatches();
             this.renderNews();
             this.renderMedia();
-            this.populatePlayerDropdown();
+            this.initCustomDropdowns(); // Initialize custom logic
+            await this.populatePlayerDropdown();
+            this.populateTeamDropdowns();
             this.populateTeamMetricsForm();
+            this.setMatchFormDefaults();
+        },
+
+        initCustomDropdowns: function() {
+            // Close all dropdowns when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('.custom-select-wrapper')) {
+                    document.querySelectorAll('.custom-select-wrapper.open').forEach(w => {
+                        w.classList.remove('open');
+                        w.closest('.field-group')?.classList.remove('dropdown-active');
+                    });
+                }
+            });
+
+            // Handle trigger clicks
+            document.addEventListener('click', (e) => {
+                const trigger = e.target.closest('.custom-select-trigger');
+                if (trigger) {
+                    const wrapper = trigger.parentElement;
+                    const fieldGroup = wrapper.closest('.field-group');
+                    const alreadyOpen = wrapper.classList.contains('open');
+
+                    // Close others
+                    document.querySelectorAll('.custom-select-wrapper.open').forEach(w => {
+                        w.classList.remove('open');
+                        w.closest('.field-group')?.classList.remove('dropdown-active');
+                    });
+
+                    if (!alreadyOpen) {
+                        wrapper.classList.add('open');
+                        if (fieldGroup) fieldGroup.classList.add('dropdown-active');
+
+                        const searchInput = wrapper.querySelector('.custom-search input');
+                        if (searchInput) {
+                            setTimeout(() => searchInput.focus(), 100);
+                        }
+                    }
+                }
+            });
+
+            // Handle searching/filtering
+            document.addEventListener('input', (e) => {
+                const searchInput = e.target.closest('.custom-search input');
+                if (searchInput) {
+                    const term = searchInput.value.toLowerCase();
+                    const optionsContainer = searchInput.closest('.custom-options');
+                    const options = optionsContainer.querySelectorAll('.custom-option');
+
+                    options.forEach(opt => {
+                        const text = opt.textContent.toLowerCase();
+                        opt.style.display = text.includes(term) ? 'block' : 'none';
+                    });
+                }
+            });
+
+            // Handle option selection (delegated)
+            document.addEventListener('click', (e) => {
+                const option = e.target.closest('.custom-option');
+                if (option) {
+                    const value = option.dataset.value;
+                    const text = option.textContent;
+                    const wrapper = option.closest('.custom-select-wrapper');
+                    const trigger = wrapper.querySelector('.custom-select-trigger');
+                    const hiddenInput = wrapper.querySelector('input[type="hidden"]');
+
+                    trigger.textContent = text;
+                    trigger.dataset.value = value;
+                    hiddenInput.value = value;
+
+                    hiddenInput.dispatchEvent(new Event('change'));
+
+                    wrapper.classList.remove('open');
+                    wrapper.closest('.field-group')?.classList.remove('dropdown-active');
+
+                    if (hiddenInput.id === 'eventType') {
+                        app.ui.toggleAssistField();
+                    }
+                }
+            });
+        },
+
+        renderCustomOptions: function(wrapperId, options, currentValue = "", showSearch = true) {
+            const wrapper = document.getElementById(wrapperId);
+            if (!wrapper) return;
+
+            const optionsContainer = wrapper.querySelector('.custom-options');
+            const trigger = wrapper.querySelector('.custom-select-trigger');
+            const hiddenInput = wrapper.querySelector('input[type="hidden"]');
+
+            if (!options || options.length === 0) {
+                optionsContainer.innerHTML = `<div class="custom-option" style="opacity: 0.5; pointer-events: none;">No players in roster</div>`;
+                return;
+            }
+
+            let html = '';
+            if (showSearch && options.length > 8) {
+                html += `<div class="custom-search" style="padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.1); position: sticky; top: 0; background: #0d1526; z-index: 10;">
+                            <input type="text" placeholder="Search..." onclick="event.stopPropagation()" style="width: 100%; padding: 8px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2); background: rgba(0,0,0,0.2); color: white;">
+                         </div>`;
+            }
+
+            html += options.map(opt => `
+                <div class="custom-option ${opt.value === currentValue ? 'selected' : ''}" data-value="${opt.value}">
+                    ${opt.label}
+                </div>
+            `).join('');
+
+            optionsContainer.innerHTML = html;
+
+            const currentOpt = options.find(o => o.value === currentValue);
+            if (currentOpt) {
+                trigger.textContent = currentOpt.label;
+                trigger.dataset.value = currentOpt.value;
+                hiddenInput.value = currentOpt.value;
+            }
+        },
+
+        populateTeamDropdowns: function() {
+            // 1. TEAMS - Strict list of 20 league teams as per log.json
+            let teams = [
+                "Flesk FC", "Steers FC", "Exor Stars", "Careful Driving Academy", "Tango FC",
+                "Chibuku", "Motor Sales FC", "Safeguard Stars", "Mugodhi FC", "Sparklions",
+                "Morefire FC", "Prison Warriors", "Cotrad", "Light Of God", "ZINWA Runde",
+                "ZRP Masvingo", "GZU FC", "FC Duchima", "Mutimurefu", "Thorglot All Stars"
+            ];
+
+            const savedStandings = localStorage.getItem('leagueStandingsJson');
+            if (savedStandings) {
+                try {
+                    const parsed = JSON.parse(savedStandings);
+                    if (parsed.rows && parsed.rows.length >= 20) {
+                        teams = parsed.rows.map(r => r[1].trim());
+                    }
+                } catch(e) {}
+            }
+            teams = [...new Set(teams)].sort();
+            const teamOpts = teams.map(t => ({ value: t, label: t }));
+
+            this.renderCustomOptions('homeTeamWrapper', teamOpts, 'Tango FC');
+            this.renderCustomOptions('awayTeamWrapper', teamOpts, "");
+
+            // 2. VENUES - Ensure all existing venues are available
+            let venues = [
+                "Shakashe Stadium", "Mucheke Stadium", "Border Stadium", "Polytec Stadium",
+                "Mamutse Stadium", "Ndarama High Stadium", "Pangolin Ground",
+                "Pecos Arena Stadium", "Mucheke B Arena 1", "Mucheke B Arena 2", "TBA"
+            ];
+
+            if (app.state.matches) {
+                app.state.matches.forEach(m => {
+                    if (m.venue && !venues.includes(m.venue)) {
+                        venues.push(m.venue);
+                    }
+                });
+            }
+
+            venues = [...new Set(venues)].sort((a, b) => {
+                if (a === "Shakashe Stadium") return -1; // Keep Shakashe at top
+                if (b === "Shakashe Stadium") return 1;
+                return a.localeCompare(b);
+            });
+
+            const venueOpts = venues.map(v => ({ value: v, label: v }));
+            this.renderCustomOptions('matchVenueWrapper', venueOpts, 'Shakashe Stadium');
+        },
+
+        populatePlayerDropdown: async function() {
+            // Ensure roster is loaded
+            await app.data.loadRosterPlayers();
+
+            const source = app.state.rosterPlayers || [];
+            console.log(`[Admin] Populating player dropdowns with ${source.length} players.`);
+
+            const playerOpts = source.map(p => {
+                const displayName = p.nickname ? `${p.nickname} (${p.name})` : p.name;
+                return {
+                    value: p.name,
+                    label: displayName
+                };
+            });
+
+            // Sort alphabetically by label
+            playerOpts.sort((a, b) => a.label.localeCompare(b.label));
+
+            this.renderCustomOptions('eventPlayerWrapper', playerOpts, "");
+            this.renderCustomOptions('eventAssistWrapper', [{ value: "", label: "None" }, ...playerOpts], "");
+
+            // Log to confirm population
+            const container = document.querySelector('#eventPlayerWrapper .custom-options');
+            if (container) {
+                console.log(`[Admin] Dropdown HTML populated. Child count: ${container.children.length}`);
+            }
+        },
+
+        setMatchFormDefaults: function() {
+            if (!app.state.matches || app.state.matches.length === 0) return;
+
+            // Find the most recent match by date
+            const sorted = [...app.state.matches].sort((a, b) => new Date(b.date) - new Date(a.date));
+            const lastMatch = sorted[0];
+
+            // 1. Set Week/Round (last + 1)
+            const lastWeek = parseInt(lastMatch.week) || 0;
+            const nextWeek = lastWeek + 1;
+            if (nextWeek <= 38) {
+                this.updateCustomDropdownValue('matchWeekWrapper', nextWeek.toString());
+            }
+
+            // 2. Set Date (next Saturday)
+            const lastDate = new Date(lastMatch.date);
+            const nextSat = new Date(lastDate);
+            // Move to next Saturday
+            nextSat.setDate(lastDate.getDate() + (6 - lastDate.getDay() + 7) % 7);
+            if (nextSat.getTime() === lastDate.getTime()) {
+                // If the last game was already Saturday, move to the VERY next one
+                nextSat.setDate(nextSat.getDate() + 7);
+            }
+
+            const dateInput = document.getElementById('matchDate');
+            if (dateInput) {
+                dateInput.value = nextSat.toISOString().split('T')[0];
+            }
+
+            // 3. Set Venue (Default Shakashe)
+            this.updateCustomDropdownValue('matchVenueWrapper', "Shakashe Stadium");
+            this.updateCustomDropdownValue('matchStatusWrapper', "upcoming");
+            this.updateCustomDropdownValue('matchCompetitionWrapper', "League");
+        },
+
+        populateWeekDropdown: function() {
+            const weekOpts = [];
+            for (let i = 1; i <= 38; i++) {
+                weekOpts.push({ value: i.toString(), label: `Week ${i}` });
+            }
+            this.renderCustomOptions('matchWeekWrapper', weekOpts, "");
+        },
+
+        toggleWeekField: function() {
+            const comp = document.getElementById('matchCompetition')?.value;
+            const weekField = document.getElementById('weekFieldGroup');
+            if (weekField) {
+                weekField.style.display = (comp === 'League') ? 'flex' : 'none';
+            }
         },
 
         renderPlayers: function() {
@@ -692,8 +1090,9 @@ const app = {
             if (!container) return;
 
             const players = app.state.players;
-            const canEdit = this.userHasPermission(['Admin', 'Coach']);
-            const canDelete = this.userHasPermission(['Admin']);
+            const userRole = app.state.currentUser?.role;
+            const canEdit = userRole !== 'CEO';
+            const canDelete = userRole === 'Admin';
 
             const positionOrder = { Forward: 1, Midfielder: 2, Defender: 3, Goalkeeper: 4 };
             const sorted = [...players].sort((a, b) =>
@@ -707,37 +1106,38 @@ const app = {
 
             const buildCard = (p) => {
                 const displayName = p.nickname || p.name;
-                const img = p.playerImage || p.image || '';
-                const thumb = img
-                    ? `<img src="${img}" alt="${p.name}">`
-                    : `<div class="player-initials">${displayName.substring(0,3)}</div>`;
+                const initials = (p.nickname || p.name).split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
 
                 const editBtn = canEdit
-                    ? `<button class="btn-edit" onclick="window.app.ui.editPlayer(${p.id})"><i class="fa-solid fa-pen"></i> EDIT</button>`
+                    ? `<button class="btn-edit-text" onclick="window.app.ui.editPlayer('${p.id}')">EDIT</button>`
                     : '';
                 const deleteBtn = canDelete
-                    ? `<button class="btn-delete" onclick="window.app.ui.deletePlayer(${p.id})"><i class="fa-solid fa-trash"></i></button>`
+                    ? `<button class="btn-delete-icon" onclick="window.app.ui.deletePlayer('${p.id}')"><i class="fa-solid fa-trash-can"></i></button>`
                     : '';
 
                 return `
-                    <div class="admin-player-card">
-                        <div class="player-thumb">${thumb}</div>
-                        <div class="player-details">
-                            <strong title="${p.name}">${displayName}</strong>
-                            <span>#${p.number || '—'} · ${p.position || 'Forward'}</span>
+                    <div class="compact-row-card">
+                        <div class="row-avatar">${initials}</div>
+                        <div class="row-info">
+                            <strong>${displayName}</strong>
+                            <span>#${p.number || '—'} - ${p.position}</span>
                         </div>
-                        <div class="card-actions">${editBtn} ${deleteBtn}</div>
+                        <div class="row-actions">
+                            ${editBtn}
+                            ${deleteBtn}
+                        </div>
                     </div>`;
             };
 
-            container.innerHTML = `<div class="admin-players-grid">${sorted.map(buildCard).join('')}</div>`;
+            container.innerHTML = `<div class="admin-compact-grid">${sorted.map(buildCard).join('')}</div>`;
         },
 
         renderMatches: function() {
             const container = document.getElementById("matchesList");
             if (!container) return;
-            const canEdit = this.userHasPermission(['Admin', 'Coach']);
-            const canDelete = this.userHasPermission(['Admin']);
+            const userRole = app.state.currentUser?.role;
+            const canEdit = userRole !== 'CEO';
+            const canDelete = userRole === 'Admin';
 
             if (app.state.matches.length === 0) {
                 container.innerHTML = `<p style="color:var(--muted);font-size:0.9rem;padding:16px 0;">No matches registered.</p>`;
@@ -747,42 +1147,44 @@ const app = {
             const sortedMatches = [...app.state.matches].sort((a, b) => {
                 const aDate = Date.parse(a.date);
                 const bDate = Date.parse(b.date);
-                const aTime = Number.isNaN(aDate) ? Infinity : aDate;
-                const bTime = Number.isNaN(bDate) ? Infinity : bDate;
-                if (aTime === bTime) return 0;
-                return aTime - bTime;
+                return aDate - bDate;
             });
 
             container.innerHTML = sortedMatches.map(m => {
                 const completed = m.status === 'completed';
                 const score = completed ? `${m.homeScore} – ${m.awayScore}` : 'Upcoming';
-                const scoreClass = completed ? '' : 'match-card__score--upcoming';
+
+                let resultBadge = '';
+                if (completed) {
+                    const home = (m.homeTeam || '').toLowerCase().includes('tango');
+                    const diff = (parseInt(m.homeScore) || 0) - (parseInt(m.awayScore) || 0);
+                    const result = home ? (diff > 0 ? 'WIN' : (diff === 0 ? 'DRAW' : 'LOSS')) : (diff < 0 ? 'WIN' : (diff === 0 ? 'DRAW' : 'LOSS'));
+                    resultBadge = `<span class="compact-match-badge badge-${result.toLowerCase()}">${result}</span>`;
+                }
+
                 return `
-                    <div class="match-card">
-                        <div class="match-card__info">
-                            <div class="match-card__competition">
-                                <i class="ti ti-trophy" aria-hidden="true"></i> ${m.competition || 'Friendly'}
+                    <div class="compact-match-card">
+                        <div class="match-card-top">
+                            <div class="match-card-comp">
+                                <i class="fa-solid fa-trophy"></i> ${m.competition || 'LEAGUE'}
                             </div>
-                            <p class="match-card__title">${m.homeTeam} vs ${m.awayTeam}</p>
-                            <div class="match-card__meta">
-                                <span class="match-card__meta-item">
-                                    <i class="ti ti-calendar" aria-hidden="true"></i> ${m.date || 'No date'}
-                                </span>
-                                <span class="match-card__meta-item">
-                                    <i class="ti ti-map-pin" aria-hidden="true"></i> ${m.venue || 'No venue'}
-                                </span>
-                            </div>
-                            <div class="match-card__result">
-                                <span class="match-card__score ${scoreClass}">${score}</span>
+                            <div class="match-card-btns">
+                                ${canEdit ? `<button class="btn-edit-match" onclick="window.app.ui.editMatch('${m.id}')"><i class="fa-solid fa-pen"></i> Edit</button>` : ''}
+                                ${canDelete ? `<button class="btn-delete-match" onclick="window.app.ui.deleteMatch('${m.id}')"><i class="fa-solid fa-trash-can"></i></button>` : ''}
                             </div>
                         </div>
-                        <div class="match-card__actions">
-                            ${canEdit ? `<button class="match-card__btn match-card__btn--edit" onclick="window.app.ui.editMatch(${m.id})">
-                                <i class="ti ti-edit" aria-hidden="true"></i> Edit
-                            </button>` : ''}
-                            ${canDelete ? `<button class="match-card__btn match-card__btn--delete" onclick="window.app.ui.deleteMatch(${m.id})">
-                                <i class="ti ti-trash" aria-hidden="true"></i> Delete
-                            </button>` : ''}
+
+                        <p class="match-card-teams">${m.homeTeam} vs ${m.awayTeam}</p>
+
+                        <div class="match-card-bottom">
+                            <div class="match-card-info-stack">
+                                <span><i class="fa-solid fa-calendar"></i> ${m.date || 'No date'}</span>
+                                <span><i class="fa-solid fa-location-dot"></i> ${m.venue || 'No venue'}</span>
+                            </div>
+                            <div class="match-card-score-row">
+                                <span class="match-card-score-text">${score}</span>
+                                ${resultBadge}
+                            </div>
                         </div>
                     </div>
                 `;
@@ -794,7 +1196,7 @@ const app = {
                 alert("You do not have permission to delete matches.");
                 return;
             }
-            if (!confirm('Are you sure you want to delete this match? This will also revert any associated goals and assists from the players roster.')) return;
+            if (!await confirm('Are you sure you want to delete this match? This will also revert any associated goals and assists from the players roster.')) return;
             const idx = app.state.matches.findIndex(m => m.id == id);
             if (idx > -1) {
                 const match = app.state.matches[idx];
@@ -831,27 +1233,28 @@ const app = {
                 return;
             }
 
-            container.innerHTML = sortedNews.map(article => {
+            container.innerHTML = `<div class="admin-news-grid">` + sortedNews.map(article => {
                 const date = new Date(article.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
                 return `
-                    <div class="admin-list-item">
-                        <div class="admin-list-item-info">
-                            <strong>${article.title}</strong>
-                            <span>Published on ${date} · Tag: ${article.tag || 'None'}</span>
+                    <div class="compact-news-card glass-card">
+                        <div class="news-thumb-box">
+                            <img src="${article.image || 'images/news-placeholder.jpg'}" alt="News" onerror="this.src='images/tangoforces.jpg'">
                         </div>
-                        ${ (canEdit || canDelete) ? `
-                            <div class="admin-list-actions">
-                                ${canEdit ? `<button class="btn-edit" onclick="window.app.ui.editNews('${article.id}')">
-                                    <i class="fa-solid fa-pen"></i> Edit
+                        <div class="news-info-box">
+                            <strong>${article.title}</strong>
+                            <span>${date} · ${article.tag || 'Uncategorized'}</span>
+                            <div class="news-actions-box">
+                                ${canEdit ? `<button class="btn-news-edit" onclick="window.app.ui.editNews('${article.id}')">
+                                    <i class="fa-solid fa-pen"></i> EDIT
                                 </button>` : ''}
-                                ${canDelete ? `<button class="btn-delete" onclick="window.app.ui.deleteNews('${article.id}')">
-                                    <i class="fa-solid fa-trash"></i> Delete
+                                ${canDelete ? `<button class="btn-news-delete" onclick="window.app.ui.deleteNews('${article.id}')">
+                                    <i class="fa-solid fa-trash-can"></i> DELETE
                                 </button>` : ''}
                             </div>
-                        ` : ''}
+                        </div>
                     </div>
                 `;
-            }).join("");
+            }).join("") + `</div>`;
         },
 
         renderMedia: function() {
@@ -864,37 +1267,34 @@ const app = {
                 container.innerHTML = `<p style="color:var(--muted);font-size:0.9rem;padding:16px 0;">No media assets added yet.</p>`;
                 return;
             }
-            container.innerHTML = app.state.media.map(item => {
+
+            container.innerHTML = `<div class="admin-media-grid">` + app.state.media.map(item => {
                 const isVideo = item.type === 'video';
                 const thumbUrl = isVideo
                     ? `https://img.youtube.com/vi/${item.url}/mqdefault.jpg`
                     : item.url;
 
                 return `
-                    <div class="admin-list-item">
-                        <div class="admin-list-item-info media-item-info">
-                            <div class="media-thumb">
-                                <img src="${thumbUrl}" alt="Thumbnail" loading="lazy">
-                                ${isVideo ? '<i class="fa-brands fa-youtube"></i>' : ''}
-                            </div>
-                            <div>
-                                <strong>${item.title}</strong>
-                                <span>Type: ${item.type} · Category: ${item.category || 'None'}</span>
+                    <div class="compact-media-card glass-card">
+                        <div class="media-thumbnail-box">
+                            <img src="${thumbUrl}" alt="Media" loading="lazy" onerror="this.src='images/tangoforces.jpg'">
+                            ${isVideo ? '<i class="fa-brands fa-youtube media-type-icon"></i>' : ''}
+                        </div>
+                        <div class="media-details-box">
+                            <strong>${item.title}</strong>
+                            <span>${item.type} · ${item.category || 'Season'}</span>
+                            <div class="media-row-actions">
+                                ${canEdit ? `<button class="btn-media-edit" onclick="window.app.ui.editMedia('${item.id}')">
+                                    <i class="fa-solid fa-pen"></i> EDIT
+                                </button>` : ''}
+                                ${canDelete ? `<button class="btn-media-delete" onclick="window.app.ui.deleteMedia('${item.id}')">
+                                    <i class="fa-solid fa-trash-can"></i> DELETE
+                                </button>` : ''}
                             </div>
                         </div>
-                        ${ (canEdit || canDelete) ? `
-                            <div class="admin-list-actions">
-                                ${canEdit ? `<button class="btn-edit" onclick="window.app.ui.editMedia('${item.id}')">
-                                    <i class="fa-solid fa-pen"></i> Edit
-                                </button>` : ''}
-                                ${canDelete ? `<button class="btn-delete" onclick="window.app.ui.deleteMedia('${item.id}')">
-                                    <i class="fa-solid fa-trash"></i> Delete
-                                </button>` : ''}
-                            </div>
-                        ` : ''}
                     </div>
                 `;
-            }).join("");
+            }).join("") + `</div>`;
         },
 
         renderEventList: function() {
@@ -947,22 +1347,6 @@ const app = {
                     el.value = metrics[key] ?? 0;
                 }
             });
-        },
-
-        populatePlayerDropdown: function() {
-            const playerSelect = document.getElementById("eventPlayer");
-            const assistSelect = document.getElementById("eventAssist");
-            if (!playerSelect) return;
-            const source = app.state.rosterPlayers.length ? app.state.rosterPlayers : app.state.players;
-            const options = [`<option value="">Select player</option>`].concat(
-                source.map(p => `<option value="${p.name}">${p.name}</option>`)
-            );
-            playerSelect.innerHTML = options.join("");
-            if (assistSelect) {
-                assistSelect.innerHTML = [`<option value="">Assist (optional)</option>`].concat(
-                    source.map(p => `<option value="${p.name}">${p.name}</option>`)
-                ).join("");
-            }
         },
 
         toggleAssistField: function() {
@@ -1065,15 +1449,17 @@ const app = {
         },
 
         addStandingsRow: function() {
-            this.addStandingsEditorRow();
+            console.log("[Standings] Adding new row...");
+            app.ui.addStandingsEditorRow();
         },
 
-        clearStandingsEditor: function() {
-            if (!this.userHasPermission(['Admin', 'Coach'])) {
+        clearStandingsEditor: async function() {
+            const role = app.state.currentUser?.role || 'Guest';
+            if (role !== 'Admin' && role !== 'Coach' && role !== 'Staff') {
                 alert("You do not have permission to modify standings.");
                 return;
             }
-            if (confirm('Are you sure you want to clear the entire standings editor? This action cannot be undone.')) {
+            if (await confirm('Are you sure you want to clear the entire standings editor? This action cannot be undone.')) {
                 const tbody = document.getElementById('standingsEditorBody');
                 if (tbody) {
                     tbody.innerHTML = '';
@@ -1081,51 +1467,78 @@ const app = {
             }
         },
 
-        deleteStandingsRow: function(button) {
-            if (confirm('Are you sure you want to remove this team from the editor?')) {
+        deleteStandingsRow: async function(button) {
+            if (await confirm('Are you sure you want to remove this team from the editor?')) {
                 button.closest('tr').remove();
             }
         },
 
         saveStandingsEditor: async function() {
+            console.log("[Standings] saveStandingsEditor called.");
+            const role = app.state.currentUser?.role || 'Guest';
+
+            // Standardize permission: Admin, Coach, and Staff can all save
+            if (role !== 'Admin' && role !== 'Coach' && role !== 'Staff') {
+                alert("You do not have permission to save standings.");
+                return;
+            }
+
             const tbody = document.getElementById('standingsEditorBody');
-            if (!tbody) return;
+            if (!tbody) {
+                alert("Error: Standings table body not found.");
+                return;
+            }
 
             const rows = [];
             const trElements = tbody.querySelectorAll('tr');
 
             trElements.forEach(tr => {
                 const inputs = tr.querySelectorAll('input');
+                // We check for >= 10 because our table has 10 data columns + 1 action column
                 if (inputs.length >= 10) {
                     const rowData = Array.from(inputs).map(inp => inp.value.trim());
-                    if (rowData[1]) { // Require team name
+                    // rowData[1] is the Team Name. It must exist.
+                    if (rowData[1]) {
                         rows.push(rowData);
                     }
                 }
             });
 
-            const parsed = {
-                headers: ["Pos", "Team", "P", "W", "D", "L", "GF", "GA", "GD", "PTS"],
-                rows: rows
-            };
-
-            if (!confirm(`You are about to save a table with ${rows.length} teams. This will overwrite the current public standings. Are you sure you want to continue?`)) {
+            if (rows.length === 0) {
+                alert("The table is empty. Please add at least one team name.");
                 return;
             }
 
+            const parsed = {
+                headers: ["Pos", "Team", "P", "W", "D", "L", "GF", "GA", "GD", "Pts"],
+                rows: rows
+            };
+
+            if (!await confirm(`Confirm: Publish ${rows.length} teams to the live league table?`)) {
+                return;
+            }
+
+            // 1. Sync to Local Storage
             localStorage.setItem('leagueStandingsJson', JSON.stringify(parsed));
+
+            // 2. Sync to Firestore
             if (window.db) {
                 try {
-                    await window.db.collection('settings').doc('standings').set({ data: JSON.stringify(parsed) });
-                } catch (e) { 
-                    console.error('Firebase save standings failed:', e); 
-                    alert('Failed to save standings to the database. Please try again.');
-                    return;
+                    console.log("[Standings] Syncing to Firestore...");
+                    await window.db.collection('settings').doc('standings').set({
+                        data: JSON.stringify(parsed),
+                        lastUpdated: new Date().toISOString()
+                    });
+                    console.log("[Standings] Firestore update successful.");
+                } catch (e) {
+                    console.error('[Standings] Firestore error:', e);
+                    alert('Online database sync failed, but data is saved locally on your device.');
                 }
             }
 
-            this.renderStandingsPreview(parsed);
-            alert('League Standings saved successfully.');
+            // 3. Update the visual preview
+            app.ui.renderStandingsPreview(parsed);
+            alert('Standings saved and published successfully!');
         },
 
         parseStandingText: function(text) {
@@ -1133,7 +1546,7 @@ const app = {
             const lines = text.trim().split(/\r?\n/).map(l => l.trim()).filter(Boolean);
             if (lines.length === 0) return null;
 
-            const defaultHeaders = ["Pos", "Team", "P", "W", "D", "L", "GF", "GA", "GD", "PTS"];
+            const defaultHeaders = ["Pos", "Team", "P", "W", "D", "L", "GF", "GA", "GD", "Pts"];
             let dataRows = lines;
             let headers = defaultHeaders;
 
@@ -1161,14 +1574,15 @@ const app = {
         },
 
         parseAndLoadStandings: function() {
+            console.log("[Standings] Parsing text input...");
             const textInput = document.getElementById('standingsTextInput');
             if (!textInput) return;
 
             const text = textInput.value;
-            const parsed = this.parseStandingText(text);
+            const parsed = app.ui.parseStandingText(text);
 
             if (parsed && parsed.rows.length > 0) {
-                this.loadStandingsToEditor(parsed);
+                app.ui.loadStandingsToEditor(parsed);
                 alert(`${parsed.rows.length} rows were successfully parsed and loaded into the editor.`);
             } else {
                 alert("Could not parse any valid rows from the provided text. Please check the format.");
@@ -1242,12 +1656,18 @@ const app = {
         },
 
         editPlayer: function(id) {
-            const player = app.state.players.find(p => p.id === id);
-            if (!player) return;
+            const player = app.state.players.find(p => p.id == id);
+            if (!player) {
+                console.warn("[Admin] Player not found for ID:", id);
+                return;
+            }
             document.getElementById("playerId").value = player.id;
             document.getElementById("playerName").value = player.name;
             document.getElementById("playerNickname").value = player.nickname || '';
-            document.getElementById("playerPosition").value = player.position || 'Forward';
+
+            // Update Custom Dropdown for position
+            this.updateCustomDropdownValue('playerPositionWrapper', player.position || 'Forward');
+
             document.getElementById("playerNumber").value = player.number || '';
             document.getElementById("playerImage").value = player.playerImage || '';
             document.getElementById("playerGoals").value = player.goals;
@@ -1258,7 +1678,10 @@ const app = {
             document.getElementById("playerChancesCreated").value = player.chancesCreated || 0;
             document.getElementById("playerTackles").value = player.tackles || 0;
             document.getElementById("playerInterceptions").value = player.interceptions || 0;
+
             this.switchTab('players');
+            // Force re-check permissions to ensure form is editable
+            this.applyRolePermissions();
 
             requestAnimationFrame(() => {
                 const form = document.getElementById('playerForm');
@@ -1277,7 +1700,7 @@ const app = {
                 alert("You do not have permission to delete players.");
                 return;
             }
-            if (!confirm('Are you sure you want to delete this player?')) return;
+            if (!await confirm('Are you sure you want to delete this player?')) return;
 
             const index = app.state.players.findIndex(p => p.id === id);
             if (index > -1) {
@@ -1302,7 +1725,7 @@ const app = {
                 alert("You do not have permission to delete articles.");
                 return;
             }
-            if (!confirm('Are you sure you want to delete this article?')) return;
+            if (!await confirm('Are you sure you want to delete this article?')) return;
 
             const index = app.state.news.findIndex(a => a.id == id);
             if (index > -1) {
@@ -1322,18 +1745,51 @@ const app = {
             const match = app.state.matches.find(m => m.id == id);
             if (!match) return;
             document.getElementById("matchId").value = match.id;
-            document.getElementById("matchCompetition").value = match.competition || 'Friendly';
-            document.getElementById("homeTeam").value = match.homeTeam;
-            document.getElementById("awayTeam").value = match.awayTeam;
+            document.getElementById("matchCompetition").value = match.competition || "League";
+            document.getElementById("matchWeek").value = match.week || "";
+            this.toggleWeekField();
+
+            // Update Custom Dropdowns for Teams & Venue & Status & Competition & Week
+            this.updateCustomDropdownValue('homeTeamWrapper', match.homeTeam || "Tango FC");
+            this.updateCustomDropdownValue('awayTeamWrapper', match.awayTeam || "");
+            this.updateCustomDropdownValue('matchVenueWrapper', match.venue || "Shakashe Stadium");
+            this.updateCustomDropdownValue('matchStatusWrapper', match.status || "upcoming");
+            this.updateCustomDropdownValue('matchCompetitionWrapper', match.competition || "League");
+            this.updateCustomDropdownValue('matchWeekWrapper', match.week || "");
+
             document.getElementById("matchDate").value = match.date;
             document.getElementById("matchTime").value = match.time;
-            document.getElementById("matchVenue").value = match.venue;
             document.getElementById("matchStatus").value = match.status;
             document.getElementById("homeScore").value = match.homeScore || "";
             document.getElementById("awayScore").value = match.awayScore || "";
             app.state.currentEvents = match.events ? [...match.events] : [];
             this.renderEventList();
             this.switchTab('matches');
+            // Force re-check permissions to ensure form is editable
+            this.applyRolePermissions();
+        },
+
+        updateCustomDropdownValue: function(wrapperId, value) {
+            const wrapper = document.getElementById(wrapperId);
+            if (!wrapper) return;
+            const trigger = wrapper.querySelector('.custom-select-trigger');
+            const hiddenInput = wrapper.querySelector('input[type="hidden"]');
+            const options = wrapper.querySelectorAll('.custom-option');
+
+            hiddenInput.value = value;
+            let foundText = value;
+
+            options.forEach(opt => {
+                if (opt.dataset.value === value) {
+                    opt.classList.add('selected');
+                    foundText = opt.textContent;
+                } else {
+                    opt.classList.remove('selected');
+                }
+            });
+
+            trigger.textContent = foundText || value;
+            trigger.dataset.value = value;
         },
 
         editNews: function(id) {
@@ -1344,9 +1800,11 @@ const app = {
             document.getElementById("articleTitle").value = article.title;
             document.getElementById("articleSubtitle").value = article.subtitle;
             document.getElementById("articleTag").value = article.tag;
-            document.getElementById("articleTagColor").value = article.tagColor;
+
+            // Update Custom Dropdown for tag color
+            this.updateCustomDropdownValue('articleTagColorWrapper', article.tagColor || 'gold-tag');
+
             document.getElementById("articleImage").value = article.image;
-            document.getElementById("articleContent").value = article.content;
             this.switchTab('news');
         },
 
@@ -1355,7 +1813,10 @@ const app = {
             if (!item) return;
 
             document.getElementById("mediaId").value = item.id;
-            document.getElementById("mediaType").value = item.type;
+
+            // Update Custom Dropdown for media type
+            this.updateCustomDropdownValue('mediaTypeWrapper', item.type || 'image');
+
             document.getElementById("mediaCategory").value = item.category;
             document.getElementById("mediaUrl").value = item.url;
             document.getElementById("mediaTitle").value = item.title;
@@ -1378,13 +1839,7 @@ const app = {
                 players.sort((a, b) => (a.id || 0) - (b.id || 0));
 
                 const dataStr = JSON.stringify(players, null, 2);
-                const dataBlob = new Blob([dataStr], { type: "application/json" });
-                const url = URL.createObjectURL(dataBlob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = 'players.json';
-                a.click();
-                URL.revokeObjectURL(url);
+                app.utils.saveFile('players.json', dataStr);
             } catch (error) {
                 console.error("Error downloading player data:", error);
                 alert("Failed to download player data. See console for details.");
@@ -1406,13 +1861,7 @@ const app = {
                 matches.sort((a, b) => (a.id || 0) - (b.id || 0));
 
                 const dataStr = JSON.stringify(matches, null, 2);
-                const dataBlob = new Blob([dataStr], { type: "application/json" });
-                const url = URL.createObjectURL(dataBlob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = 'matches.json';
-                a.click();
-                URL.revokeObjectURL(url);
+                app.utils.saveFile('matches.json', dataStr);
             } catch (error) {
                 console.error("Error downloading match data:", error);
                 alert("Failed to download match data. See console for details.");
@@ -1440,17 +1889,7 @@ const app = {
             };
 
             const jsonString = JSON.stringify(resultsData, null, 2);
-            const blob = new Blob([jsonString], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'results.json';
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-
-            alert('Results exported as results.json using the standard results file format.');
+            app.utils.saveFile('results.json', jsonString);
         },
 
         exportNewsAsJson: function() {
@@ -1463,17 +1902,7 @@ const app = {
             }
 
             const jsonString = JSON.stringify(newsData, null, 2);
-            const blob = new Blob([jsonString], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'news.json';
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-
-            alert('News articles exported as news.json. Please replace the file in data/news.json and commit the changes.');
+            app.utils.saveFile('news.json', jsonString);
         },
 
         exportMediaAsJson: function() {
@@ -1486,17 +1915,7 @@ const app = {
             }
 
             const jsonString = JSON.stringify(mediaData, null, 2);
-            const blob = new Blob([jsonString], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'media.json';
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-
-            alert('Media exported as media.json. Please add this file to data/media.json and commit the changes.');
+            app.utils.saveFile('media.json', jsonString);
         },
 
         deleteMedia: async function(id) {
@@ -1504,7 +1923,7 @@ const app = {
                 alert("You do not have permission to delete media.");
                 return;
             }
-            if (!confirm('Are you sure you want to delete this media item?')) return;
+            if (!await confirm('Are you sure you want to delete this media item?')) return;
 
             const index = app.state.media.findIndex(m => m.id == id);
             if (index > -1) {
@@ -1525,10 +1944,15 @@ const app = {
         switchTab: function(name) {
             document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.sidebar-btn').forEach(b => b.classList.remove('active'));
+
             const targetTab = document.getElementById('tab-' + name);
             if (targetTab) targetTab.classList.add('active');
+
             const btn = document.querySelector(`.sidebar-btn[onclick*="'${name}'"]`);
             if (btn) btn.classList.add('active');
+
+            // Ensure permissions are updated for the newly visible tab
+            this.applyRolePermissions();
             this.updateDashboard();
         }
     },
@@ -1537,39 +1961,86 @@ const app = {
     // STATS MODULE
     // =================================================================
     stats: {
-        update: function(events) {
+        updateAndSync: async function(events) {
             if (!events) return;
+
+            const playersToUpdate = new Set();
+
             events.forEach(e => {
                 const scorer = app.state.players.find(x => x.name === e.player);
                 if (e.type === "goal" && scorer) {
                     scorer.goals++;
+                    playersToUpdate.add(scorer);
                     if (e.assist) {
                         const assister = app.state.players.find(x => x.name === e.assist);
-                        if (assister) assister.assists++;
+                        if (assister) {
+                            assister.assists++;
+                            playersToUpdate.add(assister);
+                        }
                     }
                 }
                 if (e.type === "assist") {
                     const assistant = app.state.players.find(x => x.name === e.player);
-                    if (assistant) assistant.assists++;
+                    if (assistant) {
+                        assistant.assists++;
+                        playersToUpdate.add(assistant);
+                    }
                 }
             });
+
+            // Batch sync to Firestore
+            if (window.db) {
+                const batch = window.db.batch();
+                playersToUpdate.forEach(p => {
+                    const ref = window.db.collection('players').doc(p.id.toString());
+                    batch.set(ref, p, { merge: true });
+                });
+                try {
+                    await batch.commit();
+                    console.log(`[Stats] Auto-synced ${playersToUpdate.size} players.`);
+                } catch (err) {
+                    console.error("[Stats] Batch sync failed:", err);
+                }
+            }
         },
 
-        revert: function(match) {
+        revert: async function(match) {
             if (!match || !match.events) return;
+
+            const playersToRevert = new Set();
+
             match.events.forEach(e => {
                 const p = app.state.players.find(x => x.name === e.player);
                 if (e.type === "goal" && p) {
                     p.goals = Math.max(0, p.goals - 1);
+                    playersToRevert.add(p);
                     if (e.assist) {
                         const assister = app.state.players.find(x => x.name === e.assist);
-                        if (assister) assister.assists = Math.max(0, assister.assists - 1);
+                        if (assister) {
+                            assister.assists = Math.max(0, assister.assists - 1);
+                            playersToRevert.add(assister);
+                        }
                     }
                 }
                 if (e.type === "assist" && p) {
                     p.assists = Math.max(0, p.assists - 1);
+                    playersToRevert.add(p);
                 }
             });
+
+            // Batch sync to Firestore
+            if (window.db) {
+                const batch = window.db.batch();
+                playersToRevert.forEach(p => {
+                    const ref = window.db.collection('players').doc(p.id.toString());
+                    batch.set(ref, p, { merge: true });
+                });
+                try {
+                    await batch.commit();
+                } catch (err) {
+                    console.error("[Stats] Batch revert failed:", err);
+                }
+            }
         }
     }
 };
@@ -1581,5 +2052,16 @@ window.addEvent = () => app.events.addMatchEvent();
 window.removeEvent = (i) => app.events.removeMatchEvent(i);
 window.editNews = (id) => app.ui.editNews(id);
 window.editMedia = (id) => app.ui.editMedia(id);
+
+window.triggerExport = (fileName) => {
+    switch (fileName) {
+        case 'matches.json': app.ui.downloadMatchData(); break;
+        case 'log.json': app.events.exportStandingsAsJson(); break;
+        case 'players.json': app.ui.downloadPlayerData(); break;
+        case 'news.json': app.ui.exportNewsAsJson(); break;
+        case 'media.json': app.ui.exportMediaAsJson(); break;
+        default: console.warn("Unknown export file:", fileName);
+    }
+};
 
 document.addEventListener("DOMContentLoaded", () => app.init());

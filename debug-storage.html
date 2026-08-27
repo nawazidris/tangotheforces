@@ -145,8 +145,8 @@ Data Source:
             document.getElementById('summary').textContent = summary;
         }
 
-        function clearLocalStorage() {
-            if (confirm('Are you sure? This will clear all localStorage data.')) {
+        async function clearLocalStorage() {
+            if (await confirm('Are you sure? This will clear all localStorage data.')) {
                 localStorage.clear();
                 refreshAll();
             }

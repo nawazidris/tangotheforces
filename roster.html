@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="description" content="Meet the Tango FC squad — player profiles, positions, stats and bios for the 2026 season.">
     <link rel="icon" type="image/jpeg" href="images/tangoforces.jpg">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Player Roster — Tango Football Club</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -12,7 +12,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="css/roster.css">
     <link rel="stylesheet" href="css/index.css">
-    <script src="js/components.js" defer></script>
 </head>
 <body>
 
@@ -126,11 +125,26 @@
 
     <main-footer></main-footer>
 
+    <script src="js/app-config.js"></script>
+    <script src="js/cache-service.js"></script>
+    <script src="js/components.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
     <script src="js/firebase-init.js"></script>
-    <script src="js/players data.js"></script>
+    <script src="js/players-data.js"></script>
     <script src="js/roster.js"></script>
+
+    <script>
+        // Emergency Force-Load for Header
+        setTimeout(() => {
+            const headerTag = document.querySelector('main-header');
+            if (headerTag && headerTag.innerHTML.trim() === '') {
+                if (typeof loadComponent === 'function') {
+                    loadComponent("main-header", "header.html");
+                }
+            }
+        }, 3000);
+    </script>
 </body>
 </html>

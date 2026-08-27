@@ -45,7 +45,7 @@
 
 @media (max-width: 480px) {
     .roster-hero {
-        padding: 30px 3% 0;
+        padding: 85px 3% 0; /* Clears the 65px header top padding */
     }
     
     .roster-hero-content {

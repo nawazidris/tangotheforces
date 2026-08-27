@@ -19,50 +19,56 @@ const sortRosterPlayers = (players) => {
         const priorityA = getPositionPriority(a.position);
         const priorityB = getPositionPriority(b.position);
         if (priorityA !== priorityB) return priorityA - priorityB;
+
+        // Within the same category, sort by stats (goals + assists) descending
+        const totalStatsA = (a.goals || 0) + (a.assists || 0);
+        const totalStatsB = (b.goals || 0) + (b.assists || 0);
+        if (totalStatsB !== totalStatsA) return totalStatsB - totalStatsA;
+
+        // Fallback to jersey number
         if ((a.number || 0) !== (b.number || 0)) return (a.number || 0) - (b.number || 0);
+
         return String(a.name || '').localeCompare(String(b.name || ''), undefined, { sensitivity: 'base' });
     });
 };
+
+let rosterListener = null;
 
 async function loadPlayers() {
     const container = document.getElementById('rosterPlayers');
     if (!container) return;
 
+    // 1. Instant local load
     try {
-        if (window.db) {
-            try {
-                const snapshot = await window.db.collection('players').get();
-                if (!snapshot.empty) {
-                    allPlayers = sortRosterPlayers(snapshot.docs
-                        .map(doc => doc.data())
-                        .filter(player => player && player.id != null));
-                }
-            } catch (firebaseError) {
-                console.error('Failed to fetch roster players from Firebase:', firebaseError);
-            }
+        const fetchFn = (window.AppConfig && window.AppConfig.fetchAsset) ? window.AppConfig.fetchAsset : fetch;
+        const res = await fetchFn('data/players.json');
+        if (res.ok) {
+            allPlayers = sortRosterPlayers(await res.json());
+            updateSquadStats(allPlayers);
+            renderPlayers(allPlayers);
         }
+    } catch (e) { console.warn("Initial roster load failed:", e); }
 
-        if (!Array.isArray(allPlayers) || allPlayers.length === 0) {
-            if (typeof getMergedPlayers === 'function') {
-                allPlayers = getMergedPlayers();
-            } else {
-                const localAdmin = localStorage.getItem('adminPlayers');
-                const localAll = localStorage.getItem('allPlayers');
-                allPlayers = localAdmin ? JSON.parse(localAdmin) : (localAll ? JSON.parse(localAll) : basePlayers || []);
+    // 2. Real-time Firebase Sync
+    if (window.db) {
+        if (rosterListener) rosterListener();
+        console.log("[Roster] Subscribing to real-time updates...");
+
+        rosterListener = window.db.collection('players').onSnapshot(snapshot => {
+            if (!snapshot.empty) {
+                const livePlayers = snapshot.docs.map(doc => doc.data());
+                allPlayers = sortRosterPlayers(livePlayers);
+                updateSquadStats(allPlayers);
+
+                // Re-apply current filter
+                const activeTab = document.querySelector('.filter-tab.active');
+                const position = activeTab?.dataset.position || 'all';
+                filterPlayers(position);
             }
-        }
-    } catch (e) {
-        console.error('Error loading player data profiles:', e);
-        allPlayers = basePlayers || [];
+        });
     }
-
-    if (!Array.isArray(allPlayers)) {
-        allPlayers = [];
-    }
-
-    updateSquadStats(allPlayers);
-    renderPlayers(allPlayers);
 }
+
 
 function renderPlayers(playersToRender) {
     const container = document.getElementById('rosterPlayers');

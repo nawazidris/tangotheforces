@@ -4,50 +4,111 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 let allMatches = [];
+let playersData = [];
+let matchesListener = null;
+let playersListener = null;
 
 async function initializeMatches() {
     const container = document.getElementById('matchesContainer');
     if (!container) return;
 
+    // 1. INSTANT LOAD: Load local data first so the user sees content immediately
     try {
-        container.innerHTML = `
-            <div class="loading-state">
-                <div class="loading-spinner"></div>
-                <p>Loading matches…</p>
-            </div>`;
+        const [mRes, pRes] = await Promise.all([
+            fetchMatchesFromJSON(),
+            fetchPlayersFromJSON()
+        ]);
+        allMatches = mRes;
+        playersData = pRes;
 
-        if (window.db) {
-            try {
-                const mSnap = await window.db.collection('matches').get();
-                if (!mSnap.empty) {
-                    allMatches = mSnap.docs.map(doc => doc.data());
-                }
-            } catch (e) {
-                console.error("Firebase fetch failed, falling back to JSON.", e);
-                allMatches = await fetchMatchesFromJSON();
-            }
-        } else {
-            allMatches = await fetchMatchesFromJSON();
-        }
-
-        // Sort all matches by date initially
         allMatches.sort((a, b) => new Date(a.date) - new Date(b.date));
-
         renderMatches('all');
         updateQuickStats(allMatches);
+    } catch (e) {
+        console.warn("Initial local load failed:", e);
+    }
 
-    } catch (error) {
-        console.error("Failed to initialize matches:", error);
-        container.innerHTML = `<p>Error loading matches. Please try again later.</p>`;
+    // 2. REAL-TIME SYNC: Listen for live updates from Firebase
+    if (window.db) {
+        // Unsubscribe from existing listeners if they exist
+        if (matchesListener) matchesListener();
+        if (playersListener) playersListener();
+
+        console.log("[Matches] Subscribing to real-time updates...");
+
+        matchesListener = window.db.collection('matches').onSnapshot((snapshot) => {
+            if (!snapshot.empty) {
+                allMatches = snapshot.docs.map(doc => doc.data());
+                allMatches.sort((a, b) => new Date(a.date) - new Date(b.date));
+                refreshUI();
+            }
+        }, (error) => console.error("[Matches] Matches sync failed:", error));
+
+        playersListener = window.db.collection('players').onSnapshot((snapshot) => {
+            if (!snapshot.empty) {
+                playersData = snapshot.docs.map(doc => doc.data());
+                refreshUI();
+            }
+        }, (error) => console.error("[Matches] Players sync failed:", error));
     }
 }
 
+function refreshUI() {
+    const currentFilter = document.querySelector('.filter-tab.active')?.dataset.filter || 'all';
+    renderMatches(currentFilter);
+    updateQuickStats(allMatches);
+}
+
+function localFetch(url) {
+    return new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.open('GET', url, true);
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === 4) {
+                if (xhr.status === 200 || xhr.status === 0) {
+                    try {
+                        resolve({
+                            ok: true,
+                            json: () => Promise.resolve(JSON.parse(xhr.responseText))
+                        });
+                    } catch (e) {
+                        reject(new Error("Parse error"));
+                    }
+                } else {
+                    resolve({ ok: false, status: xhr.status });
+                }
+            }
+        };
+        xhr.onerror = () => reject(new Error("Network error"));
+        xhr.send();
+    });
+}
+
 async function fetchMatchesFromJSON() {
-    const response = await fetch('data/matches.json');
-    if (!response.ok) {
-        throw new Error('Failed to fetch matches.json');
-    }
+    const fetchFn = (window.AppConfig && window.AppConfig.fetchAsset) ? window.AppConfig.fetchAsset : localFetch;
+    const response = await fetchFn('data/matches.json');
+    if (!response.ok) throw new Error('Failed to fetch matches.json');
     return await response.json();
+}
+
+async function fetchPlayersFromJSON() {
+    const fetchFn = (window.AppConfig && window.AppConfig.fetchAsset) ? window.AppConfig.fetchAsset : localFetch;
+    const response = await fetchFn('data/players.json');
+    if (!response.ok) throw new Error('Failed to fetch players.json');
+    return await response.json();
+}
+
+/**
+ * Returns a player's nickname if found, otherwise returns their name as-is.
+ */
+function getPlayerNickname(fullName) {
+    if (!fullName) return '';
+    const nameLower = fullName.toLowerCase().trim();
+    const player = playersData.find(p =>
+        (p.name && p.name.toLowerCase().trim() === nameLower) ||
+        (p.nickname && p.nickname.toLowerCase().trim() === nameLower)
+    );
+    return player?.nickname || fullName;
 }
 
 function renderMatches(filter) {
@@ -101,96 +162,87 @@ function createMatchCard(match) {
     // Determine result relative to Tango
     const tangoHome = (match.homeTeam || '').toLowerCase().includes('tango');
     const tangoAway = (match.awayTeam || '').toLowerCase().includes('tango');
-    const diff = (match.homeScore || 0) - (match.awayScore || 0);
+    const diff = (parseInt(match.homeScore) || 0) - (parseInt(match.awayScore) || 0);
 
-    let result = null; // 'win' | 'draw' | 'lose' | null
+    let resultText = '';
+    let resultClass = '';
     if (isCompleted) {
+        let result = 'draw';
         if (tangoHome) {
             result = diff > 0 ? 'win' : diff === 0 ? 'draw' : 'lose';
         } else if (tangoAway) {
             result = diff < 0 ? 'win' : diff === 0 ? 'draw' : 'lose';
         }
+        resultText = result.toUpperCase();
+        resultClass = `badge-${result}`;
     }
 
-    // Build card class list
-    const statusClass = isCompleted ? 'status-completed' : 'status-upcoming';
-    const resultClass = result ? `result-${result}` : '';
-    card.className = ['match-card', statusClass, resultClass].filter(Boolean).join(' ');
+    card.className = `match-card simple-match-card ${isCompleted ? 'status-completed' : 'status-upcoming'}`;
 
-    // Badge in header
-    let badgeClass, badgeText;
-    if (isCompleted) {
-        badgeClass = result ? `badge-${result}` : 'badge-draw';
-        badgeText  = result === 'win' ? 'WIN' : result === 'draw' ? 'DRAW' : 'LOSS';
-    } else {
-        badgeClass = 'badge-upcoming';
-        // Format time as HH:MM if available, else 'Upcoming'
-        if (match.time) {
-            badgeText = match.time;
-        } else {
-            badgeText = 'Upcoming';
-        }
-    }
+    const dateStr = match.date || 'TBA';
+    const scoreText = isCompleted ? `${match.homeScore} – ${match.awayScore}` : 'VS';
+    const resultBadge = isCompleted ? `<span class="m-badge ${resultClass}">${resultText}</span>` : `<span class="m-badge badge-upcoming">UPCOMING</span>`;
 
-    // Date formatted as e.g. "Sat, 28 Jun"
-    const dateStr = new Date(match.date).toLocaleDateString('en-GB', {
-        weekday: 'short', day: 'numeric', month: 'short'
-    });
+    // Goalscorers section
+    let homeScorersHtml = '';
+    let awayScorersHtml = '';
+    if (isCompleted && match.events && match.events.length > 0) {
+        const homeGoals = match.events.filter(e => e.type === 'goal' && (e.team === match.homeTeam || e.team === 'home'));
+        const awayGoals = match.events.filter(e => e.type === 'goal' && (e.team === match.awayTeam || e.team === 'away'));
 
-    // Score / VS block
-    const scoreContent = isCompleted
-        ? `<div class="card-score">${match.homeScore ?? 0} – ${match.awayScore ?? 0}</div>`
-        : `<div class="card-vs">VS</div>`;
+        const renderGoal = (g) => {
+            const scorerNick = getPlayerNickname(g.player);
+            const assisterNick = g.assist ? getPlayerNickname(g.assist) : null;
 
-    // Events columns
-    let eventsHtml = '';
-    if (match.events && match.events.length > 0) {
-        const homeEvents = match.events.filter(e => e.team === 'home' ||
-            (tangoHome && e.team !== 'away') ||
-            (!tangoHome && !tangoAway && e.team === 'home'));
-        const awayEvents = match.events.filter(e => e.team === 'away' ||
-            (tangoAway && e.team !== 'home') ||
-            (!tangoHome && !tangoAway && e.team === 'away'));
-
-        // Fall back: split by index if no team field
-        const allHaveTeam = match.events.every(e => e.team);
-        const homeEvts = allHaveTeam ? homeEvents : match.events.filter((_, i) => i % 2 === 0);
-        const awayEvts = allHaveTeam ? awayEvents : match.events.filter((_, i) => i % 2 !== 0);
-
-        const renderEvent = e => {
-            const icon = e.type === 'goal' ? '⚽' : e.type === 'yellowcard' ? '🟨' : e.type === 'redcard' ? '🟥' : '•';
-            const min  = e.minute ? `${e.minute}'` : '';
-            const assist = e.assist ? ` <span class="assist-label clr-gold">🅰 ${e.assist}</span>` : '';
-            return `<span>${icon} ${min} ${e.player || ''}${assist}</span>`;
+            return `
+                <div class="m-event-item">
+                    <i class="fa-solid fa-futbol" title="Goal"></i>
+                    <span class="m-event-player">${scorerNick}</span>
+                    ${assisterNick ? `
+                        <span class="m-event-assist">
+                            <i class="fa-solid fa-bullseye" title="Assist"></i> ${assisterNick}
+                        </span>
+                    ` : ''}
+                    <span class="m-event-min">${g.minute}'</span>
+                </div>
+            `;
         };
 
-        eventsHtml = `
-            <div class="card-events">
-                <div class="events-col events-home">${homeEvts.map(renderEvent).join('')}</div>
-                <div class="events-col events-away">${awayEvts.map(renderEvent).join('')}</div>
-            </div>`;
+        homeScorersHtml = homeGoals.map(renderGoal).join('');
+        awayScorersHtml = awayGoals.map(renderGoal).join('');
     }
 
     card.innerHTML = `
-        <div class="card-header">
-            <span class="card-competition"><i class="fa-solid fa-trophy"></i> ${match.competition || 'Friendly'}</span>
-            <span class="card-date-badge ${badgeClass}">${badgeText}</span>
-            <span class="card-venue"><i class="fa-solid fa-location-dot"></i> ${match.venue || 'TBA'}</span>
+        <div class="m-card-top">
+            <div class="m-top-info">
+                <span class="m-comp"><i class="fa-solid fa-trophy"></i> ${match.competition || 'LEAGUE'}</span>
+                <span class="m-venue"><i class="fa-solid fa-location-dot"></i> ${match.venue || 'TBA'}</span>
+                <span class="m-date"><i class="fa-solid fa-calendar-days"></i> ${dateStr}</span>
+            </div>
+            <span class="m-time-top"><i class="fa-solid fa-clock"></i> ${match.time || '15:00'}</span>
         </div>
-        <div class="card-scoreline">
-            <div class="card-team home">
-                <div class="card-team-name">${match.homeTeam}</div>
-                <div class="card-date" style="font-size:0.7rem;color:var(--muted);margin-top:4px">${dateStr}</div>
-            </div>
-            <div class="card-score-block">
-                ${scoreContent}
-            </div>
-            <div class="card-team away">
-                <div class="card-team-name">${match.awayTeam}</div>
+
+        <div class="m-card-body">
+            <div class="m-match-main">
+                <div class="m-team home">
+                    <span class="m-team-name">${match.homeTeam}</span>
+                    <div class="m-team-scorers">${homeScorersHtml}</div>
+                </div>
+                <div class="m-score">${scoreText}</div>
+                <div class="m-team away">
+                    <span class="m-team-name">${match.awayTeam}</span>
+                    <div class="m-team-scorers">${awayScorersHtml}</div>
+                </div>
             </div>
         </div>
-        ${eventsHtml}
+
+        <div class="m-card-footer">
+            <div class="m-result-box">
+                ${resultBadge}
+            </div>
+        </div>
     `;
+
     return card;
 }
 
@@ -207,44 +259,49 @@ function setupFilters() {
 }
 
 function updateQuickStats(matches) {
-    const completed = matches.filter(m => m.status === 'completed');
-    let wins = 0, draws = 0, losses = 0, gf = 0;
+    const TANGO_NAME = "tango";
 
-    const getResultClass = (match) => {
-        const tangoHome = (match.homeTeam || '').toLowerCase().includes('tango');
-        const tangoAway = (match.awayTeam || '').toLowerCase().includes('tango');
-        const diff = (match.homeScore || 0) - (match.awayScore || 0);
-
-        if (tangoHome) {
-            if (diff > 0) return 'win';
-            if (diff === 0) return 'draw';
-            return 'lose';
-        }
-        if (tangoAway) {
-            if (diff < 0) return 'win';
-            if (diff === 0) return 'draw';
-            return 'lose';
-        }
-        return 'other';
-    };
-
-    completed.forEach(m => {
-        const result = getResultClass(m);
-        if (result === 'win') wins++;
-        else if (result === 'draw') draws++;
-        else if (result === 'lose') losses++;
-
-        const tangoHome = (m.homeTeam || '').toLowerCase().includes('tango');
-        if (tangoHome) gf += Number(m.homeScore || 0);
-        else gf += Number(m.awayScore || 0);
+    // 1. Filter for matches that involve Tango and are completed
+    const tangoCompletedMatches = matches.filter(m => {
+        const involvesTango = (m.homeTeam || '').toLowerCase().includes(TANGO_NAME) ||
+                              (m.awayTeam || '').toLowerCase().includes(TANGO_NAME);
+        return involvesTango && m.status === 'completed';
     });
 
-    const upcoming = matches.filter(m => m.status !== 'completed').length;
+    let wins = 0, draws = 0, losses = 0, goalsFor = 0;
 
-    document.getElementById('qs-played').textContent = completed.length;
+    tangoCompletedMatches.forEach(m => {
+        const homeTeam = (m.homeTeam || '').toLowerCase();
+        const awayTeam = (m.awayTeam || '').toLowerCase();
+        const homeScore = parseInt(m.homeScore) || 0;
+        const awayScore = parseInt(m.awayScore) || 0;
+
+        if (homeTeam.includes(TANGO_NAME)) {
+            // Tango is Home
+            goalsFor += homeScore;
+            if (homeScore > awayScore) wins++;
+            else if (homeScore === awayScore) draws++;
+            else losses++;
+        } else {
+            // Tango is Away
+            goalsFor += awayScore;
+            if (awayScore > homeScore) wins++;
+            else if (awayScore === homeScore) draws++;
+            else losses++;
+        }
+    });
+
+    const upcoming = matches.filter(m => {
+        const involvesTango = (m.homeTeam || '').toLowerCase().includes(TANGO_NAME) ||
+                              (m.awayTeam || '').toLowerCase().includes(TANGO_NAME);
+        return involvesTango && m.status === 'upcoming';
+    }).length;
+
+    // 2. Update UI
+    document.getElementById('qs-played').textContent = tangoCompletedMatches.length;
     document.getElementById('qs-wins').textContent = wins;
     document.getElementById('qs-draws').textContent = draws;
     document.getElementById('qs-losses').textContent = losses;
-    document.getElementById('qs-gf').textContent = gf;
+    document.getElementById('qs-gf').textContent = goalsFor;
     document.getElementById('qs-upcoming').textContent = upcoming;
 }

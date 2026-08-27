@@ -185,9 +185,7 @@
     {"week": 17, "home": "Steers FC",               "homeScore": 3, "awayScore": 0, "away": "Thorglot All Stars"},
     {"week": 17, "home": "Chibuku",                 "homeScore": 3, "awayScore": 3, "away": "Tango FC"},
     {"week": 17, "home": "Flesk FC",                "homeScore": 3, "awayScore": 0, "away": "Light Of God"},
-    {"week": 17, "home": "Mugodhi FC",              "homeScore": null, "awayScore": null, "away": "Morefire FC"},
     {"week": 17, "home": "Mugodhi FC",              "homeScore": 2, "awayScore": 0, "away": "Mutimurefu"},
-
 
     {"week": 18, "home": "Prison Warriors",         "homeScore": 2, "awayScore": 5, "away": "Exor Stars"},
     {"week": 18, "home": "GZU FC",                  "homeScore": 3, "awayScore": 1, "away": "Mutimurefu"},
@@ -199,7 +197,7 @@
     {"week": 18, "home": "Steers FC",               "homeScore": 4, "awayScore": 1, "away": "Light Of God"},
     {"week": 18, "home": "Tango FC",                "homeScore": 1, "awayScore": 1, "away": "Mugodhi FC"},
     {"week": 18, "home": "Flesk FC",                "homeScore": 0, "awayScore": 0, "away": "Morefire FC"},
-    
+
     {"week": 19, "home": "Motor Sales FC",          "homeScore": 6, "awayScore": 3, "away": "Prison Warriors"},
     {"week": 19, "home": "ZRP Masvingo",            "homeScore": null, "awayScore": null, "away": "GZU FC"},
     {"week": 19, "home": "Exor Stars",              "homeScore": 7, "awayScore": 0, "away": "FC Duchima"},
@@ -210,6 +208,5 @@
     {"week": 19, "home": "Thorglot All Stars",      "homeScore": 1, "awayScore": 4, "away": "Flesk FC"},
     {"week": 19, "home": "Morefire FC",             "homeScore": 1, "awayScore": 1, "away": "Chibuku"},
     {"week": 19, "home": "Mugodhi FC",              "homeScore": 0, "awayScore": 1, "away": "Light Of God"}
-    
-      ]
-    }
+  ]
+}

@@ -2,300 +2,252 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="description" content="Tango Football Club — Masvingo's most celebrated football organisation. MOSSL champions 2025/26.">
-    <meta property="og:title" content="Tango Football Club | MOSSL Champions 2025/26">
-    <meta property="og:description" content="Follow Tango FC: fixtures, results, player stats, standings, and club news from Masvingo's finest football club.">
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://example.com/">
-    <meta property="og:image" content="https://example.com/images/tangoforces.jpg">
-    <meta property="og:image:alt" content="Tango Football Club logo and stadium backdrop">
-    <meta property="og:site_name" content="Tango Football Club">
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Tango Football Club | MOSSL Champions 2025/26">
-    <meta name="twitter:description" content="Follow Tango FC: fixtures, results, player stats, standings, and club news from Masvingo's finest football club.">
-    <meta name="twitter:image" content="https://example.com/images/tangoforces.jpg">
-    <meta name="twitter:image:alt" content="Tango Football Club logo and stadium backdrop">
-    <meta name="twitter:site" content="@TangoForces">
-    <meta name="twitter:creator" content="@TangoForces">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Tango Football Club — Official Home Page</title>
+    <meta name="description" content="Welcome to the official home of Tango Football Club. Professionalism, excellence, and community spirit.">
     <link rel="icon" type="image/jpeg" href="images/tangoforces.jpg">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tango Football Club</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="css/index.css">
-    <script src="js/components.js" defer></script>
 </head>
 <body>
 
     <main-header></main-header>
     <mobile-nav></mobile-nav>
 
-    <main>
-
-        <!-- ============================
-             HERO SECTION
-        ============================= -->
-        <section class="hero-section">
-            <div class="hero-content">
-
+    <!-- HERO SECTION -->
+    <!-- HERO SECTION (LAYOUT 3: FULL WIDTH HERO) -->
+    <section class="hero-section layout-3">
+        <div class="hero-container">
+            
+            <!-- Upper Section: Main Heading & Watermark -->
+            <div class="hero-upper">
                 <div class="hero-left">
-                    <div class="season-badge">
-                        <i class="fa-solid fa-trophy"></i>
-                        MOSSL Champions 2025
-                    </div>
-
-                    <h2>
-                        Masvingo's<br>
-                        <span class="accent">Finest Club</span>
-                    </h2>
-
-                    <p>
-                        Tango Football Club — champions of excellence, community, and the beautiful game.
-                        Founded in 2015, we've grown into Masvingo's most celebrated football organisation.
-                    </p>
-
+                    <span class="season-badge">2026 Season Official</span>
+                    <h2>Welcome to <br><span class="accent">Tango Football Club</span></h2>
+                    <p>Developing Masvingo's brightest talent through professional training, community integration, and a winning philosophy.</p>
                     <div class="hero-buttons">
-                        <a href="roster.html" class="btn-primary">
-                            <i class="fa-solid fa-users"></i> Meet the Team
-                        </a>
-                        <a href="matches.html" class="btn-secondary">
-                            View Fixtures
-                        </a>
+                        <a href="roster.html" class="btn-primary">View Squad</a>
+                        <a href="matches.html" class="btn-secondary">Upcoming Matches</a>
+                    </div>
+                </div>
+                
+                <!-- Watermark Crest -->
+                <div class="hero-right-watermark">
+                    <img src="images/tangoforces.jpg" alt="Tango FC Crest" class="watermark-crest">
+                </div>
+            </div>
+
+            <!-- Lower Section: Consolidated Bottom Stats Bar -->
+            <div class="hero-bottom-bar glass-card">
+                
+                <!-- Segment 1: Champions Indicator -->
+                <div class="bar-segment champions-segment">
+                    <div class="segment-icon gold-glow">
+                        <i class="fa-solid fa-trophy"></i>
+                    </div>
+                    <div class="segment-text">
+                        <span class="segment-label">MOSSL Champions</span>
+                        <strong class="segment-value">2025</strong>
                     </div>
                 </div>
 
-                <div class="hero-right">
-                    <div class="hero-stats-card glass-card">
-                        <div class="hero-stat">
-                            <strong>1st</strong>
-                            <span>League Position</span>
-                        </div>
-                        <div class="hero-stat-divider"></div>
-                        <div class="hero-stat">
-                            <strong>86</strong>
-                            <span>Points</span>
-                        </div>
-                        <div class="hero-stat-divider"></div>
-                        <div class="hero-stat">
-                            <strong>37</strong>
-                            <span>Matches</span>
-                        </div>
-                    </div>
+                <!-- Segment 2: Live Points -->
+                <div class="bar-segment stat-segment">
+                    <span class="segment-label">Points</span>
+                    <strong id="heroLivePts" class="segment-value-highlight">35</strong>
+                </div>
 
-                    <div class="hero-badge-card glass-card">
-                        <div class="badge-icon">
-                            <i class="fa-solid fa-trophy"></i>
-                        </div>
-                        <div>
-                            <strong>MOSSL 2025</strong>
-                            <span>League Champions</span>
-                        </div>
+                <!-- Segment 3: Live Wins -->
+                <div class="bar-segment stat-segment">
+                    <span class="segment-label">Wins</span>
+                    <strong id="heroLiveWins" class="segment-value-highlight">10</strong>
+                </div>
+
+                <!-- Segment 4: Draws & Losses Combined Split -->
+                <div class="bar-segment stat-split-segment">
+                    <div class="split-box">
+                        <span class="segment-label-sm">Draws</span>
+                        <strong id="heroLiveDraws" class="split-value">5</strong>
+                    </div>
+                    <div class="split-box-divider"></div>
+                    <div class="split-box">
+                        <span class="segment-label-sm">Losses</span>
+                        <strong id="heroLiveLosses" class="split-value">5</strong>
+                    </div>
+                </div>
+
+                <!-- Segment 5: Next Match Quick Peek -->
+                <div class="bar-segment next-match-segment">
+                    <div class="segment-icon blue-glow">
+                        <i class="fa-solid fa-circle-play"></i>
+                    </div>
+                    <div class="segment-text">
+                        <span class="segment-label">Next Match</span>
+                        <strong id="quickNextOpponent" class="segment-title-value">vs ZRP FC</strong>
+                        <span id="quickNextDetails" class="segment-subtext">13 Jun 2026 • 15:00 — Shakashe Stadium</span>
                     </div>
                 </div>
 
             </div>
-        </section>
+        </div>
+    </section>
 
-        <!-- ============================
-             NEXT MATCH COUNTDOWN
-        ============================= -->
-        <section class="countdown-section" id="nextMatchCountdown" style="display: none;">
-            <div class="countdown-content">
-                <div class="countdown-header">
-                    <h3 id="countdownOpponent">vs. Opponent</h3>
-                    <p>Next Match Kicks Off In</p>
+    <!-- COUNTDOWN SECTION -->
+    <section id="nextMatchCountdown" class="countdown-section" style="display: none;">
+        <div class="countdown-content">
+            <div class="countdown-header">
+                <p>Next Match Countdown</p>
+                <h3 id="countdownOpponent">vs. TBA</h3>
+            </div>
+            <div class="countdown-timer">
+                <div class="countdown-segment">
+                    <strong id="countdownDays">00</strong>
+                    <span>Days</span>
                 </div>
-                <div class="countdown-timer">
-                    <div class="countdown-segment">
-                        <strong id="countdownDays">00</strong>
-                        <span>Days</span>
-                    </div>
-                    <div class="countdown-divider">:</div>
-                    <div class="countdown-segment">
-                        <strong id="countdownHours">00</strong>
-                        <span>Hours</span>
-                    </div>
-                    <div class="countdown-divider">:</div>
-                    <div class="countdown-segment">
-                        <strong id="countdownMinutes">00</strong>
-                        <span>Mins</span>
-                    </div>
-                    <div class="countdown-divider">:</div>
-                    <div class="countdown-segment">
-                        <strong id="countdownSeconds">00</strong>
-                        <span>Secs</span>
-                    </div>
+                <div class="countdown-divider">:</div>
+                <div class="countdown-segment">
+                    <strong id="countdownHours">00</strong>
+                    <span>Hours</span>
                 </div>
-                <div class="countdown-footer">
-                    <span id="countdownVenue"><i class="fa-solid fa-location-dot"></i> Venue</span>
-                    <span id="countdownDate"><i class="fa-solid fa-calendar-day"></i> Date</span>
+                <div class="countdown-divider">:</div>
+                <div class="countdown-segment">
+                    <strong id="countdownMinutes">00</strong>
+                    <span>Min</span>
+                </div>
+                <div class="countdown-divider">:</div>
+                <div class="countdown-segment">
+                    <strong id="countdownSeconds">00</strong>
+                    <span>Sec</span>
                 </div>
             </div>
-        </section>
-
-
-        
-
-        <!-- ============================
-             ABOUT SECTION
-        ============================= -->
-        <section class="about-section section-spacing">
-            <div class="section-title">
-                <h2>About Tango FC</h2>
-                <p>More than a club — a family united by passion</p>
+            <div class="countdown-footer">
+                <span id="countdownDate"><i class="fa-solid fa-calendar-day"></i> TBA</span>
+                <span id="countdownVenue"><i class="fa-solid fa-location-dot"></i> TBA</span>
             </div>
+        </div>
+    </section>
 
-            <div class="about-grid">
-                <div class="about-text">
-                    <p>
-                        Founded in 2015, Tango Football Club has grown from humble beginnings to become
-                        Masvingo's most successful football organisation. Our commitment to excellence —
-                        both on and off the pitch — has earned us five league titles and countless
-                        unforgettable moments.
-                    </p>
-                    <p>
-                        We believe in developing not just skilled players, but well-rounded individuals
-                        who contribute positively to our community. The Tango badge represents more than
-                        silverware — it represents character, discipline, and unity.
-                    </p>
+    <!-- NEWS GRID -->
+    <section class="section-spacing">
+        <div class="section-title">
+            <h2>Latest Club News</h2>
+            <p>Stay updated with results, announcements, and transfers.</p>
+        </div>
+        <div id="newsGrid" class="news-grid">
+            <!-- Populated by home.js -->
+        </div>
+    </section>
+
+    <!-- ABOUT & VALUES SECTION -->
+    <section class="section-spacing about-section" style="border-top: 1px solid var(--border);">
+        <div class="section-title">
+            <span class="about-eyebrow">Our Identity</span>
+            <h2>More Than Just A Club</h2>
+            <p>Tango FC is built on a foundation of discipline, community, and the relentless pursuit of excellence.</p>
+        </div>
+
+        <div class="about-bottom-layout">
+            <div class="about-left-col">
+                <div class="about-description">
+                    <p>Founded with a vision to transform Masvingo football, Tango FC has quickly risen to become the MOSSL Champions. We focus on technical precision and tactical intelligence.</p>
+                    <p class="highlight-text">"Success is a journey, not a destination. We play for the badge, the city, and the future."</p>
                 </div>
 
-                <div class="about-bottom">
-                    <div class="values-grid">
-                        <div class="value-card glass-card">
-                            <div class="value-icon blue">🎯</div>
-                            <h4>Excellence</h4>
-                            <p>Striving for perfection in every aspect of the game</p>
-                        </div>
-                        <div class="value-card glass-card">
-                            <div class="value-icon green">🤝</div>
-                            <h4>Teamwork</h4>
-                            <p>United we stand — collective strength drives us forward</p>
-                        </div>
-                        <div class="value-card glass-card">
-                            <div class="value-icon gold">🌟</div>
-                            <h4>Community</h4>
-                            <p>Giving back to Masvingo and inspiring the next generation</p>
-                        </div>
+                <div class="values-grid">
+                    <div class="value-card glass-card">
+                        <div class="value-icon blue"><i class="fa-solid fa-heart"></i></div>
+                        <h4>Passion</h4>
+                        <p>We play with heart and soul in every match.</p>
                     </div>
+                    <div class="value-card glass-card">
+                        <div class="value-icon green"><i class="fa-solid fa-handshake"></i></div>
+                        <h4>Integrity</h4>
+                        <p>Honesty and respect define our character.</p>
+                    </div>
+                    <div class="value-card glass-card">
+                        <div class="value-icon gold"><i class="fa-solid fa-star"></i></div>
+                        <h4>Excellence</h4>
+                        <p>Striving for the highest standards always.</p>
+                    </div>
+                    <div class="value-card glass-card">
+                        <div class="value-icon red"><i class="fa-solid fa-shield-halved"></i></div>
+                        <h4>Discipline</h4>
+                        <p>Dedication and professional conduct at all times.</p>
+                    </div>
+                </div>
+            </div>
 
-                    <div class="about-badge-panel glass-card">
-                        <img src="images/tangoforces.jpg" alt="Tango FC Crest" class="about-crest">
-                        <h3>Tango FC</h3>
-                        <p>Est. 2015 · Masvingo, Zimbabwe</p>
-                        <div class="founded-stats">
-                            <div>
-                                <strong>10+</strong>
-                                <span>Trophies</span>
+            <div class="about-right-col">
+                <div class="about-featured-card glass-card">
+                    <img src="images/tangoforces.jpg" alt="Tango FC Crest" class="floating-crest">
+                    <div class="card-info">
+                        <h3>Tango Football Club</h3>
+                        <p class="est-tag">EST. 2015</p>
+
+                        <div class="quick-stats-grid">
+                            <div class="qs-box">
+                                <strong id="aboutRank">1st</strong>
+                                <span>Rank</span>
                             </div>
-                            <div>
-                                <strong>5</strong>
-                                <span>Titles</span>
+                            <div class="qs-box">
+                                <strong id="aboutPts">86</strong>
+                                <span>Pts</span>
                             </div>
-                            <div>
-                                <strong>200+</strong>
-                                <span>Players</span>
+                            <div class="qs-box">
+                                <strong id="aboutGames">38</strong>
+                                <span>Games</span>
                             </div>
                         </div>
+                        <p class="location-tag"><i class="fa-solid fa-location-dot"></i> Rujeko, Masvingo, Zimbabwe</p>
                     </div>
                 </div>
             </div>
-        </section>
+        </div>
 
+        <div style="text-align: center; margin-top: 50px;">
+            <a href="history.html" class="btn-secondary">Read Full History</a>
+        </div>
+    </section>
 
-        <!-- ============================
-             LATEST NEWS
-        ============================= -->
-        <section class="news-section section-spacing">
-            <div class="section-title">
-                <h2>Latest News</h2>
-                <p>Stay updated with everything Tango FC</p>
+    <!-- SOCIAL & CONTACT STRIP -->
+    <section class="cta-strip">
+        <div class="cta-content">
+            <div>
+                <h3>Connect With Us</h3>
+                <p>Follow the forces on our social media platforms.</p>
             </div>
-
-            <div class="news-grid" id="newsGrid">
-                <!-- News articles will be loaded here dynamically -->
+            <div class="cta-actions">
+                <a href="https://wa.me/263719246563" class="btn-primary blue"><i class="fa-brands fa-whatsapp"></i> WhatsApp</a>
+                <a href="https://facebook.com" class="btn-primary"><i class="fa-brands fa-facebook"></i> Facebook</a>
+                <a href="https://instagram.com" class="btn-primary red"><i class="fa-brands fa-instagram"></i> Instagram</a>
             </div>
-        </section>
+        </div>
+    </section>
 
-
-        <!-- ============================
-             ACHIEVEMENTS
-        ============================= -->
-        <section class="achievements-section section-spacing">
-            <div class="section-title">
-                <h2>Club Honours</h2>
-                <p>A legacy built on hard work and dedication</p>
-            </div>
-
-            <div class="achievements-grid">
-                <div class="achievement-card glass-card">
-                    <div class="ach-icon gold">🏆</div>
-                    <h4>League Champions 2025/26</h4>
-                    <p>Won the MOSSL with 86 points — a record-setting campaign</p>
-                </div>
-                <div class="achievement-card glass-card">
-                    <div class="ach-icon blue">🥇</div>
-                    <h4>Top 4 Cup 2024</h4>
-                    <p>Claimed the Cup trophy in a memorable final</p>
-                </div>
-                <div class="achievement-card glass-card">
-                    <div class="ach-icon green">🏆</div>
-                    <h4>League Champions 2023</h4>
-                    <p>Won the MOSSL with 90 points — dominant and unrelenting</p>
-                </div>
-                <div class="achievement-card glass-card">
-                    <div class="ach-icon red">⭐</div>
-                    <h4>10 Total Titles</h4>
-                    <p>A decade of silverware makes Tango FC Masvingo's most decorated side</p>
-                </div>
-            </div>
-
-            <div style="text-align:center; margin-top: 30px;">
-                <a href="history.html" class="btn-primary">
-                    View Full History <i class="fa-solid fa-arrow-right"></i>
-                </a>
-            </div>
-        </section>
-
-
-        <!-- ============================
-             CTA STRIP
-        ============================= -->
-        <section class="cta-strip">
-            <div class="cta-content">
-                <div>
-                    <h3>Follow Tango FC</h3>
-                    <p>Stay connected for matchday updates, club news, highlights, and community moments.</p>
-                </div>
-                <div class="cta-actions">
-                    <a href="https://www.facebook.com/" target="_blank" rel="noopener noreferrer" class="btn-primary">
-                        <i class="fa-brands fa-facebook-f"></i> Facebook
-                    </a>
-                    <a href="https://www.instagram.com/" target="_blank" rel="noopener noreferrer" class="btn-secondary">
-                        <i class="fa-brands fa-instagram"></i> Instagram
-                    </a>
-                    <a href="https://x.com/" target="_blank" rel="noopener noreferrer" class="btn-secondary">
-                        <i class="fa-brands fa-x-twitter"></i> X / Twitter
-                    </a>
-                </div>
-            </div>
-        </section>
-
-    </main>
-    
     <main-footer></main-footer>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/2.1.0/showdown.min.js"></script>
 
-    <!-- Firebase SDKs -->
+    <script src="js/app-config.js"></script>
+    <script src="js/cache-service.js"></script>
+    <script src="js/components.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
-
-    <!-- Your unique Firebase configuration -->
     <script src="js/firebase-init.js"></script>
     <script src="js/home.js"></script>
 
+    <script>
+        // Emergency Force-Load for Header
+        setTimeout(() => {
+            const headerTag = document.querySelector('main-header');
+            if (headerTag && headerTag.innerHTML.trim() === '') {
+                if (typeof loadComponent === 'function') {
+                    loadComponent("main-header", "header.html");
+                }
+            }
+        }, 3000);
+    </script>
 </body>
 </html>

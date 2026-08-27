@@ -224,174 +224,214 @@
 
 
 /* =========================================
-   MATCH CARD
+   SIMPLE MATCH CARD (CLEAN PUBLIC VIEW)
    ========================================= */
 
-.match-card {
-    background: var(--card);
+.match-card.simple-match-card {
+    background: rgba(255,255,255,0.03);
     border: 1px solid var(--border);
-    border-radius: 20px;
-    overflow: hidden;
-    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    border-radius: 16px;
+    padding: 16px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    transition: all 0.2s ease;
     position: relative;
+    overflow: hidden;
 }
 
-.match-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 20px 40px rgba(0,0,0,0.35);
+.match-card.simple-match-card:hover {
+    background: rgba(255,255,255,0.06);
+    border-color: var(--blue-glow);
+    transform: translateY(-2px);
 }
 
 /* Coloured top accent bar */
-.match-card::before {
+.match-card.simple-match-card::before {
     content: '';
     position: absolute;
     top: 0; left: 0; right: 0;
     height: 3px;
 }
-
 .match-card.status-completed::before { background: linear-gradient(90deg, var(--blue), var(--green)); }
 .match-card.status-upcoming::before  { background: linear-gradient(90deg, var(--gold), #f97316); }
 
-/* Result left-border accent */
-.match-card.result-win  { border-left: 3px solid var(--green); }
-.match-card.result-draw { border-left: 3px solid var(--gold);  }
-.match-card.result-lose { border-left: 3px solid var(--red);   }
-
-
-/* ---- Card header ---- */
-.card-header {
+/* --- Top Row (Comp, Venue, Date | Time) --- */
+.m-card-top {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 14px 18px 10px;
-    border-bottom: 1px solid var(--border);
-    gap: 8px;
+    gap: 12px;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    padding-bottom: 8px;
 }
 
-.card-competition {
-    display: inline-flex;
+.m-top-info {
+    display: flex;
     align-items: center;
-    gap: 6px;
-    font-size: 0.75rem;
-    font-weight: 700;
+    gap: 12px;
+    flex-wrap: wrap;
+    min-width: 0;
+}
+
+.m-comp {
+    font-size: 0.65rem;
+    font-weight: 800;
+    color: var(--blue);
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    color: var(--muted);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 45%;
-}
-
-.card-venue {
-    font-size: 0.75rem;
-    color: var(--muted);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 45%;
-    text-align: right;
-}
-
-/* ---- Result badge (shown in the middle of header) ---- */
-.card-date-badge {
-    padding: 5px 12px;
-    border-radius: 999px;
-    font-size: 0.75rem;
-    font-weight: 700;
-    color: white;
-    white-space: nowrap;
-    flex-shrink: 0;
-}
-
-.badge-win    { background: var(--green); }
-.badge-draw   { background: var(--gold); color: #07111f; }
-.badge-lose   { background: var(--red);  }
-.badge-upcoming { background: rgba(59,130,246,0.25); color: var(--blue); border: 1px solid rgba(59,130,246,0.3); }
-
-
-/* ---- Scoreline ---- */
-.card-scoreline {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    padding: 20px 18px 16px;
-    gap: 12px;
+    gap: 5px;
 }
 
-.card-team {
+.m-venue, .m-date, .m-time-top {
+    font-size: 0.68rem;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    white-space: nowrap;
+}
+
+.m-time-top {
+    color: var(--gold);
+    font-weight: 600;
+}
+
+/* --- Body (Teams & Score) --- */
+.m-card-body {
+    padding: 12px 0;
+}
+
+.m-match-main {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.m-team {
     flex: 1;
+    display: flex;
+    flex-direction: column;
     min-width: 0;
 }
 
-.card-team-name {
-    font-size: 0.95rem;
-    font-weight: 700;
-    line-height: 1.25;
-    color: var(--text);
-    /* keep to 2 lines max */
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
+.m-team.home {
+    text-align: left;
+    align-items: flex-start;
 }
 
-.card-team.away .card-team-name {
+.m-team.away {
     text-align: right;
+    align-items: flex-end;
 }
 
-.card-score-block {
-    flex-shrink: 0;
-    text-align: center;
-    min-width: 64px;
-}
-
-.card-score {
-    font-size: 2.2rem;
-    font-weight: 900;
-    letter-spacing: 0.02em;
-    line-height: 1;
-    color: var(--text);
-}
-
-.card-vs {
-    font-size: 0.75rem;
+.m-team-name {
+    font-size: 0.92rem;
     font-weight: 700;
+    color: white;
+    margin-bottom: 8px;
+    line-height: 1.2;
+}
+
+.m-score {
+    font-size: 1.6rem;
+    font-weight: 900;
+    color: white;
+    letter-spacing: 1px;
+    line-height: 1;
+    padding-top: 2px;
+    min-width: 60px;
+    text-align: center;
+}
+
+/* --- Events (Goalscorers) --- */
+.m-team-scorers {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    width: 100%;
+}
+
+.m-event-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.68rem;
     color: var(--muted);
-    letter-spacing: 0.1em;
+    width: 100%;
+}
+
+.m-team.away .m-event-item {
+    justify-content: flex-end;
+}
+
+.m-event-item i {
+    font-size: 0.6rem;
+    color: var(--blue);
+    flex-shrink: 0;
+}
+
+.m-event-player {
+    font-weight: 600;
+    color: rgba(255,255,255,0.85);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.m-event-assist {
+    font-size: 0.65rem;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    opacity: 0.7;
+}
+
+.m-event-assist i {
+    font-size: 0.55rem;
+    color: var(--gold);
+}
+
+.m-event-min {
+    color: var(--blue);
+    font-weight: 700;
+    font-size: 0.65rem;
+    flex-shrink: 0;
+}
+
+/* --- Footer (Badge only) --- */
+.m-card-footer {
+    display: flex;
+    justify-content: center;
+    margin-top: 4px;
+}
+
+.m-result-box {
+    display: flex;
+    align-items: center;
+}
+
+.m-badge {
+    font-size: 0.65rem;
+    font-weight: 800;
+    padding: 3px 10px;
+    border-radius: 6px;
     text-transform: uppercase;
 }
 
+.m-badge.badge-win  { background: rgba(16, 185, 129, 0.15); color: var(--green); border: 1px solid rgba(16,185,129,0.2); }
+.m-badge.badge-draw { background: rgba(245, 158, 11, 0.15); color: var(--gold); border: 1px solid rgba(245,158,11,0.2); }
+.m-badge.badge-lose { background: rgba(239, 68, 68, 0.15); color: var(--red); border: 1px solid rgba(239,68,68,0.2); }
+.m-badge.badge-upcoming { background: rgba(59,130,246,0.1); color: var(--blue); border: 1px solid rgba(59,130,246,0.2); }
 
-/* ---- Events section ---- */
-.card-events {
-    display: flex;
-    gap: 12px;
-    padding: 10px 18px 16px;
-    border-top: 1px solid var(--border);
-}
-
-.events-col {
-    flex: 1;
-    min-width: 0;
-    font-size: 0.72rem;
-    line-height: 1.6;
-    color: var(--muted);
-}
-
-.events-col.events-away {
-    text-align: right;
-}
-
-.events-col span {
-    display: block;
-}
-
-.assist-label {
-    color: var(--text);
-    opacity: 0.75;
-    margin-left: 6px;
-    font-weight: 600;
+@media (max-width: 480px) {
+    .m-teams-title { font-size: 0.95rem; }
+    .m-score-text { font-size: 1.1rem; }
+    .m-card-top { gap: 8px; }
 }
 
 
@@ -486,27 +526,6 @@
 }
 
 @media (max-width: 480px) {
-    .filter-tab span,
-    .filter-tab i { font-size: 0.82rem; }
-
-    .card-score { font-size: 1.8rem; }
-
-    .card-team-name { font-size: 0.88rem; }
-
-    .matches-hero-content h2 { font-size: 2rem; }
-
-    .quick-stats {
-        grid-template-columns: repeat(2, 1fr);
+    .matches-hero {
+        padding: 95px 3% 0; /* Clears the 65px header top padding */
     }
-
-    .card-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 10px;
-    }
-
-    .card-venue {
-        text-align: left;
-        max-width: 100%;
-    }
-}

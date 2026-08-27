@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Tango FC — Statistics Dashboard</title>
     <meta name="description" content="Full season statistics for Tango FC — goals, assists, clean sheets, top scorers, form and league position.">
     <link rel="icon" type="image/jpeg" href="images/tangoforces.jpg">
@@ -12,7 +12,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="css/index.css">
     <link rel="stylesheet" href="css/stats.css">
-        <script src="js/components.js" defer></script>
 </head>
 <body>
 
@@ -124,14 +123,10 @@
                     <p>Complete squad performance overview</p>
                 </div>
                 <div class="filters">
+                    <label for="statsSearchInput" style="display: none;">Search players</label>
                     <input type="text" id="statsSearchInput" placeholder="Search players...">
-                    <select id="teamFilter"><option value="">All Teams</option></select>
                     <select id="positionFilter"><option value="">All Positions</option></select>
                 </div>
-            </div>
-            <div class="pagination-controls-wrapper">
-                <p>Showing <span id="pagination-info"></span></p>
-                <div id="stats-pagination" class="pagination-controls"></div>
             </div>
             <div class="table-container">
                 <table id="stats-table">
@@ -156,11 +151,18 @@
                     </tbody>
                 </table>
             </div>
+            <div class="pagination-controls-wrapper">
+                <p>Showing <span id="pagination-info"></span></p>
+                <div id="stats-pagination" class="pagination-controls"></div>
+            </div>
         </div>
     </section>
 
     <main-footer></main-footer>
 
+    <script src="js/app-config.js"></script>
+    <script src="js/cache-service.js"></script>
+    <script src="js/components.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
@@ -168,5 +170,16 @@
     <script src="js/firebase-init.js"></script>
     <script src="js/stats.js"></script>
 
+    <script>
+        // Emergency Force-Load for Header
+        setTimeout(() => {
+            const headerTag = document.querySelector('main-header');
+            if (headerTag && headerTag.innerHTML.trim() === '') {
+                if (typeof loadComponent === 'function') {
+                    loadComponent("main-header", "header.html");
+                }
+            }
+        }, 3000);
+    </script>
 </body>
 </html>

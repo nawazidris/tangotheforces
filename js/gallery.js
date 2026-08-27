@@ -160,6 +160,7 @@ function openLightbox(src) {
     if (lightboxImg && lightbox) {
         lightboxImg.src = src;
         lightbox.style.display = 'flex';
+        document.body.style.overflow = 'hidden'; // Lock background scroll
     }
 }
 
@@ -172,13 +173,48 @@ function changeImage(direction) {
 
     const lightboxImg = document.getElementById('lightboxImage');
     if (lightboxImg) {
-        lightboxImg.src = currentImages[currentIndex].src;
+        lightboxImg.style.opacity = '0';
+        setTimeout(() => {
+            lightboxImg.src = currentImages[currentIndex].src;
+            lightboxImg.style.opacity = '1';
+        }, 150);
     }
 }
 
 function closeLightbox() {
     const lightbox = document.getElementById('lightbox');
-    if (lightbox) lightbox.style.display = 'none';
+    if (lightbox) {
+        lightbox.style.display = 'none';
+        document.body.style.overflow = ''; // Restore scroll
+    }
+}
+
+// Swipe Functionality
+let touchStartX = 0;
+let touchEndX = 0;
+
+const lightboxElement = document.getElementById('lightbox');
+if (lightboxElement) {
+    lightboxElement.addEventListener('touchstart', e => {
+        touchStartX = e.changedTouches[0].screenX;
+    }, { passive: true });
+
+    lightboxElement.addEventListener('touchend', e => {
+        touchEndX = e.changedTouches[0].screenX;
+        handleSwipe();
+    }, { passive: true });
+}
+
+function handleSwipe() {
+    const swipeThreshold = 50;
+    if (touchEndX < touchStartX - swipeThreshold) {
+        // Swiped Left -> Next Image
+        changeImage(1);
+    }
+    if (touchEndX > touchStartX + swipeThreshold) {
+        // Swiped Right -> Previous Image
+        changeImage(-1);
+    }
 }
 
 // Event listeners for lightbox navigation

@@ -31,105 +31,6 @@ body {
 }
 
 /* =========================================
-   HEADER & NAVIGATION (Aligned with Index)
-========================================= */
-.main-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 20px 6%;
-    border-bottom: 1px solid var(--border);
-    background: rgba(0,0,0,0.4);
-    backdrop-filter: blur(10px);
-    position: sticky;
-    top: 0;
-    z-index: 100;
-}
-
-.header-brand {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-}
-
-.header-brand img {
-    width: 45px;
-    height: 45px;
-    border-radius: 50%;
-    border: 2px solid var(--blue);
-    object-fit: cover;
-}
-
-.header-brand h1 {
-    font-size: 1.4rem;
-    font-weight: 800;
-    letter-spacing: -0.5px;
-}
-
-.header-brand p {
-    font-size: 0.8rem;
-    color: var(--blue);
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
-.nav-links {
-    display: flex;
-    list-style: none;
-    gap: 30px;
-}
-
-.nav-links a {
-    color: var(--muted);
-    text-decoration: none;
-    font-weight: 500;
-    font-size: 0.95rem;
-    transition: all 0.3s ease;
-}
-
-.nav-links a:hover, .nav-links a.active {
-    color: var(--text);
-    text-shadow: 0 0 15px rgba(255,255,255,0.5);
-}
-
-/* MOBILE TOGGLE INTERFACES */
-.mobile-menu-btn {
-    display: none;
-    background: none;
-    border: none;
-    color: var(--text);
-    font-size: 1.5rem;
-    cursor: pointer;
-}
-
-.mobile-nav {
-    display: none;
-    position: fixed;
-    top: 86px;
-    left: 0;
-    width: 100%;
-    background: rgba(7, 17, 31, 0.98);
-    backdrop-filter: blur(20px);
-    border-bottom: 1px solid var(--border);
-    padding: 30px;
-    z-index: 99;
-}
-
-.mobile-nav.open {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-}
-
-.mobile-nav a {
-    color: var(--text);
-    text-decoration: none;
-    font-size: 1.2rem;
-    font-weight: 600;
-}
-
-/* =========================================
    HERO HEADINGS
 ========================================= */
 .gallery-header {
@@ -284,172 +185,45 @@ body {
     width: 100%;
 }
 
-/* =========================================
-   GLOBAL FOOTER
-========================================= */
-.main-footer {
-    border-top: 1px solid var(--border);
-    padding: 40px 6%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 20px;
-    background: rgba(0,0,0,0.2);
-    margin-top: auto;
-}
-
-.footer-brand {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-.footer-brand img {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-}
-
-.footer-brand strong {
-    display: block;
-    font-size: 0.95rem;
-}
-
-.footer-brand span {
-    font-size: 0.8rem;
-    color: var(--muted);
-}
-
-.footer-nav {
-    display: flex;
-    gap: 20px;
-}
-
-.footer-nav a {
-    color: var(--muted);
-    text-decoration: none;
-    font-size: 0.85rem;
-    transition: color 0.3s ease;
-}
-
-.footer-nav a:hover {
-    color: var(--text);
-}
-
-.footer-copy {
-    font-size: 0.85rem;
-    color: var(--muted);
-    width: 100%;
-    text-align: center;
-    margin-top: 20px;
-    border-top: 1px solid rgba(255,255,255,0.04);
-    padding-top: 20px;
-}
-
-/* =========================================
-   RESPONSIVE LAYOUT BREAKPOINTS
-========================================= */
-@media (max-width: 900px) {
-    .technical-row {
-        gap: 20px;
-    }
-
-    .technical-row .technical-card {
-        width: calc(50% - 15px);
-        max-width: 340px;
-    }
-    .technical-row.top .technical-card {
+@media (max-width: 1000px) {
+    .technical-card {
         width: 100%;
-        max-width: 340px;
+        max-width: 100%;
+    }
+
+    .technical-row {
+        display: grid;
+        gap: 20px;
+        width: 100%;
+    }
+
+    .technical-row.row-ceo {
+        grid-template-columns: minmax(0, 450px);
+        justify-content: center;
+    }
+
+    .technical-row.row-tier-2,
+    .technical-row.row-tier-3 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .technical-row.row-tier-4 {
+        grid-template-columns: repeat(3, 1fr);
     }
 }
 
 @media (max-width: 768px) {
-    .nav-links { display: none; }
-    .mobile-menu-btn { display: block; }
-    .main-footer { flex-direction: column; text-align: center; }
-    .footer-brand { flex-direction: column; }
-    .footer-nav { justify-content: center; }
-
     .technical-team {
         padding: 0 4% 60px;
+        gap: 20px;
     }
 
     .technical-row {
-        gap: 16px;
-    }
-
-    .technical-row .technical-card {
-        width: calc(50% - 12px);
-        max-width: 100%;
-        padding: 20px;
+        gap: 12px;
     }
 
     .technical-card {
-        width: auto;
-    }
-
-    .technical-card h3 {
-        font-size: 1.1rem;
-    }
-
-    .member-role,
-    .member-title,
-    .member-description,
-    .member-info .experience {
-        font-size: 0.8rem;
-    }
-
-    .technical-image {
-        width: 88px;
-        height: 88px;
-    }
-}
-
-@media (max-width: 600px) {
-    .technical-team {
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
-    }
-
-    .technical-row {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 12px;
-        width: 100%;
-    }
-
-    .technical-row.top {
-        display: grid;
-        grid-template-columns: 1fr;
-    }
-
-    .technical-row.top .technical-card {
-        width: 100%;
-        max-width: 100%;
         padding: 16px;
-    }
-
-    .technical-row.row-2,
-    .technical-row.row-3 {
-        display: grid;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-        gap: 12px;
-    }
-
-    .technical-row.row-2 .technical-card,
-    .technical-row.row-3 .technical-card {
-        width: 100%;
-        max-width: 100%;
-        padding: 16px;
-    }
-
-    .technical-row.row-3 .technical-card:nth-child(4) {
-        grid-column: 2 / 3;
-        justify-self: center;
-        width: 100%;
     }
 
     .technical-card h3 {
@@ -466,5 +240,44 @@ body {
     .technical-image {
         width: 80px;
         height: 80px;
+    }
+}
+
+@media (max-width: 480px) {
+    .technical-row.row-tier-2,
+    .technical-row.row-tier-3 {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+
+    .technical-row.row-tier-4 {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+    }
+
+    .technical-card {
+        padding: 12px 8px;
+    }
+
+    .technical-card h3 {
+        font-size: 0.85rem;
+    }
+
+    .technical-image {
+        width: 64px;
+        height: 64px;
+    }
+
+    .member-role {
+        font-size: 0.65rem;
+        padding: 2px 8px;
+    }
+
+    .member-title, .experience {
+        font-size: 0.7rem;
+    }
+
+    .member-description {
+        display: none; /* Save space on small phones */
     }
 }

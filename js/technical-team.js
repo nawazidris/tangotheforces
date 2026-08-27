@@ -77,33 +77,44 @@ document.addEventListener('DOMContentLoaded', () => {
     const technicalContainer = document.getElementById('technicalTeam');
     
     if (technicalContainer) {
-        // Build hierarchy for responsive display: 1 card (CEO), then 3 cards, then 4 cards
-        const ceo = technicalTeam.find(m => m.role.toLowerCase() === 'ceo') || technicalTeam[0];
-        const others = technicalTeam.filter(m => m !== ceo);
-        const rowCounts = [3, 4];
+        // Grouping logic based on user request:
+        // Row 1: CEO
+        // Row 2: Director & Team Manager
+        // Row 3: Captain & Logistics Manager
+        // Row 4: Last 3 (Coach, Assistant Coach, Head of Recruitment)
+
+        const findByRole = (role) => technicalTeam.find(m => m.role.toLowerCase() === role.toLowerCase());
+
+        const ceo = findByRole('CEO');
+        const director = findByRole('Director');
+        const teamManager = findByRole('Team Manager');
+        const captain = findByRole('Captain');
+        const logisticsManager = findByRole('Logistics Manager');
+
+        // The "Last 3" (those not explicitly placed above)
+        const topRoles = ['ceo', 'director', 'team manager', 'captain', 'logistics manager'];
+        const last3 = technicalTeam.filter(m => !topRoles.includes(m.role.toLowerCase()));
 
         const appendRow = (members, name) => {
-            if (!members.length) return;
+            const filtered = members.filter(Boolean);
+            if (!filtered.length) return;
             const row = document.createElement('div');
             row.className = `technical-row ${name}`;
-            members.forEach(member => row.appendChild(createTechnicalCard(member)));
+            filtered.forEach(member => row.appendChild(createTechnicalCard(member)));
             technicalContainer.appendChild(row);
         };
 
-        if (ceo) {
-            appendRow([ceo], 'top');
-        }
+        // Row 1
+        appendRow([ceo], 'row-ceo');
 
-        let offset = 0;
-        rowCounts.forEach((count, index) => {
-            const members = others.slice(offset, offset + count);
-            offset += members.length;
-            appendRow(members, `row-${index + 2}`);
-        });
+        // Row 2
+        appendRow([director, teamManager], 'row-tier-2');
 
-        if (offset < others.length) {
-            appendRow(others.slice(offset), 'row-extra');
-        }
+        // Row 3
+        appendRow([captain, logisticsManager], 'row-tier-3');
+
+        // Row 4
+        appendRow(last3, 'row-tier-4');
     }
 });
 

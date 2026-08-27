@@ -4,14 +4,14 @@
     <meta charset="UTF-8">
     <meta name="description" content="MOSSL 2026 league standings — track Tango FC's position, form and stats in the league table.">
     <link rel="icon" type="image/jpeg" href="images/tangoforces.jpg">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>League Standings — Tango Football Club</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="css/league-standings.css">
-    <script src="js/components.js" defer></script>
+    <link rel="stylesheet" href="css/index.css">
 </head>
 <body>
 
@@ -26,8 +26,8 @@
                     <h2>League <span class="accent">Standings</span></h2>
                     <p>Track Tango FC's league position, form, and performance across the MOSSL season.</p>
                     <div class="hero-buttons">
-                        <a href="stats.html" class="btn-secondary"><i class="fa-solid fa-chart-simple"></i> Stats</a>
-                        <a href="matches.html" class="btn-secondary"><i class="fa-solid fa-calendar-days"></i> Fixtures</a>
+                        <a href="stats.html" class="btn-primary"><i class="fa-solid fa-chart-simple"></i> Stats</a>
+                        <a href="matches.html" class="btn-fixtures"><i class="fa-solid fa-calendar-days"></i> Fixtures</a>
                     </div>
                 </div>
 
@@ -76,10 +76,10 @@
             </div>
 
             <div class="legend-row">
-                <div class="legend-item"><span class="legend-dot champion"></span><span class="visually-hidden">Top Four zone:</span> Top Four</div>
-                <div class="legend-item"><span class="legend-dot europa"></span><span class="visually-hidden">Middle table zone:</span> Middle table zone</div>
-                <div class="legend-item"><span class="legend-dot tango"></span><span class="visually-hidden">Tango FC row:</span> Tango FC</div>
-                <div class="legend-item"><span class="legend-dot relegation"></span><span class="visually-hidden">Relegation zone:</span> Relegation zone</div>
+                <div class="legend-item"><span class="legend-dot champion"></span><span class="visually-hidden">Top Four:</span> Top Four (1-4)</div>
+                <div class="legend-item"><span class="legend-dot europa"></span><span class="visually-hidden">Middle table:</span> Middle Table (5-7)</div>
+                <div class="legend-item"><span class="legend-dot tango"></span><span class="visually-hidden">Tango FC highlight:</span> Tango FC</div>
+                <div class="legend-item"><span class="legend-dot relegation"></span><span class="visually-hidden">Relegation:</span> Relegation (17-20)</div>
             </div>
 
             <div class="table-wrapper glass-card">
@@ -120,10 +120,25 @@
 
     <main-footer></main-footer>
 
+    <script src="js/app-config.js"></script>
+    <script src="js/cache-service.js"></script>
+    <script src="js/components.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
     <script src="js/firebase-init.js"></script>
     <script src="js/league-standings.js"></script>
+
+    <script>
+        // Emergency Force-Load for Header
+        setTimeout(() => {
+            const headerTag = document.querySelector('main-header');
+            if (headerTag && headerTag.innerHTML.trim() === '') {
+                if (typeof loadComponent === 'function') {
+                    loadComponent("main-header", "header.html");
+                }
+            }
+        }, 3000);
+    </script>
 </body>
 </html>

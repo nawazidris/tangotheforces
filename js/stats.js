@@ -4,7 +4,16 @@ const SEASON_START = '2026-03-21';
 let statsPlayers = [];
 let filteredPlayers = [];
 let currentPage = 1;
-const rowsPerPage = 5;
+const rowsPerPage = 8;
+
+const abbreviatePosition = (pos = '') => {
+    const p = String(pos).toLowerCase();
+    if (p.includes('forward') || p.includes('striker')) return 'FWD';
+    if (p.includes('midfield')) return 'MID';
+    if (p.includes('defender')) return 'DEF';
+    if (p.includes('goalkeeper') || p.includes('keeper')) return 'GK';
+    return pos;
+};
 
 const getPositionSortWeight = (position = '') => {
     const normalizedPosition = String(position || '').toLowerCase();
@@ -36,56 +45,166 @@ const sortPlayersByTablePriority = (players) => {
     });
 };
 
-const fetchPlayerStats = async () => {
-    try {
-        let data = [];
-        if (window.db) {
-            try {
-                const pSnap = await window.db.collection('players').get();
-                if (!pSnap.empty) {
-                    data = pSnap.docs.map(doc => doc.data());
-                }
-            } catch(e) { console.error('Firebase fetch players failed:', e); }
-        }
+let playersListener = null;
+let standingsListener = null;
+let metricsListener = null;
+let matchesListener = null;
 
-        if (data.length === 0) {
-            console.warn("Firebase fetch failed, falling back to local data.");
-            const playersResponse = await fetch('data/players.json');
-            data = await playersResponse.json();
-        }
+let currentSummary = null;
+let currentMatches = [];
 
-        const seasonMatches = await loadSeasonMatches();
-        statsPlayers = sortPlayersByTablePriority(data);
-        filteredPlayers = [...statsPlayers]; // Initialize filtered list
+const updateAdvancedMetrics = () => {
+    if (currentSummary && currentMatches.length > 0) {
+        applySeasonMetricsUI(currentSummary, currentMatches);
 
-        const leagueSummary = await getLeagueSummary();
-        const configuredTeamMetrics = await loadConfiguredTeamMetrics();
-
-        updateStatsSummary(data, leagueSummary);
-
-        populateFilterOptions(data);
-
-        displayTopScorers(data);
-
-        renderTeamMetrics(filteredPlayers, configuredTeamMetrics);
-
-        renderStatsTable(data);
-
-        applyLeagueSummaryUI(leagueSummary);
-
-        applySeasonMetricsUI(
-            leagueSummary,
-            seasonMatches
-        );
-
-    } catch (error) {
-
-        console.error(
-            'Error fetching player stats:',
-            error
-        );
+        // Ensure goalscorers tally with matches
+        const updatedPlayers = aggregateStatsFromMatches(statsPlayers, currentMatches);
+        statsPlayers = sortPlayersByTablePriority(updatedPlayers);
+        filteredPlayers = [...statsPlayers];
+        renderStatsTable();
+        displayTopScorers(statsPlayers);
     }
 };
+
+const aggregateStatsFromMatches = (players, matches) => {
+    // Rely strictly on match events for goals and assists to ensure tallying
+    const statsMap = {};
+
+    matches.forEach(match => {
+        if (match.status !== 'completed' || !match.events) return;
+
+        match.events.forEach(event => {
+            if (event.type === 'goal') {
+                const scorerName = (event.player || '').trim();
+                const assistName = (event.assist || '').trim();
+
+                if (scorerName) {
+                    if (!statsMap[scorerName]) statsMap[scorerName] = { goals: 0, assists: 0 };
+                    statsMap[scorerName].goals++;
+                }
+
+                if (assistName) {
+                    if (!statsMap[assistName]) statsMap[assistName] = { goals: 0, assists: 0 };
+                    statsMap[assistName].assists++;
+                }
+            } else if (event.type === 'assist') {
+                const assistantName = (event.player || '').trim();
+                if (assistantName) {
+                    if (!statsMap[assistantName]) statsMap[assistantName] = { goals: 0, assists: 0 };
+                    statsMap[assistantName].assists++;
+                }
+            }
+        });
+    });
+
+    return players.map(player => {
+        const playerName = (player.name || '').toLowerCase().trim();
+        const playerNickname = (player.nickname || '').toLowerCase().trim();
+
+        let matchGoals = 0;
+        let matchAssists = 0;
+
+        // Match by full name or nickname
+        Object.keys(statsMap).forEach(key => {
+            const lowerKey = key.toLowerCase().trim();
+            if (lowerKey === playerName || lowerKey === playerNickname) {
+                matchGoals += statsMap[key].goals;
+                matchAssists += statsMap[key].assists;
+            }
+        });
+
+        return {
+            ...player,
+            goals: matchGoals,
+            assists: matchAssists,
+            stats: {
+                ...(player.stats || {}),
+                goals: matchGoals,
+                assists: matchAssists
+            }
+        };
+    });
+};
+
+const fetchPlayerStats = async () => {
+    // 1. Initial Load from local data for speed
+    try {
+        const fetchFn = (window.AppConfig && window.AppConfig.fetchAsset) ? window.AppConfig.fetchAsset : fetch;
+        const [playersRes, logRes, matchesRes] = await Promise.all([
+            fetchFn('data/players.json'),
+            fetchFn('data/log.json'),
+            fetchFn('data/matches.json')
+        ]);
+
+        const [pData, lData, mData] = await Promise.all([
+            playersRes.json(),
+            logRes.json(),
+            matchesRes.json()
+        ]);
+
+        statsPlayers = sortPlayersByTablePriority(pData);
+        filteredPlayers = [...statsPlayers];
+        renderStatsTable();
+        displayTopScorers(pData);
+
+        currentSummary = parseLeagueStandings(lData);
+        if (currentSummary) applyLeagueSummaryUI(currentSummary);
+
+        currentMatches = mData;
+        updateAdvancedMetrics();
+
+    } catch (e) { console.warn("Initial local fetch in Stats failed:", e); }
+
+    // 2. Real-time Firebase Sync
+    if (window.db) {
+        if (playersListener) playersListener();
+        if (standingsListener) standingsListener();
+        if (metricsListener) metricsListener();
+        if (matchesListener) matchesListener();
+
+        console.log("[Stats] Subscribing to real-time updates...");
+
+        // Players Sync
+        playersListener = window.db.collection('players').onSnapshot(snapshot => {
+            if (!snapshot.empty) {
+                const data = snapshot.docs.map(doc => doc.data());
+                statsPlayers = sortPlayersByTablePriority(data);
+                filteredPlayers = [...statsPlayers];
+                renderStatsTable();
+                displayTopScorers(data);
+                populateFilterOptions(data);
+            }
+        });
+
+        // Standings Sync
+        standingsListener = window.db.collection('settings').doc('standings').onSnapshot(doc => {
+            if (doc.exists && doc.data().data) {
+                currentSummary = parseLeagueStandings(JSON.parse(doc.data().data));
+                if (currentSummary) {
+                    applyLeagueSummaryUI(currentSummary);
+                    updateAdvancedMetrics();
+                }
+            }
+        });
+
+        // Team Metrics Sync
+        metricsListener = window.db.collection('settings').doc('teamMetrics').onSnapshot(doc => {
+            if (doc.exists) {
+                renderTeamMetrics(filteredPlayers, doc.data());
+            }
+        });
+
+        // Matches Sync (for form and metrics)
+        matchesListener = window.db.collection('matches').onSnapshot(snapshot => {
+            if (!snapshot.empty) {
+                currentMatches = snapshot.docs.map(doc => doc.data());
+                updateAdvancedMetrics();
+            }
+        });
+    }
+};
+
+
 
 
 
@@ -128,14 +247,13 @@ const renderStatsTable = () => {
         row.innerHTML = `
             <td>
                 <div class="player-cell">
-                    <img src="${playerImg}" alt="${player.name}" class="player-avatar">
+                    <img src="${playerImg}" alt="${player.nickname || player.name}" class="player-avatar">
                     <div>
-                        <strong>${player.name || 'Unknown'}</strong>
-                        <small>${player.team || CLUB_NAME}</small>
+                        <strong>${player.nickname || player.name || 'Unknown'}</strong>
                     </div>
                 </div>
             </td>
-            <td><span class="position-badge">${player.position || '-'}</span></td>
+            <td><span class="position-badge">${abbreviatePosition(player.position)}</span></td>
             <td>${goals}</td>
             <td>${assists}</td>
             <td>${cleanSheets}</td>
@@ -324,13 +442,16 @@ const getLeagueSummary = async () => {
     try {
         if (window.db) {
             try {
-                const doc = await window.db.collection('settings').doc('standings').get();
+                // Apply 2s timeout to Firebase standings fetch
+                const fetchPromise = window.db.collection('settings').doc('standings').get();
+                const doc = await (window.AppConfig?.withTimeout ? window.AppConfig.withTimeout(fetchPromise) : fetchPromise);
+
                 if (doc.exists && doc.data().data) {
                     const parsed = JSON.parse(doc.data().data);
                     const leagueSummary = parseLeagueStandings(parsed);
                     if (leagueSummary) return leagueSummary;
                 }
-            } catch(e) { console.error('Firebase fetch standings failed:', e); }
+            } catch(e) { console.warn('Firebase fetch standings failed or timed out:', e.message); }
         }
 
         const raw = localStorage.getItem('leagueStandingsJson');
@@ -343,8 +464,8 @@ const getLeagueSummary = async () => {
             }
         }
 
-        const response =
-            await fetch('data/log.json');
+        const fetchFn = (window.AppConfig && window.AppConfig.fetchAsset) ? window.AppConfig.fetchAsset : fetch;
+        const response = await fetchFn('data/log.json');
 
         if (!response.ok) return null;
 
@@ -371,14 +492,6 @@ const getLeagueSummary = async () => {
 
 const populateFilterOptions = (players) => {
 
-    const teams = [
-        ...new Set(
-            players
-                .map(player => player.team)
-                .filter(Boolean)
-        )
-    ].sort();
-
     const positions = [
         ...new Set(
             players
@@ -387,23 +500,8 @@ const populateFilterOptions = (players) => {
         )
     ].sort();
 
-    const teamFilter =
-        document.getElementById('teamFilter');
-
     const positionFilter =
         document.getElementById('positionFilter');
-
-    if (teamFilter) {
-
-        teamFilter.innerHTML =
-            '<option value="">All Teams</option>' +
-
-            teams.map(team => `
-                <option value="${team}">
-                    ${team}
-                </option>
-            `).join('');
-    }
 
     if (positionFilter) {
 
@@ -427,15 +525,12 @@ const setupStatsControls = () => {
             'statsSearchInput'
         );
 
-    const teamFilter =
-        document.getElementById('teamFilter');
-
     const positionFilter =
         document.getElementById(
             'positionFilter'
         );
 
-    [searchInput, teamFilter, positionFilter]
+    [searchInput, positionFilter]
         .forEach(control => {
 
             if (control) {
@@ -459,11 +554,6 @@ const applyStatFilters = () => {
             .toLowerCase()
             .trim() || '';
 
-    const team =
-        document.getElementById(
-            'teamFilter'
-        )?.value || '';
-
     const position =
         document.getElementById(
             'positionFilter'
@@ -471,23 +561,15 @@ const applyStatFilters = () => {
 
     filteredPlayers = sortPlayersByTablePriority(statsPlayers.filter(player => {
 
-        const name =
-            player.name?.toLowerCase() || '';
-
-        const teamValue =
-            player.team?.toLowerCase() || '';
-
-        const positionValue =
-            player.position?.toLowerCase() || '';
+        const name = player.name?.toLowerCase() || '';
+        const nickname = player.nickname?.toLowerCase() || '';
+        const positionValue = player.position?.toLowerCase() || '';
 
         const matchesSearch =
             !searchTerm ||
             name.includes(searchTerm) ||
-            teamValue.includes(searchTerm) ||
+            nickname.includes(searchTerm) ||
             positionValue.includes(searchTerm);
-
-        const matchesTeam =
-            !team || player.team === team;
 
         const matchesPosition =
             !position ||
@@ -495,10 +577,10 @@ const applyStatFilters = () => {
 
         return (
             matchesSearch &&
-            matchesTeam &&
             matchesPosition
         );
     }));
+
 
     currentPage = 1; // Reset to first page on filter change
     renderStatsTable();
@@ -554,12 +636,12 @@ const displayTopScorers = (players) => {
 
                     <img
                         src="${player.playerImage || player.image || 'images/default-player.png'}"
-                        alt="${player.name}"
+                        alt="${player.nickname || player.name}"
                         class="top-player-image"
                     >
 
                     <div class="top-scorer-name">
-                        ${player.name || 'Unknown'}
+                        ${player.nickname || player.name || 'Unknown'}
                     </div>
 
                     <div class="top-scorer-meta">
@@ -569,8 +651,8 @@ const displayTopScorers = (players) => {
                     </div>
 
                     <div class="top-scorer-stats">
-                        <span>⚽ ${goals}</span>
-                        <span>🎯 ${assists}</span>
+                        <span><i class="fa-solid fa-futbol"></i> ${goals}</span>
+                        <span><i class="fa-solid fa-bullseye"></i> ${assists}</span>
                     </div>
 
                 </div>
@@ -590,7 +672,10 @@ const loadConfiguredTeamMetrics = async () => {
 
     if (window.db) {
         try {
-            const doc = await window.db.collection('settings').doc('teamMetrics').get();
+            // Apply 2s timeout to Firebase team metrics fetch
+            const fetchPromise = window.db.collection('settings').doc('teamMetrics').get();
+            const doc = await (window.AppConfig?.withTimeout ? window.AppConfig.withTimeout(fetchPromise) : fetchPromise);
+
             if (doc.exists) {
                 const raw = doc.data();
                 if (raw && typeof raw === 'object') {
@@ -600,7 +685,7 @@ const loadConfiguredTeamMetrics = async () => {
                 }
             }
         } catch (e) {
-            console.error('Failed to load configured team metrics from Firebase:', e);
+            console.warn('Firebase team metrics fetch failed or timed out:', e.message);
         }
     }
 
@@ -756,54 +841,40 @@ const applySeasonMetricsUI = (
             ).toFixed(0) + '%'
             : '-';
 
+    // Filter for completed matches involving Tango, sort newest first, and take last 5
     const recentCompletedMatches =
         seasonMatches
-            .filter(match =>
-                match.status === 'completed' &&
-                match.homeScore !== null &&
-                match.awayScore !== null
-            )
-            .slice(-5);
+            .filter(match => {
+                const involvesTango = (match.homeTeam || '').toLowerCase().includes('tango') ||
+                                      (match.awayTeam || '').toLowerCase().includes('tango');
+                return involvesTango &&
+                       match.status === 'completed' &&
+                       match.homeScore !== null &&
+                       match.awayScore !== null;
+            })
+            .sort((a, b) => new Date(b.date) - new Date(a.date)) // Sort newest first
+            .slice(0, 5); // Take top 5 newest
 
     const formBadges =
-        recentCompletedMatches
+        [...recentCompletedMatches]
+            .reverse() // Display older to newer in the badge strip (standard)
             .map(match => {
-
-                const result =
-                    getTangoMatchResult(match);
-
+                const result = getTangoMatchResult(match);
                 return `
-                    <span class="
-                        form-badge
-                        form-badge-${result.toLowerCase()}
-                    ">
+                    <span class="form-badge form-badge-${result.toLowerCase()}">
                         ${result}
                     </span>
                 `;
             })
             .join('');
 
-    document.getElementById(
-        'summaryGoalsPerMatch'
-    ).textContent = goalsPerMatch;
+    document.getElementById('summaryGoalsPerMatch').textContent = goalsPerMatch;
+    document.getElementById('summaryPointsPerGame').textContent = pointsPerGame;
+    document.getElementById('summaryWinPct').textContent = winPct;
+    document.getElementById('summaryForm').innerHTML = formBadges || '<span class="form-empty">No form data</span>';
 
-    document.getElementById(
-        'summaryPointsPerGame'
-    ).textContent = pointsPerGame;
-
-    document.getElementById(
-        'summaryWinPct'
-    ).textContent = winPct;
-
-    document.getElementById(
-        'summaryForm'
-    ).innerHTML =
-        formBadges ||
-        '<span class="form-empty">No form data</span>';
-
-    renderRecentFormMatches(
-        recentCompletedMatches
-    );
+    // Main recent form section shows newest at top
+    renderRecentFormMatches(recentCompletedMatches);
 };
 
 
@@ -813,26 +884,20 @@ const applySeasonMetricsUI = (
 ========================================= */
 
 const getTangoMatchResult = (match) => {
-
-    const tangoIsHome =
-        match.homeTeam === CLUB_NAME;
+    const homeTeam = (match.homeTeam || '').toLowerCase();
+    const awayTeam = (match.awayTeam || '').toLowerCase();
+    const tangoIsHome = homeTeam.includes('tango');
 
     const tangoGoals = tangoIsHome
-        ? match.homeScore
-        : match.awayScore;
+        ? parseInt(match.homeScore)
+        : parseInt(match.awayScore);
 
     const opponentGoals = tangoIsHome
-        ? match.awayScore
-        : match.homeScore;
+        ? parseInt(match.awayScore)
+        : parseInt(match.homeScore);
 
-    if (tangoGoals > opponentGoals) {
-        return 'W';
-    }
-
-    if (tangoGoals < opponentGoals) {
-        return 'L';
-    }
-
+    if (tangoGoals > opponentGoals) return 'W';
+    if (tangoGoals < opponentGoals) return 'L';
     return 'D';
 };
 
@@ -864,18 +929,17 @@ const renderRecentFormMatches = (
         return;
     }
 
+    // Displays the list of matches (Newest first)
     container.innerHTML =
         recentMatches
-            .slice(-5)
-            .reverse()
             .map(match => {
-
-                const tangoIsHome =
-                    match.homeTeam === CLUB_NAME;
+                const homeTeam = (match.homeTeam || '');
+                const awayTeam = (match.awayTeam || '');
+                const tangoIsHome = homeTeam.toLowerCase().includes('tango');
 
                 const opponent = tangoIsHome
-                    ? match.awayTeam
-                    : match.homeTeam;
+                    ? awayTeam
+                    : homeTeam;
 
                 const tangoGoals = tangoIsHome
                     ? match.homeScore
@@ -885,61 +949,27 @@ const renderRecentFormMatches = (
                     ? match.awayScore
                     : match.homeScore;
 
-                const result =
-                    getTangoMatchResult(match);
+                const result = getTangoMatchResult(match);
+                let resultClass = result === 'W' ? 'form-win' : result === 'D' ? 'form-draw' : 'form-loss';
 
-                let resultClass = '';
-
-                if (result === 'W') {
-                    resultClass = 'form-win';
-                }
-                else if (result === 'D') {
-                    resultClass = 'form-draw';
-                }
-                else {
-                    resultClass = 'form-loss';
-                }
+                const displayDate = new Date(match.date).toLocaleDateString(undefined, {
+                    weekday: 'short',
+                    day: 'numeric',
+                    month: 'short'
+                });
 
                 return `
-                    <div class="
-                        recent-match-card
-                        ${resultClass}
-                    ">
-
-                        <div class="
-                            recent-match-result
-                        ">
-                            ${result}
+                    <div class="recent-match-card ${resultClass}">
+                        <div class="recent-match-top-row">
+                            <div class="recent-match-result">${result}</div>
+                            <span class="recent-match-score">${tangoGoals} - ${opponentGoals}</span>
                         </div>
-
-                        <div class="
-                            recent-match-detail
-                        ">
-
-                            <span class="
-                                recent-match-teams
-                            ">
-                                ${CLUB_NAME}
-                                vs
-                                ${opponent}
-                            </span>
-
-                            <span class="
-                                recent-match-score
-                            ">
-                                ${tangoGoals}
-                                -
-                                ${opponentGoals}
-                            </span>
-
-                            <span class="
-                                recent-match-date
-                            ">
-                                ${match.date}
-                            </span>
-
+                        <div class="recent-match-teams" title="${CLUB_NAME} vs ${opponent}">
+                            ${CLUB_NAME} vs ${opponent}
                         </div>
-
+                        <div class="recent-match-date">
+                            ${displayDate}
+                        </div>
                     </div>
                 `;
             })
@@ -957,15 +987,19 @@ const loadSeasonMatches = async () => {
         let matches = [];
         if (window.db) {
             try {
-                const mSnap = await window.db.collection('matches').get();
+                // Apply 2s timeout to Firebase matches fetch
+                const fetchPromise = window.db.collection('matches').get();
+                const mSnap = await (window.AppConfig?.withTimeout ? window.AppConfig.withTimeout(fetchPromise) : fetchPromise);
+
                 if (!mSnap.empty) {
                     matches = mSnap.docs.map(doc => doc.data());
                 }
-            } catch(e) { console.error('Firebase fetch matches failed:', e); }
+            } catch(e) { console.warn('Firebase fetch matches failed or timed out:', e.message); }
         }
 
         if (matches.length === 0) {
-            const response = await fetch('data/matches.json');
+            const fetchFn = (window.AppConfig && window.AppConfig.fetchAsset) ? window.AppConfig.fetchAsset : fetch;
+            const response = await fetchFn('data/matches.json');
             if (response.ok) matches = await response.json();
         }
 

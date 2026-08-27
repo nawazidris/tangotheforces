@@ -10,7 +10,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="css/player-detail.css">
     <link rel="stylesheet" href="css/index.css">
-    <script src="js/components.js" defer></script>
 </head>
 <body>
 
@@ -32,10 +31,22 @@
         </section>
     </main>
 
-    <footer class="main-footer">
-    </footer>
+    <main-footer></main-footer>
 
+    <script src="js/components.js"></script>
     <script src="js/players-data.js"></script>
     <script src="js/player-detail.js"></script>
+
+    <script>
+        // Emergency Force-Load for Header
+        setTimeout(() => {
+            const headerTag = document.querySelector('main-header');
+            if (headerTag && headerTag.innerHTML.trim() === '') {
+                if (typeof loadComponent === 'function') {
+                    loadComponent("main-header", "header.html");
+                }
+            }
+        }, 3000);
+    </script>
 </body>
 </html>
