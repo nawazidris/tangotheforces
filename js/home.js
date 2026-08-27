@@ -95,8 +95,12 @@ function ordinal(n) {
 }
 
 async function initializeCountdown() {
-    const countdownSection = document.getElementById('nextMatchCountdown');
-    if (!countdownSection) return;
+    const initialMatch = await getNextUpcomingMatch();
+    if (initialMatch) {
+        renderNextMatch([initialMatch]);
+    } else {
+        renderNextMatch([]);
+    }
 
     // Prefer Firebase as the source of truth for live match data.
     if (window.db) {
@@ -105,32 +109,35 @@ async function initializeCountdown() {
             const liveMatches = snapshot.empty ? [] : snapshot.docs.map(doc => doc.data());
             renderNextMatch(liveMatches);
         });
-        return;
     }
+}
 
-    renderNextMatch([]);
+function getNextFutureMatch(allMatches) {
+    const now = new Date();
+
+    return [...allMatches]
+        .filter(m => {
+            if (!m || !m.date) return false;
+
+            const dateValue = `${m.date}T${m.time || '00:00'}`;
+            const matchDate = new Date(dateValue);
+            if (Number.isNaN(matchDate.getTime()) || matchDate <= now) return false;
+
+            const status = String(m.status || '').trim().toLowerCase();
+            const upcomingStatuses = ['upcoming', 'scheduled', 'fixture', 'pending', 'upcoming match'];
+            return upcomingStatuses.includes(status) || status === '' || (!['completed', 'result', 'finished'].includes(status) && !status.includes('cancelled'));
+        })
+        .sort((a, b) => new Date(`${a.date}T${a.time || '00:00'}`) - new Date(`${b.date}T${b.time || '00:00'}`))[0] || null;
 }
 
 function renderNextMatch(allMatches) {
-    const upcoming = allMatches
-        .filter(m => {
-            const matchDate = new Date(`${m.date}T${m.time || '00:00'}`);
-            const isFutureFixture = !Number.isNaN(matchDate.getTime()) && matchDate > new Date();
-            const status = String(m.status || '').toLowerCase();
-            const isUpcomingStatus = status === 'upcoming' || status === 'scheduled' || status === 'fixture';
-            const isUnfinishedMatch = status && status !== 'completed' && status !== 'result';
-            return isFutureFixture && (isUpcomingStatus || isUnfinishedMatch || !status);
-        })
-        .sort((a, b) => new Date(`${a.date}T${a.time || '00:00'}`) - new Date(`${b.date}T${b.time || '00:00'}`));
-
-    const nextMatch = upcoming.length > 0 ? upcoming[0] : null;
+    const nextMatch = getNextFutureMatch(allMatches);
     const countdownSection = document.getElementById('nextMatchCountdown');
+    const quickOpponent = document.getElementById('quickNextOpponent');
+    const quickDetails = document.getElementById('quickNextDetails');
+    const quickCountdown = document.querySelectorAll('.quick-countdown-unit');
 
     if (!nextMatch) {
-        const quickOpponent = document.getElementById('quickNextOpponent');
-        const quickDetails = document.getElementById('quickNextDetails');
-        const quickCountdown = document.querySelectorAll('.quick-countdown-unit');
-
         if (countdownSection) countdownSection.style.display = 'none';
         if (quickOpponent) quickOpponent.textContent = 'No upcoming match';
         if (quickDetails) quickDetails.textContent = 'Check fixtures';
@@ -142,8 +149,8 @@ function renderNextMatch(allMatches) {
         return;
     }
 
-    // Populate match details
-    const opponent = nextMatch.homeTeam.toLowerCase().includes('tango') ? nextMatch.awayTeam : nextMatch.homeTeam;
+    // Populate match details using the quick-bar fields that are present in the current homepage markup.
+    const opponent = (nextMatch.homeTeam || '').toLowerCase().includes('tango') ? (nextMatch.awayTeam || 'TBA') : (nextMatch.homeTeam || 'TBA');
     const matchDate = new Date(`${nextMatch.date}T${nextMatch.time || '00:00:00'}`);
     const formattedDate = matchDate.toLocaleDateString(undefined, {
         weekday: 'long',
@@ -152,12 +159,13 @@ function renderNextMatch(allMatches) {
         day: 'numeric'
     });
 
-    const quickOpponent = document.getElementById('quickNextOpponent');
-    const quickDetails = document.getElementById('quickNextDetails');
+    const countdownOpponent = document.getElementById('countdownOpponent');
+    const countdownVenue = document.getElementById('countdownVenue');
+    const countdownDate = document.getElementById('countdownDate');
 
-    document.getElementById('countdownOpponent').textContent = `vs. ${opponent}`;
-    document.getElementById('countdownVenue').innerHTML = `<i class="fa-solid fa-location-dot"></i> ${nextMatch.venue || 'TBA'}`;
-    document.getElementById('countdownDate').innerHTML = `<i class="fa-solid fa-calendar-day"></i> ${formattedDate}`;
+    if (countdownOpponent) countdownOpponent.textContent = `vs. ${opponent}`;
+    if (countdownVenue) countdownVenue.innerHTML = `<i class="fa-solid fa-location-dot"></i> ${nextMatch.venue || 'TBA'}`;
+    if (countdownDate) countdownDate.innerHTML = `<i class="fa-solid fa-calendar-day"></i> ${formattedDate}`;
 
     if (quickOpponent) quickOpponent.textContent = `vs. ${opponent}`;
     if (quickDetails) quickDetails.textContent = `${formattedDate} • ${nextMatch.time || 'TBA'} — ${nextMatch.venue || 'TBA'}`;
@@ -184,16 +192,27 @@ function renderNextMatch(allMatches) {
     }, 1000);
 
     if (countdownSection) countdownSection.style.display = 'block';
+    quickCountdown.forEach(unit => {
+        if (unit) unit.style.display = 'flex';
+    });
     syncQuickNextMatchPreview();
 }
 
 function syncQuickNextMatchPreview() {
-    const countdownOpponent = document.getElementById('countdownOpponent')?.textContent || 'vs. TBA';
-    const countdownDate = document.getElementById('countdownDate')?.textContent || 'TBA';
-    const countdownVenue = document.getElementById('countdownVenue')?.textContent || 'TBA';
+    const countdownOpponentEl = document.getElementById('countdownOpponent');
+    const countdownDateEl = document.getElementById('countdownDate');
+    const countdownVenueEl = document.getElementById('countdownVenue');
 
     const quickOpponent = document.getElementById('quickNextOpponent');
     const quickDetails = document.getElementById('quickNextDetails');
+
+    if (!countdownOpponentEl || !countdownDateEl || !countdownVenueEl) {
+        return;
+    }
+
+    const countdownOpponent = countdownOpponentEl.textContent || 'vs. TBA';
+    const countdownDate = countdownDateEl.textContent || 'TBA';
+    const countdownVenue = countdownVenueEl.textContent || 'TBA';
 
     if (countdownOpponent.includes('TBA') || countdownDate.includes('TBA') || countdownVenue.includes('TBA')) {
         if (quickOpponent) quickOpponent.textContent = 'No upcoming match';
@@ -289,7 +308,6 @@ async function getNextUpcomingMatch() {
         let allMatches = [];
         if (window.db) {
             try {
-                // Apply 2s timeout to Firebase call
                 const fetchPromise = window.db.collection('matches').get();
                 const snapshot = await (window.AppConfig?.withTimeout ? window.AppConfig.withTimeout(fetchPromise) : fetchPromise);
 
@@ -304,13 +322,8 @@ async function getNextUpcomingMatch() {
         if (allMatches.length === 0) {
             allMatches = await getAssetData('data/matches.json') || [];
         }
-// ... rest of the function
 
-        const upcoming = allMatches
-            .filter(m => m.status === 'upcoming' && new Date(`${m.date}T${m.time || '00:00'}`) > new Date())
-            .sort((a, b) => new Date(`${a.date}T${a.time || '00:00'}`) - new Date(`${b.date}T${b.time || '00:00'}`));
-
-        return upcoming.length > 0 ? upcoming[0] : null;
+        return getNextFutureMatch(allMatches);
 
     } catch (error) {
         console.error("Failed to get next match:", error);
