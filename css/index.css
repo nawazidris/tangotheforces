@@ -34,11 +34,48 @@ body {
     color: var(--text);
     line-height: 1.6;
     overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 html {
     scroll-behavior: smooth;
     scroll-padding-top: var(--header-height);
+}
+
+/* Clear headings hierarchy */
+h1, h2, h3, h4 {
+    letter-spacing: -0.02em;
+}
+
+.section-title h2 {
+    letter-spacing: -0.03em;
+}
+
+.section-title p {
+    color: var(--muted);
+    font-size: 1.05rem;
+    margin-top: 6px;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: #050b14;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.12);
+    border-radius: 5px;
+    border: 2px solid #050b14;
+    transition: background 0.3s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(59, 130, 246, 0.4);
 }
 
 /* =========================================
@@ -158,10 +195,43 @@ main-header { display: block; min-height: 70px; }
 }
 
 .season-badge {
-    display: inline-flex; align-items: center; gap: 8px; padding: 6px 14px;
+    position: relative;
+    display: inline-flex; align-items: center; gap: 8px; padding: 6px 14px 6px 28px !important;
     background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.2);
     color: var(--gold); border-radius: 99px; font-size: 0.75rem; font-weight: 700;
     text-transform: uppercase; margin-bottom: 20px;
+}
+
+.badge-pulse-dot {
+    position: absolute;
+    left: 12px;
+    width: 6px;
+    height: 6px;
+    background-color: var(--gold);
+    border-radius: 50%;
+}
+
+.badge-pulse-dot::after {
+    content: '';
+    position: absolute;
+    top: -3px;
+    left: -3px;
+    width: 12px;
+    height: 12px;
+    border: 1px solid var(--gold);
+    border-radius: 50%;
+    animation: badge-pulse 1.8s infinite ease-out;
+}
+
+@keyframes badge-pulse {
+    0% {
+        transform: scale(0.5);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(2.2);
+        opacity: 0;
+    }
 }
 
 .hero-left h2 { font-size: clamp(2.2rem, 5vw, 4rem); font-weight: 800; line-height: 1.1; margin-bottom: 20px; }
