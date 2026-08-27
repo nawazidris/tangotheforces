@@ -49,21 +49,6 @@ let allPhotos = [];
 let currentImages = [];
 let currentIndex = 0;
 
-function buildResponsivePicture(src, alt) {
-    const fallbackSrc = src || 'images/new2.jpg';
-    const fileName = fallbackSrc.split('/').pop();
-    const optimizedSrc = fallbackSrc.startsWith('http')
-        ? fallbackSrc
-        : `images/optimized/${fileName.replace(/\.(jpe?g|png|gif)$/i, '.webp')}`;
-
-    return `
-        <picture>
-            <source type="image/webp" srcset="${optimizedSrc}">
-            <img src="${fallbackSrc}" data-src="${fallbackSrc}" loading="lazy" decoding="async" alt="${alt}">
-        </picture>
-    `;
-}
-
 function normalizeGalleryCategory(category) {
     const raw = category ? category.toString().trim().toLowerCase().replace(/\s+/g, ' ') : '';
     const mapping = {
@@ -142,7 +127,7 @@ function renderGallery(filterType = 'all') {
         item.className = 'gallery-item';
         item.innerHTML = `
             <div class="gallery-item-img-wrapper">
-                ${buildResponsivePicture(photo.src, photo.title)}
+                <img src="${photo.src}" loading="lazy" alt="${photo.title}">
             </div>
             <p>${photo.title}</p>
         `;
@@ -175,9 +160,6 @@ function openLightbox(src) {
     if (lightboxImg && lightbox) {
         lightboxImg.src = src;
         lightbox.style.display = 'flex';
-        lightbox.removeAttribute('hidden');
-        const closeBtn = lightbox.querySelector('.close-btn');
-        setTimeout(() => closeBtn?.focus(), 50);
     }
 }
 
@@ -196,10 +178,7 @@ function changeImage(direction) {
 
 function closeLightbox() {
     const lightbox = document.getElementById('lightbox');
-    if (lightbox) {
-        lightbox.style.display = 'none';
-        lightbox.setAttribute('hidden', 'true');
-    }
+    if (lightbox) lightbox.style.display = 'none';
 }
 
 // Event listeners for lightbox navigation

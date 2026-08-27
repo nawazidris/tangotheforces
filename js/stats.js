@@ -38,25 +38,38 @@ const sortPlayersByTablePriority = (players) => {
 
 const fetchPlayerStats = async () => {
     try {
-        // Use PlayerService to get players, which handles Firebase and fallback logic
-        const allPlayers = await PlayerService.getPlayers();
+        let data = [];
+        if (window.db) {
+            try {
+                const pSnap = await window.db.collection('players').get();
+                if (!pSnap.empty) {
+                    data = pSnap.docs.map(doc => doc.data());
+                }
+            } catch(e) { console.error('Firebase fetch players failed:', e); }
+        }
+
+        if (data.length === 0) {
+            console.warn("Firebase fetch failed, falling back to local data.");
+            const playersResponse = await fetch('data/players.json');
+            data = await playersResponse.json();
+        }
 
         const seasonMatches = await loadSeasonMatches();
-        statsPlayers = sortPlayersByTablePriority(allPlayers);
+        statsPlayers = sortPlayersByTablePriority(data);
         filteredPlayers = [...statsPlayers]; // Initialize filtered list
 
         const leagueSummary = await getLeagueSummary();
         const configuredTeamMetrics = await loadConfiguredTeamMetrics();
 
-        updateStatsSummary(allPlayers, leagueSummary);
+        updateStatsSummary(data, leagueSummary);
 
-        populateFilterOptions(allPlayers);
+        populateFilterOptions(data);
 
-        displayTopScorers(allPlayers);
+        displayTopScorers(data);
 
         renderTeamMetrics(filteredPlayers, configuredTeamMetrics);
 
-        renderStatsTable(); // renderStatsTable uses filteredPlayers, which is already set
+        renderStatsTable(data);
 
         applyLeagueSummaryUI(leagueSummary);
 
@@ -102,8 +115,6 @@ const renderStatsTable = () => {
 
     paginatedPlayers.forEach(player => {
 
-        const displayName = PlayerService.getNickname(player.name);
-
         // Support both nested stats object (stats.goals) and flat fields (player.goals)
         const stats       = player.stats || {};
         const goals       = stats.goals       ?? player.goals       ?? 0;
@@ -117,9 +128,9 @@ const renderStatsTable = () => {
         row.innerHTML = `
             <td>
                 <div class="player-cell">
-                    <img src="${playerImg}" alt="${displayName}" class="player-avatar">
+                    <img src="${playerImg}" alt="${player.name}" class="player-avatar">
                     <div>
-                        <strong title="${player.name || ''}">${displayName || 'Unknown'}</strong>
+                        <strong>${player.name || 'Unknown'}</strong>
                         <small>${player.team || CLUB_NAME}</small>
                     </div>
                 </div>
@@ -531,7 +542,6 @@ const displayTopScorers = (players) => {
     container.innerHTML = topScorers.map(
         (player, index) => {
 
-            const displayName = PlayerService.getNickname(player.name);
             const goals   = player.stats?.goals   ?? player.goals   ?? 0;
             const assists = player.stats?.assists ?? player.assists ?? 0;
 
@@ -544,12 +554,12 @@ const displayTopScorers = (players) => {
 
                     <img
                         src="${player.playerImage || player.image || 'images/default-player.png'}"
-                        alt="${displayName}"
+                        alt="${player.name}"
                         class="top-player-image"
                     >
 
                     <div class="top-scorer-name">
-                        ${displayName || 'Unknown'}
+                        ${player.name || 'Unknown'}
                     </div>
 
                     <div class="top-scorer-meta">

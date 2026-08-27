@@ -13,67 +13,38 @@
 }
 
 :root {
-    /* ── Core palette ── */
-    --primary-color: #050b14;
-    --secondary-color: #091321;
-    --accent-color: #3b82f6;
-    --accent-color-strong: #2563eb;
-    --accent-color-soft: rgba(59, 130, 246, 0.4);
-    --text-color: #ffffff;
-    --text-secondary: #a1a1aa;
-    --gold: #f59e0b;
-    --success: #10b981;
-    --card-bg: rgba(255, 255, 255, 0.03);
-    --card-bg-hover: rgba(255, 255, 255, 0.06);
-    --border-color: rgba(255, 255, 255, 0.08);
-    --border-color-hover: rgba(255, 255, 255, 0.15);
-    --danger-color: #ef4444;
-    --danger-color-soft: rgba(239, 68, 68, 0.4);
+    /* ── Background ── */
+    --bg:  #050b14;
+    --bg2: #091321;
 
-    /* ── Legacy aliases ── */
-    --bg: var(--primary-color);
-    --bg2: var(--secondary-color);
-    --card: var(--card-bg);
-    --card-hover: var(--card-bg-hover);
-    --border: var(--border-color);
-    --border-hover: var(--border-color-hover);
-    --text: var(--text-color);
-    --muted: var(--text-secondary);
-    --blue: var(--accent-color);
-    --blue-dark: var(--accent-color-strong);
-    --blue-glow: var(--accent-color-soft);
-    --green: var(--success);
-    --green-glow: rgba(16, 185, 129, 0.4);
-    --red: var(--danger-color);
-    --red-glow: var(--danger-color-soft);
-    --gold-glow: rgba(245, 158, 11, 0.4);
+    /* ── Cards / Surfaces ── */
+    --card:       rgba(255, 255, 255, 0.03);
+    --card-hover: rgba(255, 255, 255, 0.06);
+
+    /* ── Borders ── */
+    --border:       rgba(255, 255, 255, 0.08);
+    --border-hover: rgba(255, 255, 255, 0.15);
 
     /* ── Typography ── */
-    --font-family-base: 'Inter', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-    --font-family-heading: 'Montserrat', 'Inter', 'Segoe UI', sans-serif;
-    --font-size-xs: 0.75rem;
-    --font-size-sm: 0.875rem;
-    --font-size-md: 1rem;
-    --font-size-lg: 1.125rem;
-    --font-size-xl: 1.25rem;
-    --font-size-2xl: 1.5rem;
+    --text:  #ffffff;
+    --muted: #a1a1aa;
 
-    /* ── Spacing ── */
-    --space-1: 0.25rem;
-    --space-2: 0.5rem;
-    --space-3: 0.75rem;
-    --space-4: 1rem;
-    --space-5: 1.25rem;
-    --space-6: 1.5rem;
-    --space-8: 2rem;
-    --space-10: 2.5rem;
-    --space-12: 3rem;
-    --space-16: 4rem;
-    --space-20: 5rem;
-    --space-24: 6rem;
+    /* ── Brand colours ── */
+    --blue:      #3b82f6;
+    --blue-dark: #2563eb;
+    --blue-glow: rgba(59, 130, 246, 0.4);
+
+    --green:      #10b981;
+    --green-glow: rgba(16, 185, 129, 0.4);
+
+    --red:      #ef4444;
+    --red-glow: rgba(239, 68, 68, 0.4);
+
+    --gold:      #f59e0b;
+    --gold-glow: rgba(245, 158, 11, 0.4);
 
     /* ── Sizing ── */
-    --header-h: 93px; /* sticky main-header height */
+    --header-h:  93px;   /* sticky main-header height */
     --radius-sm: 10px;
     --radius-md: 14px;
     --radius-lg: 20px;
@@ -81,69 +52,8 @@
 }
 
 body {
-    font-family: var(--font-family-base);
+    font-family: 'Inter', sans-serif;
     background: var(--bg);
     color: var(--text);
     line-height: 1.6;
-}
-
-html {
-    scroll-behavior: smooth;
-}
-
-.skip-link {
-    position: absolute;
-    left: 1rem;
-    top: -3rem;
-    z-index: 2000;
-    padding: 0.75rem 1rem;
-    border-radius: 0.5rem;
-    background: var(--accent-color);
-    color: var(--text-color);
-    text-decoration: none;
-    font-weight: 700;
-    transition: top 0.2s ease;
-}
-
-.skip-link:focus {
-    top: 1rem;
-}
-
-.visually-hidden {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    white-space: nowrap;
-    border: 0;
-}
-
-a:focus-visible,
-button:focus-visible,
-input:focus-visible,
-select:focus-visible,
-textarea:focus-visible,
-[tabindex]:focus-visible {
-    outline: 3px solid var(--accent-color);
-    outline-offset: 3px;
-}
-
-.noscript-banner {
-    display: block;
-    padding: 1rem;
-    background: rgba(245, 158, 11, 0.18);
-    border-bottom: 1px solid rgba(245, 158, 11, 0.35);
-    color: var(--text-color);
-}
-
-@media (prefers-reduced-motion: reduce) {
-    *, *::before, *::after {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
-        scroll-behavior: auto !important;
-    }
 }

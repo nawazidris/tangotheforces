@@ -1,0 +1,90 @@
+{
+    "foundedYear": 1995,
+    "founder": "Sports Community Initiative",
+    "club": "Tango Football Club",
+    "stadium": "Tango Stadium",
+    "capacity": 12000,
+    "description": "Tango Football Club is a professional football club dedicated to excellence on and off the pitch. Founded in 1995, we have grown to become one of the most competitive teams in the league.",
+    "seasonStats": {
+        "2025_26": {
+            "league": "MOSSL",
+            "position": "1st",
+            "played": 38,
+            "won": 27,
+            "drawn": 6,
+            "lost": 3,
+            "points": 86,
+            "topScorers": [
+                {"name": "Edrice Mujeyi", "goals": 18},
+                {"name": "Svari", "goals": 11},
+                {"name": "Jamela", "goals": 10}
+            ]
+        }
+    },
+    "clubPhilosophy": {
+        "title": "Our Philosophy",
+        "description": "At Tango FC, we believe in developing not just skilled footballers, but well-rounded individuals who contribute positively to our community. Our three pillars guide everything we do:",
+        "pillars": [
+            {
+                "name": "Excellence",
+                "description": "Striving for perfection in every aspect of our game and organization"
+            },
+            {
+                "name": "Community",
+                "description": "Giving back to Masvingo through youth development and community programs"
+            },
+            {
+                "name": "Integrity",
+                "description": "Conducting ourselves with honesty, respect, and sportsmanship both on and off the pitch"
+            }
+        ]
+    },
+    "achievements": [
+        {
+            "year": "2025/26",
+            "title": "MOSSL Champions",
+            "description": "Won the Masvingo Social Soccer League with outstanding performance: 27 wins, 6 draws, 3 losses from 38 matches (86 points)"
+        },
+        {
+            "year": 2024,
+            "title": "League Champions",
+            "description": "Won the Premier League with 89 points"
+        },
+        {
+            "year": 2023,
+            "title": "Cup Winners",
+            "description": "Claimed the National Cup trophy"
+        },
+        {
+            "year": 2022,
+            "title": "European Qualification",
+            "description": "Secured spot in European competition"
+        },
+        {
+            "year": 2021,
+            "title": "Youth Academy Excellence",
+            "description": "5 youth players promoted to first team"
+        },
+        {
+            "year": 2020,
+            "title": "Unbeaten Run",
+            "description": "12-match unbeaten streak in league"
+        },
+        {
+            "year": 2019,
+            "title": "Fan Favorite Award",
+            "description": "Players chosen for community engagement"
+        }
+    ],
+    "milestones": [
+        "1995 - Club Founded by Sports Community Initiative",
+        "2000 - First League Title secured",
+        "2005 - Youth development program launched",
+        "2010 - Stadium Expansion (8,000 to 12,000 capacity)",
+        "2015 - Professional Youth Academy Established",
+        "2020 - Professional Academy Status achieved",
+        "2023 - Second League Title won",
+        "2024 - Record-breaking revenue year",
+        "2025/26 - MOSSL Champions with unbeaten run in final 12 matches"
+    ]
+}

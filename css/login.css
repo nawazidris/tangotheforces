@@ -1,5 +1,3 @@
-@import url("variables.css");
-
 /* =========================================
    LOGIN PAGE — Tango FC dark theme
 ========================================= */
@@ -11,24 +9,25 @@
 }
 
 :root {
-    --card: var(--card-bg);
-    --border: var(--border-color);
-    --text: var(--text-color);
-    --muted: var(--text-secondary);
-    --blue: var(--accent-color);
-    --blue-dark: var(--accent-color-strong);
-    --green: var(--success);
-    --red: var(--danger-color);
+    --bg: #07111f;
+    --card: rgba(255,255,255,0.06);
+    --border: rgba(255,255,255,0.08);
+    --text: #ffffff;
+    --muted: #9ca3af;
+    --blue: #3b82f6;
+    --blue-dark: #2563eb;
+    --green: #10b981;
+    --red: #ef4444;
 }
 
 body {
-    font-family: var(--font-family-base);
+    font-family: 'Inter', sans-serif;
     background: var(--bg);
     color: var(--text);
     min-height: 100vh;
     display: flex;
     align-items: center;
-    padding: var(--space-5);
+    padding: 20px;
     justify-content: center;
     overflow: hidden;
     position: relative;
@@ -97,7 +96,7 @@ body {
     border: 2px solid rgba(255,255,255,0.12);
     overflow: hidden;
     margin: 0 auto 16px;
-    background: var(--card-bg-hover);
+    background: rgba(255,255,255,0.06);
 }
 
 .login-logo-wrap img {
@@ -158,7 +157,7 @@ body {
     border-radius: 14px;
     color: white;
     font-size: 0.95rem;
-    font-family: var(--font-family-base);
+    font-family: 'Inter', sans-serif;
     transition: 0.25s ease;
 }
 
@@ -215,7 +214,7 @@ body {
     border-radius: 14px;
     font-size: 0.95rem;
     font-weight: 700;
-    font-family: var(--font-family-base);
+    font-family: 'Inter', sans-serif;
     cursor: pointer;
     transition: 0.25s ease;
     margin-top: 10px;

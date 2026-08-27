@@ -2,9 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="description" content="Browse Tango Football Club gallery highlights, matchday moments, and championship celebrations.">
-    <meta name="robots" content="index,follow">
-    <link rel="canonical" href="https://example.com/gallery.html">
+    <meta name="description" content="Tango FC photo gallery — matchday action, trophy celebrations and behind-the-scenes moments.">
     <link rel="icon" type="image/jpeg" href="images/tangoforces.jpg">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gallery — Tango Football Club</title>
@@ -15,14 +13,13 @@
     <link rel="stylesheet" href="css/gallery.css">
     <link rel="stylesheet" href="css/index.css">
     <script src="js/components.js" defer></script>
-    <script src="js/lazy-images.js" defer></script>
 </head>
 <body>
 
     <main-header></main-header>
     <mobile-nav></mobile-nav>
 
-    <main id="main-content">
+    <main>
         <section class="page-hero">
             <h2>Photo Gallery</h2>
             <p>Capturing intense matchday action, trophy celebrations, and behind-the-scenes moments</p>
@@ -54,15 +51,15 @@
         </div>
     </main>
 
-    <div id="lightbox" class="lightbox" role="dialog" aria-modal="true" aria-label="Image gallery preview" hidden>
+    <div id="lightbox" class="lightbox">
         <div class="lightbox-content-container">
-            <button type="button" class="close-btn" onclick="closeLightbox()" aria-label="Close image preview">✖</button>
-            <button type="button" class="lightbox-nav-btn prev-btn" onclick="changeImage(-1)" aria-label="View previous image">
-                <i class="fa-solid fa-chevron-left" aria-hidden="true"></i>
+            <span class="close-btn" onclick="closeLightbox()">✖</span>
+            <button class="lightbox-nav-btn prev-btn" onclick="changeImage(-1)">
+                <i class="fa-solid fa-chevron-left"></i>
             </button>
             <img id="lightboxImage" src="" alt="Enlarged View">
-            <button type="button" class="lightbox-nav-btn next-btn" onclick="changeImage(1)" aria-label="View next image">
-                <i class="fa-solid fa-chevron-right" aria-hidden="true"></i>
+            <button class="lightbox-nav-btn next-btn" onclick="changeImage(1)">
+                <i class="fa-solid fa-chevron-right"></i>
             </button>
         </div>
     </div>

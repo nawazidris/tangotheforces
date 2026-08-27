@@ -2,9 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="description" content="Watch Tango Football Club videos including highlights, matchday action, and championship celebrations.">
-    <meta name="robots" content="index,follow">
-    <link rel="canonical" href="https://example.com/videos.html">
+    <meta name="description" content="Tango FC video room — match highlights, tactical logs and celebration reels.">
     <link rel="icon" type="image/jpeg" href="images/tangoforces.jpg">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Videos — Tango Football Club</title>
@@ -21,7 +19,7 @@
     <main-header></main-header>
     <mobile-nav></mobile-nav>
 
-    <main id="main-content">
+    <main>
         <section class="gallery-header">
             <h2>Club Video Room</h2>
             <p>Match highlights, matchday tactical logs, and celebration reels from Tango FC</p>
@@ -36,10 +34,10 @@
         </section>
     </main>
 
-    <div id="lightbox" class="lightbox" role="dialog" aria-modal="true" aria-label="Video preview" hidden>
+    <div id="lightbox" class="lightbox">
         <div class="lightbox-content-wrapper">
-            <button type="button" class="close-btn" onclick="closeLightbox()" aria-label="Close video preview">✖</button>
-            <video id="lightboxVideo" controls controlsList="nodownload" aria-label="Video preview"></video>
+            <span class="close-btn" onclick="closeLightbox()">✖</span>
+            <video id="lightboxVideo" controls controlsList="nodownload"></video>
         </div>
     </div>
 

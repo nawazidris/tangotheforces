@@ -136,10 +136,8 @@ function buildVideoCard(video) {
     card.addEventListener("click", () => {
         if (lightbox && lightboxVideo) {
             lightbox.style.display = "flex";
-            lightbox.removeAttribute('hidden');
             lightboxVideo.src = video.url;
             lightboxVideo.play();
-            setTimeout(() => lightbox.querySelector('.close-btn')?.focus(), 50);
         }
     });
 
@@ -151,7 +149,6 @@ function closeLightbox() {
         lightboxVideo.pause();
         lightboxVideo.src = "";
         lightbox.style.display = "none";
-        lightbox.setAttribute('hidden', 'true');
     }
 }
 
