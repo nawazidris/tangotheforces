@@ -43,77 +43,94 @@
                 </div>
             </div>
 
-            <!-- Lower Section: Consolidated Bottom Stats Bar -->
+            <!-- Hero Bottom Stats Bar (Scoreboard Layout) -->
             <div class="hero-bottom-bar glass-card">
                 
-                <!-- Segment 1: Champions Indicator -->
-                <div class="bar-segment champions-segment">
-                    <div class="segment-icon gold-glow">
-                        <i class="fa-solid fa-trophy"></i>
-                    </div>
-                    <div class="segment-text">
-                        <span class="segment-label">MOSSL Champions</span>
-                        <strong class="segment-value">2025</strong>
-                    </div>
-                </div>
-
-                <!-- Segment 2: Live Position -->
-                <div class="bar-segment stat-segment">
-                    <span class="segment-label">Position</span>
-                    <strong id="heroPosNum" class="segment-value-highlight">1st</strong>
-                </div>
-
-                <!-- Segment 3: Live Points -->
-                <div class="bar-segment stat-segment">
-                    <span class="segment-label">Points</span>
-                    <strong id="heroLivePts" class="segment-value-highlight">86</strong>
-                </div>
-
-                <!-- Segment 4: Live Wins -->
-                <div class="bar-segment stat-segment">
-                    <span class="segment-label">Wins</span>
-                    <strong id="heroLiveWins" class="segment-value-highlight">27</strong>
-                </div>
-
-                <!-- Segment 4: Draws & Losses Combined Split -->
-                <div class="bar-segment stat-split-segment">
-                    <div class="split-box">
-                        <span class="segment-label-sm">Draws</span>
-                        <strong id="heroLiveDraws" class="split-value">6</strong>
-                    </div>
-                    <div class="split-box-divider"></div>
-                    <div class="split-box">
-                        <span class="segment-label-sm">Losses</span>
-                        <strong id="heroLiveLosses" class="split-value">3</strong>
-                    </div>
-                </div>
-
-                <!-- Segment 5: Next Match Quick Peek -->
-                <div class="bar-segment next-match-segment">
-                    <div class="segment-icon blue-glow">
-                        <i class="fa-solid fa-circle-play"></i>
-                    </div>
-                    <div class="segment-text">
-                        <span class="segment-label">Next Match</span>
-                        <strong id="quickNextOpponent" class="segment-title-value">Loading fixture…</strong>
-                        <span id="quickNextDetails" class="segment-subtext">Checking upcoming match…</span>
-                    </div>
-                    <div class="quick-countdown-timer" aria-label="Countdown until next match">
-                        <div class="quick-countdown-unit">
-                            <strong id="quickCountdownDays">00</strong>
-                            <span>d</span>
+                <!-- ROW 1: CLUB STATS LINE (All standard-stacked vertically) -->
+                <div class="bottom-bar-stats">
+                    
+                    <!-- Trophy (Styled inline with icon for weight) -->
+                    <div class="stat-item champions-item">
+                        <div class="stat-icon-wrap gold-glow">
+                            <i class="fa-solid fa-trophy"></i>
                         </div>
-                        <div class="quick-countdown-unit">
-                            <strong id="quickCountdownHours">00</strong>
-                            <span>h</span>
+                        <div class="stat-text-wrap">
+                            <span class="stat-label">MOSSL Champions</span>
+                            <strong class="stat-value text-white">2025</strong>
                         </div>
-                        <div class="quick-countdown-unit">
-                            <strong id="quickCountdownMinutes">00</strong>
-                            <span>m</span>
+                    </div>
+
+                    <div class="stat-divider"></div>
+
+                    <!-- Position -->
+                    <div class="stat-item vertical-align">
+                        <span class="stat-label">Position</span>
+                        <strong id="heroPosNum" class="stat-value text-gold">4th</strong>
+                    </div>
+
+                    <div class="stat-divider"></div>
+
+                    <!-- Points -->
+                    <div class="stat-item vertical-align">
+                        <span class="stat-label">Points</span>
+                        <strong id="heroLivePts" class="stat-value text-blue">35</strong>
+                    </div>
+
+                    <div class="stat-divider"></div>
+
+                    <!-- Wins -->
+                    <div class="stat-item vertical-align">
+                        <span class="stat-label">Wins</span>
+                        <strong id="heroLiveWins" class="stat-value text-green">10</strong>
+                    </div>
+
+                    <div class="stat-divider"></div>
+
+                    <!-- Draws -->
+                    <div class="stat-item vertical-align">
+                        <span class="stat-label">Draws</span>
+                        <strong id="heroLiveDraws" class="stat-value text-neutral">5</strong>
+                    </div>
+
+                    <div class="stat-divider"></div>
+
+                    <!-- Losses -->
+                    <div class="stat-item vertical-align">
+                        <span class="stat-label">Losses</span>
+                        <strong id="heroLiveLosses" class="stat-value text-red">5</strong>
+                    </div>
+                </div>
+
+                <!-- ROW 2: NEXT MATCH LINE -->
+                <div class="bottom-bar-match">
+                    <div class="match-info-side">
+                        <div class="match-icon-blue">
+                            <i class="fa-solid fa-calendar-day"></i>
                         </div>
-                        <div class="quick-countdown-unit">
-                            <strong id="quickCountdownSeconds">00</strong>
-                            <span>s</span>
+                        <div class="match-text">
+                            <span class="match-label">Next Match Info</span>
+                            <strong id="quickNextOpponent" class="match-title">No upcoming match</strong>
+                            <span id="quickNextDetails" class="match-subtext">Check fixtures</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Stylized Uniform Ticker Cards -->
+                    <div class="match-countdown-side">
+                        <div class="mini-countdown-unit">
+                            <span id="barDays" class="unit-val">00</span>
+                            <span class="unit-lbl">Days</span>
+                        </div>
+                        <div class="mini-countdown-unit">
+                            <span id="barHours" class="unit-val">00</span>
+                            <span class="unit-lbl">Hours</span>
+                        </div>
+                        <div class="mini-countdown-unit">
+                            <span id="barMins" class="unit-val">00</span>
+                            <span class="unit-lbl">Min</span>
+                        </div>
+                        <div class="mini-countdown-unit">
+                            <span id="barSecs" class="unit-val">00</span>
+                            <span class="unit-lbl">Sec</span>
                         </div>
                     </div>
                 </div>

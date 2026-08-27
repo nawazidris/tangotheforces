@@ -132,24 +132,16 @@ function getNextFutureMatch(allMatches) {
 
 function renderNextMatch(allMatches) {
     const nextMatch = getNextFutureMatch(allMatches);
-    const countdownSection = document.getElementById('nextMatchCountdown');
     const quickOpponent = document.getElementById('quickNextOpponent');
     const quickDetails = document.getElementById('quickNextDetails');
-    const quickCountdown = document.querySelectorAll('.quick-countdown-unit');
 
     if (!nextMatch) {
-        if (countdownSection) countdownSection.style.display = 'none';
         if (quickOpponent) quickOpponent.textContent = 'No upcoming match';
         if (quickDetails) quickDetails.textContent = 'Check fixtures';
-        quickCountdown.forEach(unit => {
-            if (unit) unit.style.display = 'none';
-        });
-
-        updateTimer(0, 0, 0, 0);
+        updateTimer(0, 0, 0, 0, true);
         return;
     }
 
-    // Populate match details using the quick-bar fields that are present in the current homepage markup.
     const opponent = (nextMatch.homeTeam || '').toLowerCase().includes('tango') ? (nextMatch.awayTeam || 'TBA') : (nextMatch.homeTeam || 'TBA');
     const matchDate = new Date(`${nextMatch.date}T${nextMatch.time || '00:00:00'}`);
     const formattedDate = matchDate.toLocaleDateString(undefined, {
@@ -158,14 +150,6 @@ function renderNextMatch(allMatches) {
         month: 'long',
         day: 'numeric'
     });
-
-    const countdownOpponent = document.getElementById('countdownOpponent');
-    const countdownVenue = document.getElementById('countdownVenue');
-    const countdownDate = document.getElementById('countdownDate');
-
-    if (countdownOpponent) countdownOpponent.textContent = `vs. ${opponent}`;
-    if (countdownVenue) countdownVenue.innerHTML = `<i class="fa-solid fa-location-dot"></i> ${nextMatch.venue || 'TBA'}`;
-    if (countdownDate) countdownDate.innerHTML = `<i class="fa-solid fa-calendar-day"></i> ${formattedDate}`;
 
     if (quickOpponent) quickOpponent.textContent = `vs. ${opponent}`;
     if (quickDetails) quickDetails.textContent = `${formattedDate} • ${nextMatch.time || 'TBA'} — ${nextMatch.venue || 'TBA'}`;
@@ -179,7 +163,7 @@ function renderNextMatch(allMatches) {
 
         if (difference <= 0) {
             clearInterval(countdownInterval);
-            updateTimer(0, 0, 0, 0);
+            updateTimer(0, 0, 0, 0, true);
             return;
         }
 
@@ -188,40 +172,19 @@ function renderNextMatch(allMatches) {
         const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
         const seconds = Math.floor((difference % (1000 * 60)) / 1000);
 
-        updateTimer(days, hours, minutes, seconds);
+        updateTimer(days, hours, minutes, seconds, true);
     }, 1000);
-
-    if (countdownSection) countdownSection.style.display = 'block';
-    quickCountdown.forEach(unit => {
-        if (unit) unit.style.display = 'flex';
-    });
-    syncQuickNextMatchPreview();
 }
 
 function syncQuickNextMatchPreview() {
-    const countdownOpponentEl = document.getElementById('countdownOpponent');
-    const countdownDateEl = document.getElementById('countdownDate');
-    const countdownVenueEl = document.getElementById('countdownVenue');
-
     const quickOpponent = document.getElementById('quickNextOpponent');
     const quickDetails = document.getElementById('quickNextDetails');
 
-    if (!countdownOpponentEl || !countdownDateEl || !countdownVenueEl) {
+    if (!quickOpponent || !quickDetails) return;
+
+    if (quickOpponent.textContent.includes('No upcoming match') || quickDetails.textContent.includes('Check fixtures')) {
         return;
     }
-
-    const countdownOpponent = countdownOpponentEl.textContent || 'vs. TBA';
-    const countdownDate = countdownDateEl.textContent || 'TBA';
-    const countdownVenue = countdownVenueEl.textContent || 'TBA';
-
-    if (countdownOpponent.includes('TBA') || countdownDate.includes('TBA') || countdownVenue.includes('TBA')) {
-        if (quickOpponent) quickOpponent.textContent = 'No upcoming match';
-        if (quickDetails) quickDetails.textContent = 'Check fixtures';
-        return;
-    }
-
-    if (quickOpponent) quickOpponent.textContent = countdownOpponent;
-    if (quickDetails) quickDetails.textContent = `${countdownDate.replace('calendar-day', '').trim()} • ${countdownVenue.replace(/.*location-dot/gi, '').trim() || 'TBA'}`;
 }
 
 function syncQuickNextMatchPreviewListener() {
@@ -235,30 +198,29 @@ function syncQuickNextMatchPreviewListener() {
     observer.observe(targetNode, { childList: true, subtree: true, characterData: true });
 }
 
-function updateTimer(days, hours, minutes, seconds) {
+function updateTimer(days, hours, minutes, seconds, useBarIds = false) {
     const pad = (num) => num.toString().padStart(2, '0');
-    const primaryTargets = [
-        document.getElementById('countdownDays'),
-        document.getElementById('countdownHours'),
-        document.getElementById('countdownMinutes'),
-        document.getElementById('countdownSeconds')
-    ];
-    const quickTargets = [
-        document.getElementById('quickCountdownDays'),
-        document.getElementById('quickCountdownHours'),
-        document.getElementById('quickCountdownMinutes'),
-        document.getElementById('quickCountdownSeconds')
-    ];
-
     const values = [pad(days), pad(hours), pad(minutes), pad(seconds)];
 
-    primaryTargets.forEach((el, index) => {
+    const targetIds = ['barDays', 'barHours', 'barMins', 'barSecs'];
+    const legacyIds = ['countdownDays', 'countdownHours', 'countdownMinutes', 'countdownSeconds'];
+    const legacyQuickIds = ['quickCountdownDays', 'quickCountdownHours', 'quickCountdownMinutes', 'quickCountdownSeconds'];
+
+    targetIds.forEach((id, index) => {
+        const el = document.getElementById(id);
         if (el) el.textContent = values[index];
     });
 
-    quickTargets.forEach((el, index) => {
-        if (el) el.textContent = values[index];
-    });
+    if (useBarIds) {
+        legacyIds.forEach((id, index) => {
+            const el = document.getElementById(id);
+            if (el) el.textContent = values[index];
+        });
+        legacyQuickIds.forEach((id, index) => {
+            const el = document.getElementById(id);
+            if (el) el.textContent = values[index];
+        });
+    }
 }
 
 /**
