@@ -332,15 +332,16 @@ const renderStatsTable = () => {
         const cleanSheets = stats.cleanSheets ?? player.cleansheets ?? 0;
         // Support both playerImage (roster schema) and image (legacy schema)
         const playerImg   = player.playerImage || player.image || 'images/default-player.png';
+        const displayName = normalizePlayerNameForDisplay(player.nickname || player.name || 'Unknown', statsPlayers);
 
         const row = document.createElement('tr');
 
         row.innerHTML = `
             <td>
                 <div class="player-cell">
-                    <img src="${playerImg}" alt="${player.nickname || player.name}" class="player-avatar">
+                    <img src="${playerImg}" alt="${displayName}" class="player-avatar">
                     <div>
-                        <strong>${player.nickname || player.name || 'Unknown'}</strong>
+                        <strong>${displayName}</strong>
                     </div>
                 </div>
             </td>
@@ -684,6 +685,23 @@ const applyStatFilters = () => {
    TOP SCORERS
 ========================================= */
 
+const normalizePlayerNameForDisplay = (value, players = []) => {
+    if (!value) return '';
+
+    const sourceKey = String(value).trim().toLowerCase().replace(/[^a-z0-9]/g, '');
+    if (!sourceKey) return String(value).trim();
+
+    const match = players.find(player => {
+        const allKeys = [player?.name, player?.nickname, player?.displayName]
+            .filter(Boolean)
+            .map(key => String(key).trim().toLowerCase().replace(/[^a-z0-9]/g, ''));
+
+        return allKeys.some(key => key === sourceKey || key.includes(sourceKey) || sourceKey.includes(key));
+    });
+
+    return match?.nickname || match?.name || String(value).trim();
+};
+
 const displayTopScorers = (players) => {
 
     const container =
@@ -717,6 +735,7 @@ const displayTopScorers = (players) => {
 
             const goals   = player.stats?.goals   ?? player.goals   ?? 0;
             const assists = player.stats?.assists ?? player.assists ?? 0;
+            const displayName = normalizePlayerNameForDisplay(player.nickname || player.name || 'Unknown', players);
 
             return `
                 <div class="top-scorer-card">
@@ -727,12 +746,12 @@ const displayTopScorers = (players) => {
 
                     <img
                         src="${player.playerImage || player.image || 'images/default-player.png'}"
-                        alt="${player.nickname || player.name}"
+                        alt="${displayName}"
                         class="top-player-image"
                     >
 
                     <div class="top-scorer-name">
-                        ${player.nickname || player.name || 'Unknown'}
+                        ${displayName}
                     </div>
 
                     <div class="top-scorer-meta">

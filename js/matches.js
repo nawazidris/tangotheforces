@@ -99,16 +99,53 @@ async function fetchPlayersFromJSON() {
 }
 
 /**
- * Returns a player's nickname if found, otherwise returns their name as-is.
+ * Returns a consistent display name for a player across match events.
+ * Prefer the roster nickname, but fall back to the canonical full name if needed.
  */
+function normalizePlayerName(value = '') {
+    return String(value || '').trim().toLowerCase().replace(/[^a-z0-9]/g, '');
+}
+
 function getPlayerNickname(fullName) {
     if (!fullName) return '';
-    const nameLower = fullName.toLowerCase().trim();
-    const player = playersData.find(p =>
-        (p.name && p.name.toLowerCase().trim() === nameLower) ||
-        (p.nickname && p.nickname.toLowerCase().trim() === nameLower)
-    );
-    return player?.nickname || fullName;
+
+    const sourceName = String(fullName).trim();
+    const sourceKey = normalizePlayerName(sourceName);
+    if (!sourceKey) return sourceName;
+
+    const player = playersData.find(p => {
+        const candidateKeys = [
+            p?.name,
+            p?.nickname,
+            p?.displayName,
+            ...(p?.name ? p.name.split(/\s+/) : [])
+        ]
+            .filter(Boolean)
+            .map(normalizePlayerName);
+
+        return candidateKeys.some(candidateKey => {
+            if (!candidateKey) return false;
+            return candidateKey === sourceKey ||
+                candidateKey.includes(sourceKey) ||
+                sourceKey.includes(candidateKey);
+        });
+    });
+
+    if (!player) return sourceName;
+    return player.nickname || player.name || sourceName;
+}
+
+function getPlayerDisplayName(value) {
+    if (!value) return '';
+    const match = playersData.find(player => {
+        const playerKeys = [player?.name, player?.nickname, player?.displayName]
+            .filter(Boolean)
+            .map(normalizePlayerName);
+        const sourceKey = normalizePlayerName(value);
+        return playerKeys.some(key => key === sourceKey || key.includes(sourceKey) || sourceKey.includes(key));
+    });
+
+    return match?.nickname || match?.name || String(value).trim();
 }
 
 function renderMatches(filter) {
@@ -191,8 +228,8 @@ function createMatchCard(match) {
         const awayGoals = match.events.filter(e => e.type === 'goal' && (e.team === match.awayTeam || e.team === 'away'));
 
         const renderGoal = (g) => {
-            const scorerNick = getPlayerNickname(g.player);
-            const assisterNick = g.assist ? getPlayerNickname(g.assist) : null;
+            const scorerNick = getPlayerDisplayName(g.player);
+            const assisterNick = g.assist ? getPlayerDisplayName(g.assist) : null;
 
             return `
                 <div class="m-event-item">

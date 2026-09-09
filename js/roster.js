@@ -101,6 +101,7 @@ function buildPlayerCard(player) {
     const card = document.createElement('article');
     const rawPosition = player.position || 'Forward';
     const positionClass = rawPosition.toLowerCase().trim().replace(/\s+/g, '-');
+    const displayName = player.nickname || player.name || 'Unnamed Player';
     
     card.className = `player-card pos-${positionClass}`;
     card.style.animationDelay = `${Math.random() * 0.5}s`;
@@ -125,15 +126,15 @@ function buildPlayerCard(player) {
     card.innerHTML = `
         <div class="player-photo-wrap">
             ${player.playerImage 
-                ? `<img src="${player.playerImage}" alt="${player.name || 'Player'}" loading="lazy" onerror="this.style.display='none'">`
+                ? `<img src="${player.playerImage}" alt="${displayName}" loading="lazy" onerror="this.style.display='none'">`
                 : `<div class="player-photo-placeholder"><i class="fa-solid fa-user"></i></div>`
             }
             <div class="jersey-badge">#${player.number || '—'}</div>
             ${player.isNewSigning ? `<div class="new-badge">New</div>` : ''}
         </div>
         <div class="player-info">
-            <h3 class="player-name">${player.name || 'Unnamed Player'}</h3>
-            ${player.nickname ? `<p class="player-nickname">“${player.nickname}”</p>` : ''}
+            <h3 class="player-name">${displayName}</h3>
+            ${player.nickname && player.name && player.nickname !== player.name ? `<p class="player-nickname">“${player.nickname}”</p>` : ''}
             <div class="position-pill ${pillClass}">${rawPosition}</div>
             <div class="player-stats-row" style="grid-template-columns: repeat(2, 1fr);">
                 <div class="ps-stat">
