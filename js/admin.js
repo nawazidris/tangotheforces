@@ -417,8 +417,27 @@ const app = {
 
             if (window.db) {
                 try {
-                    await window.db.collection('players').doc(player.id).set(player, { merge: true });
-                    console.log("[Admin] Player saved to Firestore.");
+                    const existingPlayer = app.state.players.find(p => String(p.id) === String(player.id)) || null;
+                    const diff = {};
+
+                    Object.keys(player).forEach((key) => {
+                        const oldValue = existingPlayer ? existingPlayer[key] : undefined;
+                        const newValue = player[key];
+                        const oldKey = JSON.stringify(oldValue ?? null);
+                        const newKey = JSON.stringify(newValue ?? null);
+
+                        if (oldKey !== newKey) {
+                            diff[key] = newValue;
+                        }
+                    });
+
+                    if (Object.keys(diff).length === 0 && existingPlayer) {
+                        console.log("[Admin] No player changes detected; skipping Firestore write.");
+                    } else {
+                        await window.db.collection('players').doc(player.id).set(diff, { merge: true });
+                        console.log("[Admin] Player changes saved to Firestore.", diff);
+                    }
+
                     alert("Player saved successfully!");
                 } catch (err) {
                     console.error("Firebase save player failed:", err);
@@ -444,6 +463,7 @@ const app = {
             console.log("[Admin] Handling match form submit...");
 
             const matchId = document.getElementById("matchId").value || Date.now().toString();
+            const originalMatch = app.state.matches.find(m => String(m.id) === String(matchId)) || null;
             const match = {
                 id:          matchId,
                 competition: document.getElementById("matchCompetition").value,
@@ -458,6 +478,8 @@ const app = {
                 awayScore:   document.getElementById("awayScore").value,
                 events:      [...app.state.currentEvents]
             };
+
+            const hasActualGoalAssistChanges = app.stats.hasGoalAssistEventChanges(originalMatch?.events, match.events);
 
             if (match.status === 'completed' && (match.homeScore === '' || match.awayScore === '')) {
                 alert('Add both home and away scores before saving a completed match.');
@@ -484,7 +506,7 @@ const app = {
                 app.state.matches.push(match);
             }
 
-            if (match.status === 'completed') {
+            if (match.status === 'completed' && hasActualGoalAssistChanges) {
                 await app.stats.updateAndSync(match.events);
             }
 
@@ -2022,6 +2044,45 @@ const app = {
                 candidateTokens.some(token => playerTokens.includes(token));
         },
 
+        normalizeMatchEventForComparison: function(event) {
+            if (!event || typeof event !== 'object') return null;
+
+            const type = String(event.type || '').trim().toLowerCase();
+            if (!['goal', 'assist'].includes(type)) {
+                return null;
+            }
+
+            const base = {
+                type,
+                player: String(event.player || '').trim().toLowerCase(),
+                team: String(event.team || '').trim().toLowerCase(),
+                minute: String(event.minute ?? '').trim()
+            };
+
+            if (type === 'goal') {
+                base.assist = String(event.assist || '').trim().toLowerCase();
+            }
+
+            return JSON.stringify(base);
+        },
+
+        hasGoalAssistEventChanges: function(oldEvents, newEvents) {
+            const oldList = Array.isArray(oldEvents) ? oldEvents : [];
+            const newList = Array.isArray(newEvents) ? newEvents : [];
+
+            const normalizeList = (events) => {
+                return events
+                    .map(event => this.normalizeMatchEventForComparison(event))
+                    .filter(Boolean)
+                    .sort();
+            };
+
+            const oldNormalized = normalizeList(oldList);
+            const newNormalized = normalizeList(newList);
+
+            return JSON.stringify(oldNormalized) !== JSON.stringify(newNormalized);
+        },
+
         buildPlayerStatsFromMatches: function(players, matches) {
             const statsMap = {};
 
@@ -2094,7 +2155,8 @@ const app = {
                 const batch = window.db.batch();
                 syncedPlayers.forEach(player => {
                     const ref = window.db.collection('players').doc(String(player.id));
-                    batch.set(ref, {
+                    const originalPlayer = players.find(item => String(item.id) === String(player.id)) || null;
+                    const safePlayer = {
                         ...player,
                         goals: Number(player.goals || 0),
                         assists: Number(player.assists || 0),
@@ -2103,7 +2165,20 @@ const app = {
                             goals: Number(player.goals || 0),
                             assists: Number(player.assists || 0)
                         }
-                    }, { merge: true });
+                    };
+
+                    const updates = {};
+                    Object.keys(safePlayer).forEach(key => {
+                        const oldValue = originalPlayer ? originalPlayer[key] : undefined;
+                        const newValue = safePlayer[key];
+                        if (JSON.stringify(oldValue ?? null) !== JSON.stringify(newValue ?? null)) {
+                            updates[key] = newValue;
+                        }
+                    });
+
+                    if (Object.keys(updates).length > 0) {
+                        batch.set(ref, updates, { merge: true });
+                    }
                 });
 
                 try {
