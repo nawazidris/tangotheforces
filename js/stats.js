@@ -159,36 +159,83 @@ const normalizeDerivedPlayerStats = (players, matches) => {
     return aggregateStatsFromMatches(players, matches);
 };
 
-const fetchPlayerStats = async () => {
-    // 1. Initial Load from local data for speed
+const fetchFirebaseStatsSnapshot = async () => {
+    if (!window.db) return { players: [], matches: [], standings: null };
+
     try {
-        const fetchFn = (window.AppConfig && window.AppConfig.fetchAsset) ? window.AppConfig.fetchAsset : fetch;
-        const [playersRes, logRes, matchesRes] = await Promise.all([
-            fetchFn('data/players.json'),
-            fetchFn('data/log.json'),
-            fetchFn('data/matches.json')
+        const [playersSnap, matchesSnap, standingsDoc] = await Promise.all([
+            window.db.collection('players').get(),
+            window.db.collection('matches').get(),
+            window.db.collection('settings').doc('standings').get()
         ]);
 
-        const [pData, lData, mData] = await Promise.all([
-            playersRes.json(),
-            logRes.json(),
-            matchesRes.json()
-        ]);
+        const players = !playersSnap.empty ? playersSnap.docs.map(doc => doc.data()) : [];
+        const matches = !matchesSnap.empty ? matchesSnap.docs.map(doc => doc.data()) : [];
+        const standings = standingsDoc.exists && standingsDoc.data()?.data ? JSON.parse(standingsDoc.data().data) : null;
 
-        currentMatches = Array.isArray(mData) ? mData : [];
-        rawPlayers = Array.isArray(pData) ? pData : [];
-        const derivedPlayers = normalizeDerivedPlayerStats(rawPlayers, currentMatches);
-        statsPlayers = sortPlayersByTablePriority(derivedPlayers);
-        filteredPlayers = [...statsPlayers];
-        renderStatsTable();
-        displayTopScorers(statsPlayers);
+        return { players, matches, standings };
+    } catch (error) {
+        console.warn('[Stats] Firebase stats snapshot failed:', error);
+        return { players: [], matches: [], standings: null };
+    }
+};
 
-        currentSummary = parseLeagueStandings(lData);
-        if (currentSummary) applyLeagueSummaryUI(currentSummary);
+const fetchPlayerStats = async () => {
+    let firebaseLoaded = false;
 
-        updateAdvancedMetrics();
+    try {
+        const firebaseData = await fetchFirebaseStatsSnapshot();
+        if (firebaseData.players.length || firebaseData.matches.length) {
+            currentMatches = Array.isArray(firebaseData.matches) ? firebaseData.matches : [];
+            rawPlayers = Array.isArray(firebaseData.players) ? firebaseData.players : [];
+            const derivedPlayers = normalizeDerivedPlayerStats(rawPlayers, currentMatches);
+            statsPlayers = sortPlayersByTablePriority(derivedPlayers);
+            filteredPlayers = [...statsPlayers];
+            renderStatsTable();
+            displayTopScorers(statsPlayers);
 
-    } catch (e) { console.warn("Initial local fetch in Stats failed:", e); }
+            if (firebaseData.standings) {
+                currentSummary = parseLeagueStandings(firebaseData.standings);
+                if (currentSummary) applyLeagueSummaryUI(currentSummary);
+            }
+
+            updateAdvancedMetrics();
+            firebaseLoaded = true;
+        }
+    } catch (e) {
+        console.warn('[Stats] Firebase primary load failed:', e);
+    }
+
+    if (!firebaseLoaded) {
+        try {
+            const fetchFn = (window.AppConfig && window.AppConfig.fetchAsset) ? window.AppConfig.fetchAsset : fetch;
+            const [playersRes, logRes, matchesRes] = await Promise.all([
+                fetchFn('data/players.json'),
+                fetchFn('data/log.json'),
+                fetchFn('data/matches.json')
+            ]);
+
+            const [pData, lData, mData] = await Promise.all([
+                playersRes.json(),
+                logRes.json(),
+                matchesRes.json()
+            ]);
+
+            currentMatches = Array.isArray(mData) ? mData : [];
+            rawPlayers = Array.isArray(pData) ? pData : [];
+            const derivedPlayers = normalizeDerivedPlayerStats(rawPlayers, currentMatches);
+            statsPlayers = sortPlayersByTablePriority(derivedPlayers);
+            filteredPlayers = [...statsPlayers];
+            renderStatsTable();
+            displayTopScorers(statsPlayers);
+
+            currentSummary = parseLeagueStandings(lData);
+            if (currentSummary) applyLeagueSummaryUI(currentSummary);
+
+            updateAdvancedMetrics();
+
+        } catch (e) { console.warn("Initial local fetch in Stats failed:", e); }
+    }
 
     // 2. Real-time Firebase Sync
     if (window.db) {
