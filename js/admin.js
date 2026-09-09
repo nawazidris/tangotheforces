@@ -418,22 +418,24 @@ const app = {
             if (window.db) {
                 try {
                     const existingPlayer = app.state.players.find(p => String(p.id) === String(player.id)) || null;
-                    const diff = {};
+                    const comparableKeys = ['id', 'name', 'nickname', 'position', 'number', 'playerImage', 'goals', 'assists', 'cleansheets', 'shots', 'shotsOnTarget', 'chancesCreated', 'tackles', 'interceptions', 'recoveries'];
+                    const hasPlayerChanges = !existingPlayer || comparableKeys.some(key => JSON.stringify(existingPlayer[key] ?? null) !== JSON.stringify(player[key] ?? null));
 
-                    Object.keys(player).forEach((key) => {
-                        const oldValue = existingPlayer ? existingPlayer[key] : undefined;
-                        const newValue = player[key];
-                        const oldKey = JSON.stringify(oldValue ?? null);
-                        const newKey = JSON.stringify(newValue ?? null);
-
-                        if (oldKey !== newKey) {
-                            diff[key] = newValue;
-                        }
-                    });
-
-                    if (Object.keys(diff).length === 0 && existingPlayer) {
+                    if (!hasPlayerChanges) {
                         console.log("[Admin] No player changes detected; skipping Firestore write.");
                     } else {
+                        const diff = {};
+                        comparableKeys.forEach((key) => {
+                            const oldValue = existingPlayer ? existingPlayer[key] : undefined;
+                            const newValue = player[key];
+                            const oldKey = JSON.stringify(oldValue ?? null);
+                            const newKey = JSON.stringify(newValue ?? null);
+
+                            if (oldKey !== newKey) {
+                                diff[key] = newValue;
+                            }
+                        });
+
                         await window.db.collection('players').doc(player.id).set(diff, { merge: true });
                         console.log("[Admin] Player changes saved to Firestore.", diff);
                     }
@@ -480,6 +482,7 @@ const app = {
             };
 
             const hasActualGoalAssistChanges = app.stats.hasGoalAssistEventChanges(originalMatch?.events, match.events);
+            const hasAnyMatchFieldChanges = !originalMatch || JSON.stringify(originalMatch) !== JSON.stringify(match);
 
             if (match.status === 'completed' && (match.homeScore === '' || match.awayScore === '')) {
                 alert('Add both home and away scores before saving a completed match.');
@@ -506,8 +509,8 @@ const app = {
                 app.state.matches.push(match);
             }
 
-            if (match.status === 'completed' && hasActualGoalAssistChanges) {
-                await app.stats.updateAndSync(match.events);
+            if (match.status === 'completed' && hasActualGoalAssistChanges && hasAnyMatchFieldChanges) {
+                await app.stats.updateAndSync(match.events, originalMatch?.events || []);
             }
 
             e.target.reset();
@@ -2055,8 +2058,7 @@ const app = {
             const base = {
                 type,
                 player: String(event.player || '').trim().toLowerCase(),
-                team: String(event.team || '').trim().toLowerCase(),
-                minute: String(event.minute ?? '').trim()
+                team: String(event.team || '').trim().toLowerCase()
             };
 
             if (type === 'goal') {
@@ -2144,7 +2146,16 @@ const app = {
             });
         },
 
-        updateAndSync: async function() {
+        updateAndSync: async function(matchEvents, originalMatchEvents) {
+            const hasMatchGoalAssistDelta = Array.isArray(matchEvents) && Array.isArray(originalMatchEvents)
+                ? this.hasGoalAssistEventChanges(originalMatchEvents, matchEvents)
+                : true;
+
+            if (!hasMatchGoalAssistDelta) {
+                console.log("[Stats] Skipping player sync: no goal/assist changes detected in the saved match.");
+                return;
+            }
+
             const players = [...(app.state.players || [])];
             const matches = [...(app.state.matches || [])];
             const syncedPlayers = this.buildPlayerStatsFromMatches(players, matches);
