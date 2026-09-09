@@ -137,15 +137,26 @@ function getPlayerNickname(fullName) {
 
 function getPlayerDisplayName(value) {
     if (!value) return '';
+
+    const source = String(value).trim();
+    const sourceKey = normalizePlayerName(source);
+    if (!sourceKey) return source;
+
     const match = playersData.find(player => {
         const playerKeys = [player?.name, player?.nickname, player?.displayName]
             .filter(Boolean)
             .map(normalizePlayerName);
-        const sourceKey = normalizePlayerName(value);
-        return playerKeys.some(key => key === sourceKey || key.includes(sourceKey) || sourceKey.includes(key));
+
+        return playerKeys.some(key => {
+            if (!key) return false;
+            return key === sourceKey ||
+                key.includes(sourceKey) ||
+                sourceKey.includes(key) ||
+                (key.length > 5 && sourceKey.includes(key.slice(0, 4)));
+        });
     });
 
-    return match?.nickname || match?.name || String(value).trim();
+    return match?.nickname || match?.name || source;
 }
 
 function renderMatches(filter) {

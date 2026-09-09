@@ -133,12 +133,13 @@ const aggregateStatsFromMatches = (players, matches) => {
         const matchGoals = Number(matchStats.goals || 0);
         const matchAssists = Number(matchStats.assists || 0);
 
-        // Prefer match-derived stats when available (matches are authoritative),
-        // otherwise fall back to original player-recorded stats to avoid double-counting.
+        // Prefer the recorded player totals when they already exist. Match-event totals are
+        // useful as a fallback, but they can be noisy or inconsistent across legacy data and
+        // should not overwrite verified roster/Firebase values.
         const originalGoals = Number(player.stats?.goals ?? player.goals ?? 0);
         const originalAssists = Number(player.stats?.assists ?? player.assists ?? 0);
-        const totalGoals = matchGoals > 0 ? matchGoals : originalGoals;
-        const totalAssists = matchAssists > 0 ? matchAssists : originalAssists;
+        const totalGoals = originalGoals > 0 ? originalGoals : matchGoals;
+        const totalAssists = originalAssists > 0 ? originalAssists : matchAssists;
 
         return {
             ...player,
