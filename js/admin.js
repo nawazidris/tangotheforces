@@ -983,9 +983,9 @@ const app = {
 
             // 2. VENUES - Ensure all existing venues are available
             let venues = [
-                "Shakashe Stadium", "Mucheke Stadium", "Border Stadium", "Polytec Stadium",
+                "Shakashe Stadium", "Mucheke High Stadium", "Border Stadium", "Polytec Stadium",
                 "Mamutse Stadium", "Ndarama High Stadium", "Pangolin Ground",
-                "Pecos Arena Stadium", "Mucheke B Arena 1", "Mucheke B Arena 2", "TBA"
+                "Pecos Arena Stadium", "Mucheke B Arena 1", "Mucheke B Arena 2", "Fern Valley Stadium", "GZU Stadium", "ZINWA Runde", "ZRP Masvingo", "Mugodhi FC Ground"
             ];
 
             if (app.state.matches) {
@@ -1759,8 +1759,28 @@ const app = {
             }
         },
 
-        editMatch: function(id) {
-            const match = app.state.matches.find(m => m.id == id);
+        editMatch: async function(id) {
+            try {
+                if (window.db) {
+                    const snapshot = await window.db.collection('matches').doc(String(id)).get();
+                    if (snapshot.exists) {
+                        const match = snapshot.data();
+                        app.state.matches = app.state.matches.filter(m => String(m.id) !== String(id));
+                        app.state.matches.push(match);
+                        this.populateMatchForm(match);
+                        return;
+                    }
+                }
+            } catch (error) {
+                console.warn('[Admin] Firebase match fetch failed for edit, using local state fallback:', error);
+            }
+
+            const match = app.state.matches.find(m => String(m.id) === String(id));
+            if (!match) return;
+            this.populateMatchForm(match);
+        },
+
+        populateMatchForm: function(match) {
             if (!match) return;
             document.getElementById("matchId").value = match.id;
             document.getElementById("matchCompetition").value = match.competition || "League";
@@ -1783,7 +1803,6 @@ const app = {
             app.state.currentEvents = match.events ? [...match.events] : [];
             this.renderEventList();
             this.switchTab('matches');
-            // Force re-check permissions to ensure form is editable
             this.applyRolePermissions();
         },
 
