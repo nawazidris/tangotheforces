@@ -3,6 +3,7 @@ const SEASON_START = '2026-03-21';
 
 let statsPlayers = [];
 let filteredPlayers = [];
+let rawPlayers = []; // keep the original player records (from file or firebase) to avoid double aggregation
 let currentPage = 1;
 const rowsPerPage = 8;
 
@@ -132,14 +133,21 @@ const aggregateStatsFromMatches = (players, matches) => {
         const matchGoals = Number(matchStats.goals || 0);
         const matchAssists = Number(matchStats.assists || 0);
 
+        // Prefer match-derived stats when available (matches are authoritative),
+        // otherwise fall back to original player-recorded stats to avoid double-counting.
+        const originalGoals = Number(player.stats?.goals ?? player.goals ?? 0);
+        const originalAssists = Number(player.stats?.assists ?? player.assists ?? 0);
+        const totalGoals = matchGoals > 0 ? matchGoals : originalGoals;
+        const totalAssists = matchAssists > 0 ? matchAssists : originalAssists;
+
         return {
             ...player,
-            goals: matchGoals,
-            assists: matchAssists,
+            goals: totalGoals,
+            assists: totalAssists,
             stats: {
                 ...(player.stats || {}),
-                goals: matchGoals,
-                assists: matchAssists
+                goals: totalGoals,
+                assists: totalAssists
             }
         };
     });
@@ -168,7 +176,8 @@ const fetchPlayerStats = async () => {
         ]);
 
         currentMatches = Array.isArray(mData) ? mData : [];
-        const derivedPlayers = normalizeDerivedPlayerStats(pData, currentMatches);
+        rawPlayers = Array.isArray(pData) ? pData : [];
+        const derivedPlayers = normalizeDerivedPlayerStats(rawPlayers, currentMatches);
         statsPlayers = sortPlayersByTablePriority(derivedPlayers);
         filteredPlayers = [...statsPlayers];
         renderStatsTable();
@@ -194,7 +203,8 @@ const fetchPlayerStats = async () => {
         playersListener = window.db.collection('players').onSnapshot(snapshot => {
             if (!snapshot.empty) {
                 const data = snapshot.docs.map(doc => doc.data());
-                const matchDerivedPlayers = normalizeDerivedPlayerStats(data, currentMatches);
+                rawPlayers = Array.isArray(data) ? data : rawPlayers;
+                const matchDerivedPlayers = normalizeDerivedPlayerStats(rawPlayers, currentMatches);
                 statsPlayers = sortPlayersByTablePriority(matchDerivedPlayers);
                 filteredPlayers = [...statsPlayers];
                 renderStatsTable();
@@ -225,7 +235,9 @@ const fetchPlayerStats = async () => {
         matchesListener = window.db.collection('matches').onSnapshot(snapshot => {
             if (!snapshot.empty) {
                 currentMatches = snapshot.docs.map(doc => doc.data());
-                const freshPlayers = normalizeDerivedPlayerStats(statsPlayers.length ? statsPlayers : [], currentMatches);
+                // Use the raw players (from firebase players collection or initial file) to re-derive stats
+                const sourcePlayers = rawPlayers.length ? rawPlayers : statsPlayers;
+                const freshPlayers = normalizeDerivedPlayerStats(sourcePlayers, currentMatches);
                 statsPlayers = sortPlayersByTablePriority(freshPlayers);
                 filteredPlayers = [...statsPlayers];
                 renderStatsTable();
