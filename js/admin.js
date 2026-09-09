@@ -1655,17 +1655,36 @@ const app = {
             catch (e) { console.error('Could not load and parse standings from Firebase.', e); }
         },
 
-        editPlayer: function(id) {
-            const player = app.state.players.find(p => p.id == id);
+        editPlayer: async function(id) {
+            try {
+                if (window.db) {
+                    const snapshot = await window.db.collection('players').doc(String(id)).get();
+                    if (snapshot.exists) {
+                        const player = snapshot.data();
+                        app.state.players = app.state.players.filter(p => String(p.id) !== String(id));
+                        app.state.players.push(player);
+                        this.populatePlayerForm(player);
+                        return;
+                    }
+                }
+            } catch (error) {
+                console.warn('[Admin] Firebase player fetch failed for edit, using local state fallback:', error);
+            }
+
+            const player = app.state.players.find(p => String(p.id) === String(id));
             if (!player) {
                 console.warn("[Admin] Player not found for ID:", id);
                 return;
             }
+            this.populatePlayerForm(player);
+        },
+
+        populatePlayerForm: function(player) {
+            if (!player) return;
             document.getElementById("playerId").value = player.id;
             document.getElementById("playerName").value = player.name;
             document.getElementById("playerNickname").value = player.nickname || '';
 
-            // Update Custom Dropdown for position
             this.updateCustomDropdownValue('playerPositionWrapper', player.position || 'Forward');
 
             document.getElementById("playerNumber").value = player.number || '';
@@ -1680,7 +1699,6 @@ const app = {
             document.getElementById("playerInterceptions").value = player.interceptions || 0;
 
             this.switchTab('players');
-            // Force re-check permissions to ensure form is editable
             this.applyRolePermissions();
 
             requestAnimationFrame(() => {
