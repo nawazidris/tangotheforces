@@ -465,7 +465,19 @@ const app = {
             console.log("[Admin] Handling match form submit...");
 
             const matchId = document.getElementById("matchId").value || Date.now().toString();
-            const originalMatch = app.state.matches.find(m => String(m.id) === String(matchId)) || null;
+            let originalMatch = app.state.matches.find(m => String(m.id) === String(matchId)) || null;
+
+            if (window.db && matchId) {
+                try {
+                    const snapshot = await window.db.collection('matches').doc(String(matchId)).get();
+                    if (snapshot.exists) {
+                        originalMatch = snapshot.data();
+                    }
+                } catch (error) {
+                    console.warn('[Admin] Firebase match snapshot failed during save guard check:', error);
+                }
+            }
+
             const match = {
                 id:          matchId,
                 competition: document.getElementById("matchCompetition").value,
