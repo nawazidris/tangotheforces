@@ -23,73 +23,112 @@
         <div class="hero-overlay"></div>
         <div class="hero-content">
             <div class="hero-left">
-                <span class="season-badge">2026 Season</span>
-                <h2>Tango FC Statistics Dashboard</h2>
-                <p>Performance analytics, player metrics, recent form, top scorers, and season insights.</p>
+                <span class="season-badge"><span class="badge-pulse-dot"></span>2026 Season Analytics</span>
+                <h2>Tango FC Performance Dashboard</h2>
+                <p>Track player progress, team goal metrics, historical league point changes, and individual performance ratings.</p>
                 <div class="hero-buttons">
                     <a href="matches.html" class="btn-primary">View Fixtures</a>
                     <a href="league-standings.html" class="btn-secondary">League Table</a>
                 </div>
             </div>
             <div class="hero-right">
-                <div class="glass-card hero-card">
-                    <span>Current League Position</span>
-                    <strong id="summaryPosition">
-                        <span class="position-loading">
-                            <span class="loading-spinner" style="width:32px;height:32px;border-width:3px;margin:0 auto;"></span>
-                        </span>
-                    </strong>
-                    <small>MOSSL 2026</small>
+                <div class="glass-card hero-rank-card">
+                    <span class="rank-card-label">Current MOSSL Position</span>
+                    <div class="rank-circle gold-glow">
+                        <strong id="summaryPosition">
+                            <span class="position-loading">
+                                <span class="loading-spinner" style="width:32px;height:32px;border-width:3px;"></span>
+                            </span>
+                        </strong>
+                    </div>
+                    <small class="rank-card-sub">Updated Live</small>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- DASHBOARD HEADING -->
-    <section class="dashboard-heading">
-        <div>
-            <h1>Statistics Dashboard</h1>
-            <p>Professional football analytics, performance insights, player statistics, and season tracking.</p>
-        </div>
-    </section>
-
-    <!-- SUMMARY CARDS -->
+    <!-- SUMMARY GRID -->
     <section class="summary-grid">
-        <div class="summary-card">
+        <div class="summary-card glass-card">
             <div class="summary-icon blue"><i class="fa-solid fa-calendar"></i></div>
-            <div><span>Matches Played</span><h3 id="summaryMatches">0</h3></div>
+            <div class="summary-info">
+                <span>Matches Played</span>
+                <h3 id="summaryMatches" class="text-white">0</h3>
+            </div>
         </div>
-        <div class="summary-card">
+        <div class="summary-card glass-card">
             <div class="summary-icon green"><i class="fa-solid fa-futbol"></i></div>
-            <div><span>Goals Scored</span><h3 id="summaryGoalsFor">0</h3></div>
+            <div class="summary-info">
+                <span>Goals Scored</span>
+                <h3 id="summaryGoalsFor" class="text-green">0</h3>
+            </div>
         </div>
-        <div class="summary-card">
-            <div class="summary-icon red"><i class="fa-solid fa-shield"></i></div>
-            <div><span>Goals Conceded</span><h3 id="summaryGoalsAgainst">0</h3></div>
+        <div class="summary-card glass-card">
+            <div class="summary-icon red"><i class="fa-solid fa-shield-halved"></i></div>
+            <div class="summary-info">
+                <span>Goals Conceded</span>
+                <h3 id="summaryGoalsAgainst" class="text-red">0</h3>
+            </div>
         </div>
-        <div class="summary-card">
+        <div class="summary-card glass-card">
             <div class="summary-icon gold"><i class="fa-solid fa-chart-line"></i></div>
-            <div><span>Goal Difference</span><h3 id="summaryGoalDiff">0</h3></div>
+            <div class="summary-info">
+                <span>Goal Difference</span>
+                <h3 id="summaryGoalDiff" class="text-gold">0</h3>
+            </div>
         </div>
     </section>
 
     <!-- ADVANCED METRICS -->
     <section class="advanced-grid">
-        <div class="metric-card glass-card"><div class="metric-icon"><i class="fa-solid fa-trophy"></i></div><span>Wins</span><h2 id="summaryWins">0</h2></div>
-        <div class="metric-card glass-card"><div class="metric-icon"><i class="fa-solid fa-scale-balanced"></i></div><span>Draws</span><h2 id="summaryDraws">0</h2></div>
-        <div class="metric-card glass-card"><div class="metric-icon"><i class="fa-solid fa-face-frown"></i></div><span>Losses</span><h2 id="summaryLosses">0</h2></div>
-        <div class="metric-card glass-card"><div class="metric-icon"><i class="fa-solid fa-star"></i></div><span>Points</span><h2 id="summaryPoints">0</h2></div>
-        <div class="metric-card glass-card"><div class="metric-icon"><i class="fa-solid fa-arrow-trend-up"></i></div><span>Goals Per Match</span><h2 id="summaryGoalsPerMatch">0</h2></div>
-        <div class="metric-card glass-card"><div class="metric-icon"><i class="fa-solid fa-chart-simple"></i></div><span>Points Per Game</span><h2 id="summaryPointsPerGame">0</h2></div>
-        <div class="metric-card glass-card"><div class="metric-icon"><i class="fa-solid fa-percent"></i></div><span>Win Rate</span><h2 id="summaryWinPct">0%</h2></div>
-        <div class="metric-card glass-card"><div class="metric-icon"><i class="fa-solid fa-fire"></i></div><span>Recent Form</span><div id="summaryForm" class="summary-form"></div></div>
+        <div class="metric-card glass-card">
+            <div class="metric-icon green-icon"><i class="fa-solid fa-trophy"></i></div>
+            <span>Wins</span>
+            <h2 id="summaryWins" class="text-green">0</h2>
+        </div>
+        <div class="metric-card glass-card">
+            <div class="metric-icon neutral-icon"><i class="fa-solid fa-scale-balanced"></i></div>
+            <span>Draws</span>
+            <h2 id="summaryDraws" class="text-neutral">0</h2>
+        </div>
+        <div class="metric-card glass-card">
+            <div class="metric-icon red-icon"><i class="fa-solid fa-face-frown"></i></div>
+            <span>Losses</span>
+            <h2 id="summaryLosses" class="text-red">0</h2>
+        </div>
+        <div class="metric-card glass-card">
+            <div class="metric-icon gold-icon"><i class="fa-solid fa-star"></i></div>
+            <span>Points</span>
+            <h2 id="summaryPoints" class="text-gold">0</h2>
+        </div>
+        <div class="metric-card glass-card">
+            <div class="metric-icon blue-icon"><i class="fa-solid fa-arrow-trend-up"></i></div>
+            <span>Goals Per Match</span>
+            <h2 id="summaryGoalsPerMatch" class="text-blue">0</h2>
+        </div>
+        <div class="metric-card glass-card">
+            <div class="metric-icon blue-icon"><i class="fa-solid fa-chart-simple"></i></div>
+            <span>Points Per Game</span>
+            <h2 id="summaryPointsPerGame" class="text-blue">0</h2>
+        </div>
+        <div class="metric-card glass-card">
+            <div class="metric-icon blue-icon"><i class="fa-solid fa-percent"></i></div>
+            <span>Win Rate</span>
+            <h2 id="summaryWinPct" class="text-blue">0%</h2>
+        </div>
+        <div class="metric-card glass-card">
+            <div class="metric-icon form-icon"><i class="fa-solid fa-fire"></i></div>
+            <span>Recent Form</span>
+            <div id="summaryForm" class="summary-form"></div>
+        </div>
     </section>
 
-    <!-- RECENT FORM -->
+    <!-- RECENT FORM MATCHES -->
     <section class="section-spacing">
         <div class="section-title">
-            <h2>Recent Form</h2>
-            <p>Last five completed matches</p>
+            <span class="section-eyebrow">Recent Results</span>
+            <h2>Recent Match Form</h2>
+            <p>Scorelines and analytics of the last five completed matches.</p>
         </div>
         <div id="recentFormMatches" class="recent-form-grid"></div>
     </section>
@@ -97,8 +136,9 @@
     <!-- TOP SCORERS -->
     <section class="section-spacing">
         <div class="section-title">
-            <h2>Top Scorers</h2>
-            <p>Leading attacking performers</p>
+            <span class="section-eyebrow">Squad Leaders</span>
+            <h2>Top Performers</h2>
+            <p>Our leading goal contributors driving the attack this season.</p>
         </div>
         <div id="topScorersContainer" class="top-scorers-grid"></div>
     </section>
@@ -107,10 +147,10 @@
     <section class="section-spacing">
         <div class="section-title">
             <h2>Team Metrics</h2>
-            <p>Season-wide team performance statistics.</p>
+            <p>Season-wide statistical breakdown.</p>
         </div>
         <div class="advanced-grid" id="team-metrics-grid">
-            <!-- This will be populated by stats.js -->
+            <!-- Dynamically populated by stats.js -->
         </div>
     </section>
 
@@ -120,19 +160,22 @@
             <div class="table-header">
                 <div>
                     <h2>Player Statistics</h2>
-                    <p>Complete squad performance overview</p>
+                    <p>Complete squad performance tracking</p>
                 </div>
                 <div class="filters">
                     <label for="statsSearchInput" style="display: none;">Search players</label>
                     <input type="text" id="statsSearchInput" placeholder="Search players...">
-                    <select id="positionFilter"><option value="">All Positions</option></select>
+                    <select id="positionFilter">
+                        <option value="">All Positions</option>
+                    </select>
                 </div>
             </div>
+            
             <div class="table-container">
                 <table id="stats-table">
                     <thead>
                         <tr>
-                            <th><button class="sort-btn" data-sort="name">Player</button></th>
+                            <th><button class="sort-btn" data-sort="name">Player Name</button></th>
                             <th><button class="sort-btn" data-sort="position">Position</button></th>
                             <th><button class="sort-btn" data-sort="goals">Goals</button></th>
                             <th><button class="sort-btn" data-sort="assists">Assists</button></th>
@@ -151,6 +194,7 @@
                     </tbody>
                 </table>
             </div>
+            
             <div class="pagination-controls-wrapper">
                 <p>Showing <span id="pagination-info"></span></p>
                 <div id="stats-pagination" class="pagination-controls"></div>
@@ -169,17 +213,5 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
     <script src="js/firebase-init.js"></script>
     <script src="js/stats.js"></script>
-
-    <script>
-        // Emergency Force-Load for Header
-        setTimeout(() => {
-            const headerTag = document.querySelector('main-header');
-            if (headerTag && headerTag.innerHTML.trim() === '') {
-                if (typeof loadComponent === 'function') {
-                    loadComponent("main-header", "header.html");
-                }
-            }
-        }, 3000);
-    </script>
 </body>
 </html>

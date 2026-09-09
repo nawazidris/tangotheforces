@@ -54,15 +54,18 @@ let currentSummary = null;
 let currentMatches = [];
 
 const updateAdvancedMetrics = () => {
-    if (currentSummary && currentMatches.length > 0) {
-        applySeasonMetricsUI(currentSummary, currentMatches);
+    const matchesToUse = Array.isArray(currentMatches) ? currentMatches : [];
 
-        // Ensure goalscorers tally with matches
-        const updatedPlayers = aggregateStatsFromMatches(statsPlayers, currentMatches);
+    if (matchesToUse.length > 0 && statsPlayers.length > 0) {
+        const updatedPlayers = aggregateStatsFromMatches(statsPlayers, matchesToUse);
         statsPlayers = sortPlayersByTablePriority(updatedPlayers);
         filteredPlayers = [...statsPlayers];
         renderStatsTable();
         displayTopScorers(statsPlayers);
+    }
+
+    if (currentSummary) {
+        applySeasonMetricsUI(currentSummary, matchesToUse);
     }
 };
 
@@ -142,6 +145,12 @@ const aggregateStatsFromMatches = (players, matches) => {
     });
 };
 
+const normalizeDerivedPlayerStats = (players, matches) => {
+    if (!Array.isArray(players) || !players.length) return players;
+    if (!Array.isArray(matches) || !matches.length) return players;
+    return aggregateStatsFromMatches(players, matches);
+};
+
 const fetchPlayerStats = async () => {
     // 1. Initial Load from local data for speed
     try {
@@ -158,15 +167,16 @@ const fetchPlayerStats = async () => {
             matchesRes.json()
         ]);
 
-        statsPlayers = sortPlayersByTablePriority(pData);
+        currentMatches = Array.isArray(mData) ? mData : [];
+        const derivedPlayers = normalizeDerivedPlayerStats(pData, currentMatches);
+        statsPlayers = sortPlayersByTablePriority(derivedPlayers);
         filteredPlayers = [...statsPlayers];
         renderStatsTable();
-        displayTopScorers(pData);
+        displayTopScorers(statsPlayers);
 
         currentSummary = parseLeagueStandings(lData);
         if (currentSummary) applyLeagueSummaryUI(currentSummary);
 
-        currentMatches = mData;
         updateAdvancedMetrics();
 
     } catch (e) { console.warn("Initial local fetch in Stats failed:", e); }
@@ -184,10 +194,11 @@ const fetchPlayerStats = async () => {
         playersListener = window.db.collection('players').onSnapshot(snapshot => {
             if (!snapshot.empty) {
                 const data = snapshot.docs.map(doc => doc.data());
-                statsPlayers = sortPlayersByTablePriority(data);
+                const matchDerivedPlayers = normalizeDerivedPlayerStats(data, currentMatches);
+                statsPlayers = sortPlayersByTablePriority(matchDerivedPlayers);
                 filteredPlayers = [...statsPlayers];
                 renderStatsTable();
-                displayTopScorers(data);
+                displayTopScorers(statsPlayers);
                 populateFilterOptions(data);
             }
         });
@@ -214,6 +225,11 @@ const fetchPlayerStats = async () => {
         matchesListener = window.db.collection('matches').onSnapshot(snapshot => {
             if (!snapshot.empty) {
                 currentMatches = snapshot.docs.map(doc => doc.data());
+                const freshPlayers = normalizeDerivedPlayerStats(statsPlayers.length ? statsPlayers : [], currentMatches);
+                statsPlayers = sortPlayersByTablePriority(freshPlayers);
+                filteredPlayers = [...statsPlayers];
+                renderStatsTable();
+                displayTopScorers(statsPlayers);
                 updateAdvancedMetrics();
             }
         });
