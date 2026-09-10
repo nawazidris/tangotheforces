@@ -342,22 +342,31 @@ const app = {
             document.getElementById("teamMetricsForm")?.addEventListener("submit", this.handleTeamMetricsSubmit);
             document.getElementById("standingsFileInput")?.addEventListener("change", this.handleStandingsUpload);
 
-            // Re-mapped results upload for the new "Premium" tools
-            const resultsFile = document.getElementById("file-input-results");
-            const resultsLabel = document.getElementById("file-label-name");
-            const syncBtn = document.getElementById("btn-sync-action");
+            // Multi-file Upload & Sync bindings
+            const uploadTypes = ['players', 'matches', 'standings', 'news', 'media', 'results'];
+            uploadTypes.forEach(type => {
+                const fileInput = document.getElementById(`upload-file-${type}`);
+                const nameLabel = document.getElementById(`upload-name-${type}`);
+                const syncBtn = document.getElementById(`btn-sync-${type}`);
 
-            if (resultsFile) {
-                resultsFile.addEventListener("change", (e) => {
-                    const file = e.target.files[0];
-                    if (file && resultsLabel) resultsLabel.textContent = file.name;
-                    this.handleResultsUpload(e);
-                });
-            }
+                if (fileInput) {
+                    fileInput.addEventListener('change', (e) => {
+                        const file = e.target.files[0];
+                        if (file && nameLabel) {
+                            nameLabel.textContent = file.name;
+                            nameLabel.classList.add('has-file');
+                        } else if (nameLabel) {
+                            nameLabel.textContent = 'No file selected';
+                            nameLabel.classList.remove('has-file');
+                        }
+                        if (syncBtn) syncBtn.disabled = !file;
+                    });
+                }
 
-            if (syncBtn) {
-                syncBtn.addEventListener("click", () => app.ui.exportResultsAsJson());
-            }
+                if (syncBtn) {
+                    syncBtn.addEventListener('click', () => app.sync.uploadAndSync(type));
+                }
+            });
 
             document.getElementById("mediaForm")?.addEventListener("submit", this.handleMediaFormSubmit);
             document.getElementById("mediaFileInput")?.addEventListener("change", this.handleMediaFileSelection);
@@ -2219,6 +2228,172 @@ const app = {
             const remainingMatches = (app.state.matches || []).filter(item => item.id !== match.id);
             app.state.matches = remainingMatches;
             await this.updateAndSync();
+        }
+    },
+
+    // =================================================================
+    // SYNC MODULE (Multi-File Upload & Sync to Firebase)
+    // =================================================================
+    sync: {
+        /**
+         * Read the selected file for the given type, parse it, and sync to Firebase.
+         * @param {string} type - One of: players, matches, standings, news, media, results
+         */
+        uploadAndSync: async function(type) {
+            const fileInput = document.getElementById(`upload-file-${type}`);
+            const file = fileInput?.files?.[0];
+            if (!file) {
+                alert(`No file selected for ${type}. Please choose a file first.`);
+                return;
+            }
+
+            const syncBtn = document.getElementById(`btn-sync-${type}`);
+            const originalText = syncBtn ? syncBtn.innerHTML : '';
+
+            try {
+                // Show loading state
+                if (syncBtn) {
+                    syncBtn.disabled = true;
+                    syncBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Syncing...';
+                }
+
+                const text = await file.text();
+                let parsed;
+                try {
+                    parsed = JSON.parse(text);
+                } catch (e) {
+                    alert(`Invalid JSON in ${file.name}. Please check the file format.`);
+                    return;
+                }
+
+                switch (type) {
+                    case 'players':
+                        await this.syncCollection('players', Array.isArray(parsed) ? parsed : [], 'id');
+                        app.state.players = Array.isArray(parsed) ? parsed : [];
+                        app.ui.renderPlayers();
+                        await app.ui.populatePlayerDropdown();
+                        app.ui.updateDashboard();
+                        break;
+
+                    case 'matches':
+                        const matchesArr = Array.isArray(parsed) ? parsed : (parsed.matches || []);
+                        await this.syncCollection('matches', matchesArr, 'id');
+                        app.state.matches = matchesArr;
+                        app.ui.renderMatches();
+                        app.ui.updateDashboard();
+                        break;
+
+                    case 'standings':
+                        let standingsData = parsed;
+                        if (Array.isArray(parsed) && Array.isArray(parsed[0])) {
+                            standingsData = {
+                                headers: ["Pos", "Team", "P", "W", "D", "L", "GF", "GA", "GD", "PTS"],
+                                rows: parsed
+                            };
+                        }
+                        if (!standingsData.headers || !standingsData.rows) {
+                            alert('Invalid standings format. Expected {headers, rows} or array of arrays.');
+                            return;
+                        }
+                        localStorage.setItem('leagueStandingsJson', JSON.stringify(standingsData));
+                        if (window.db) {
+                            await window.db.collection('settings').doc('standings').set({
+                                data: JSON.stringify(standingsData),
+                                lastUpdated: new Date().toISOString()
+                            });
+                        }
+                        app.ui.renderStandingsPreview(standingsData);
+                        app.ui.loadStandingsToEditor(standingsData);
+                        break;
+
+                    case 'news':
+                        const newsArr = Array.isArray(parsed) ? parsed : (parsed.news || []);
+                        await this.syncCollection('news', newsArr, 'id');
+                        app.state.news = newsArr;
+                        app.ui.renderNews();
+                        break;
+
+                    case 'media':
+                        const mediaArr = (Array.isArray(parsed) ? parsed : (parsed.media || [])).map(item => ({
+                            ...item,
+                            type: app.utils.normalizeMediaType(item.type),
+                            category: app.utils.normalizeMediaCategory(item.category)
+                        }));
+                        await this.syncCollection('media', mediaArr, 'id');
+                        app.state.media = mediaArr;
+                        localStorage.setItem('adminMedia', JSON.stringify(mediaArr));
+                        app.ui.renderMedia();
+                        break;
+
+                    case 'results':
+                        let resultsData = parsed;
+                        if (Array.isArray(parsed)) {
+                            resultsData = { matches: parsed };
+                        }
+                        if (!resultsData.matches || !Array.isArray(resultsData.matches)) {
+                            alert('Invalid results format. Expected {matches: [...]} or array of match objects.');
+                            return;
+                        }
+                        localStorage.setItem('resultsJson', JSON.stringify(resultsData));
+                        if (window.db) {
+                            await window.db.collection('settings').doc('results').set({
+                                data: JSON.stringify(resultsData)
+                            });
+                        }
+                        break;
+
+                    default:
+                        alert(`Unknown data type: ${type}`);
+                        return;
+                }
+
+                alert(`${type.charAt(0).toUpperCase() + type.slice(1)} synced to Firebase successfully!`);
+                console.log(`[Sync] ${type} synced successfully from ${file.name}`);
+
+            } catch (error) {
+                console.error(`[Sync] Error syncing ${type}:`, error);
+                alert(`Error syncing ${type}: ${error.message}`);
+            } finally {
+                if (syncBtn) {
+                    syncBtn.innerHTML = originalText;
+                    syncBtn.disabled = false;
+                }
+            }
+        },
+
+        /**
+         * Sync an array of items to a Firestore collection using batch writes.
+         * @param {string} collectionName - Firestore collection name
+         * @param {Array} items - Array of objects to sync
+         * @param {string} idField - Field name to use as the document ID
+         */
+        syncCollection: async function(collectionName, items, idField) {
+            if (!window.db) {
+                console.warn(`[Sync] Firebase not available. ${collectionName} saved to local state only.`);
+                return;
+            }
+
+            if (!Array.isArray(items) || items.length === 0) {
+                console.warn(`[Sync] No items to sync for ${collectionName}.`);
+                return;
+            }
+
+            // Firestore batch limit is 500 writes per batch
+            const BATCH_SIZE = 450;
+            for (let i = 0; i < items.length; i += BATCH_SIZE) {
+                const batch = window.db.batch();
+                const slice = items.slice(i, i + BATCH_SIZE);
+
+                slice.forEach(item => {
+                    const docId = String(item[idField] || Date.now() + Math.random());
+                    if (!item[idField]) item[idField] = docId;
+                    const ref = window.db.collection(collectionName).doc(docId);
+                    batch.set(ref, item);
+                });
+
+                await batch.commit();
+                console.log(`[Sync] Batch committed for ${collectionName}: ${slice.length} docs (batch ${Math.floor(i / BATCH_SIZE) + 1})`);
+            }
         }
     }
 };
