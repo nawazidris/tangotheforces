@@ -669,14 +669,20 @@ body {
 
 .admin-form {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 16px;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
 }
 
 .field-group {
     display: flex;
     flex-direction: column;
     gap: 6px;
+    min-width: 0;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .field-group label {
@@ -685,10 +691,14 @@ body {
     color: var(--muted);
     text-transform: uppercase;
     letter-spacing: 0.05em;
+    white-space: normal;
+    overflow-wrap: anywhere;
 }
 
 .field-group input,
 .field-group select {
+    width: 100%;
+    box-sizing: border-box;
     padding: 10px 14px;
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid var(--border);
@@ -727,10 +737,12 @@ select {
 .custom-select-wrapper {
     position: relative;
     width: 100%;
+    min-width: 0;
 }
 
 .custom-select-trigger {
     width: 100%;
+    box-sizing: border-box;
     padding: 10px 14px;
     background: rgba(255, 255, 255, 0.07);
     border: 1px solid var(--border);
@@ -743,6 +755,9 @@ select {
     cursor: pointer;
     transition: all 0.2s ease;
     min-height: 44px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .custom-select-trigger::after {
@@ -926,10 +941,18 @@ select {
 
 .field-full {
     grid-column: 1 / -1;
+    min-width: 0;
 }
 
 .field-align-end {
     justify-content: flex-end;
+}
+
+.form-card,
+.players-form-card,
+.matches-form-card {
+    box-sizing: border-box;
+    overflow: hidden;
 }
 
 .form-actions {
@@ -1107,10 +1130,11 @@ select {
 .players-tab-layout,
 .matches-tab-layout {
     display: grid;
-    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+    grid-template-columns: minmax(300px, 0.9fr) minmax(320px, 1.1fr);
     gap: 28px;
     align-items: start;
     width: 100%;
+    min-width: 0;
 }
 
 .players-form-card,
@@ -1119,50 +1143,72 @@ select {
 .matches-log-panel {
     min-width: 0;
     width: 100%;
+    max-width: 100%;
     padding: 28px;
     background: var(--card);
     border: 1px solid var(--border);
     border-radius: 20px;
 }
 
+#playersList,
+.admin-compact-grid {
+    min-width: 0;
+    width: 100%;
+    max-width: 100%;
+}
+
 /* Admin Compact Grids */
 .admin-compact-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
     gap: 12px;
     width: 100%;
+    align-items: stretch;
+}
+
+.players-list-card {
+    overflow: hidden;
+}
+
+#playersList {
+    width: 100%;
+    min-width: 0;
 }
 
 /* Compact Player Row Card (Screenshot Style) */
 .compact-row-card {
     display: flex;
     align-items: center;
-    background: rgba(255,255,255,0.03);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 10px 14px;
-    transition: 0.2s ease;
+    background: linear-gradient(180deg, rgba(15, 23, 42, 0.94), rgba(15, 23, 42, 0.82));
+    border: 1px solid rgba(148, 163, 184, 0.18);
+    border-radius: 14px;
+    padding: 12px 14px;
+    transition: all 0.2s ease;
+    min-width: 0;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);
 }
 
 .compact-row-card:hover {
-    background: rgba(255,255,255,0.06);
-    border-color: rgba(59,130,246,0.3);
+    background: linear-gradient(180deg, rgba(17, 24, 39, 0.98), rgba(15, 23, 42, 0.9));
+    border-color: rgba(59,130,246,0.42);
+    transform: translateY(-1px);
+    box-shadow: 0 10px 24px rgba(2, 6, 23, 0.25);
 }
 
 .row-avatar {
-    width: 36px;
-    height: 36px;
-    background: rgba(255,255,255,0.05);
-    border-radius: 6px;
+    width: 38px;
+    height: 38px;
+    background: linear-gradient(135deg, rgba(59,130,246,0.18), rgba(30,41,59,0.95));
+    border-radius: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 0.7rem;
-    font-weight: 700;
-    color: var(--muted);
+    font-size: 0.72rem;
+    font-weight: 800;
+    color: #e2e8f0;
     margin-right: 14px;
     flex-shrink: 0;
-    border: 1px solid var(--border);
+    border: 1px solid rgba(59,130,246,0.2);
 }
 
 .row-info {
@@ -1172,19 +1218,21 @@ select {
 
 .row-info strong {
     display: block;
-    font-size: 0.88rem;
+    font-size: 0.92rem;
     font-weight: 700;
-    color: white;
+    color: #f8fafc;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    letter-spacing: -0.01em;
 }
 
 .row-info span {
     display: block;
     font-size: 0.72rem;
-    color: var(--muted);
-    margin-top: 1px;
+    color: #94a3b8;
+    margin-top: 2px;
+    letter-spacing: 0.02em;
 }
 
 .row-actions {
@@ -1192,38 +1240,43 @@ select {
     align-items: center;
     gap: 8px;
     margin-left: 10px;
+    flex-shrink: 0;
 }
 
 .btn-edit-text {
-    background: transparent;
-    border: none;
-    color: var(--blue);
+    background: rgba(59, 130, 246, 0.14);
+    border: 1px solid rgba(59, 130, 246, 0.32);
+    color: #bfdbfe;
     font-weight: 800;
-    font-size: 0.75rem;
+    font-size: 0.72rem;
     cursor: pointer;
-    padding: 4px 8px;
-    border-radius: 4px;
-    transition: 0.2s;
+    padding: 7px 12px;
+    border-radius: 9px;
+    transition: all 0.2s ease;
+    letter-spacing: 0.04em;
 }
 
 .btn-edit-text:hover {
-    background: rgba(59, 130, 246, 0.1);
+    background: rgba(59, 130, 246, 0.22);
+    box-shadow: 0 6px 16px rgba(59, 130, 246, 0.18);
 }
 
 .btn-delete-icon {
-    background: transparent;
-    border: none;
-    color: var(--red);
-    opacity: 0.6;
+    background: rgba(239, 68, 68, 0.12);
+    border: 1px solid rgba(239, 68, 68, 0.28);
+    color: #fecaca;
+    opacity: 1;
     font-size: 0.85rem;
     cursor: pointer;
-    padding: 4px;
-    transition: 0.2s;
+    padding: 7px 9px;
+    border-radius: 9px;
+    transition: all 0.2s ease;
 }
 
 .btn-delete-icon:hover {
-    opacity: 1;
-    transform: scale(1.1);
+    background: rgba(239, 68, 68, 0.18);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(239, 68, 68, 0.16);
 }
 
 /* Compact Match Card (Screenshot Style) */
@@ -1640,36 +1693,7 @@ select {
         height: 70px;
     }
 }
-    border: 1px solid rgba(239,68,68,0.2);
-    color: var(--red);
-    border-radius: 9px;
-    font-size: 0.8rem;
-    font-weight: 600;
-    font-family: 'Inter', sans-serif;
-    cursor: pointer;
-    transition: 0.2s ease;
-}
 
-.btn-delete:hover {
-    background: rgba(239,68,68,0.2);
-}
-
-.btn-delete {
-    padding: 7px 14px;
-    background: rgba(239,68,68,0.1);
-    border: 1px solid rgba(239,68,68,0.2);
-    color: var(--red);
-    border-radius: 9px;
-    font-size: 0.8rem;
-    font-weight: 600;
-    font-family: 'Inter', sans-serif;
-    cursor: pointer;
-    transition: 0.2s ease;
-}
-
-.btn-delete:hover {
-    background: rgba(239,68,68,0.2);
-}
 .media-item-info {
     display: flex;
     align-items: center;

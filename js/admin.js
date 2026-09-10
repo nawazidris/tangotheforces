@@ -658,44 +658,58 @@ const app = {
         },
 
         exportStandingsAsJson: function() {
-            // Get standings from the editor table
             const tbody = document.getElementById('standingsEditorBody');
-            if (!tbody || tbody.children.length === 0) {
-                alert('No standings data to export. Please load or add standings first.');
-                return;
-            }
+            let rows = [];
 
-            const rows = [];
-            tbody.querySelectorAll('tr').forEach(tr => {
-                const cells = tr.querySelectorAll('input[type="text"]');
-                if (cells.length >= 10) {
-                    rows.push([
-                        cells[0].value, // Pos
-                        cells[1].value, // Team
-                        cells[2].value, // P
-                        cells[3].value, // W
-                        cells[4].value, // D
-                        cells[5].value, // L
-                        cells[6].value, // GF
-                        cells[7].value, // GA
-                        cells[8].value, // GD
-                        cells[9].value  // PTS
-                    ]);
-                }
-            });
+            if (tbody && tbody.querySelectorAll('tr').length > 0) {
+                tbody.querySelectorAll('tr').forEach(tr => {
+                    const inputs = Array.from(tr.querySelectorAll('input')).map(input => input.value.trim());
+                    if (inputs.length >= 10) {
+                        const rowData = [
+                            inputs[0] || '',
+                            inputs[1] || '',
+                            inputs[2] || '0',
+                            inputs[3] || '0',
+                            inputs[4] || '0',
+                            inputs[5] || '0',
+                            inputs[6] || '0',
+                            inputs[7] || '0',
+                            inputs[8] || '0',
+                            inputs[9] || '0'
+                        ];
+
+                        if (rowData[1]) {
+                            rows.push(rowData);
+                        }
+                    }
+                });
+            }
 
             if (rows.length === 0) {
-                alert('No valid standings data found in the editor.');
+                const savedStandings = localStorage.getItem('leagueStandingsJson');
+                if (savedStandings) {
+                    try {
+                        const parsed = JSON.parse(savedStandings);
+                        if (parsed && Array.isArray(parsed.rows) && parsed.rows.length > 0) {
+                            rows = parsed.rows.map(row => Array.isArray(row) ? row.slice(0, 10) : []);
+                            rows = rows.filter(row => row.length >= 2 && row[1]);
+                        }
+                    } catch (error) {
+                        console.warn('Unable to read saved standings JSON for export.', error);
+                    }
+                }
+            }
+
+            if (rows.length === 0) {
+                alert('No valid standings data found in the editor. Please load or add standings first.');
                 return;
             }
 
-            // Create the JSON structure matching log.json format
             const standingsData = {
                 headers: ["Pos", "Team", "P", "W", "D", "L", "GF", "GA", "GD", "Pts"],
                 rows: rows
             };
 
-            // Use utility to handle download/APK save
             const jsonString = JSON.stringify(standingsData, null, 2);
             app.utils.saveFile('log.json', jsonString);
         },
