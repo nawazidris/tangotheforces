@@ -5,7 +5,7 @@
   "subtitle": "Tango FC secured the title with 86 points and a strong finish that showed unity on and off the pitch.",
   "tag": "The Forces",
   "tagColor": "gold-tag",
-  "image": "images/img.png",
+  "image": "images\\optimized\\IMG_3518.webp",
   "content": "",
   "date": "2026-02-22T12:00:00.000Z"
 },
@@ -16,7 +16,7 @@
     "subtitle": "Players are back in camp for focused fitness, tactical drills, and team cohesion ahead of the new season.",
     "tag": "Training",
     "tagColor": "blue-tag",
-    "image": "images/tango1111.jpg",
+    "image": "images\\optimized\\tango1111.webp",
     "content": "",
     "date": "2026-02-28T12:00:00.000Z"
   },
@@ -26,7 +26,7 @@
     "subtitle": "Tango FC has added fresh attacking and defensive talent to strengthen the squad ahead of the new campaign.",
     "tag": "Transfers",
     "tagColor": "green-tag",
-    "image": "images/new00.jpeg",
+    "image": "images\\optimized\\new00.webp",
     "content": "",
     "date": "2026-03-10T12:00:00.000Z"
   }
